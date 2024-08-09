@@ -1,0 +1,26 @@
+@use 'colors';
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100..900&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+
+@font-face {
+    font-family: 'DSEG7 Classic';
+    font-weight: 700;
+    src: url('../assets/fonts/DSEG7Classic-Bold.woff2');
+}
+
+@font-face {
+    font-family: 'HD44780A00 5x8';
+    font-weight: 400;
+    src: url('../assets/fonts/hd44780a00-5x8.otf');
+}
+
+body {
+    font-family: 'Roboto', 'Noto Sans JP', sans-serif;
+    font-weight: 400;
+    font-optical-sizing: auto;
+    color: colors.$text-color;
+}
+
+.font-numeric {
+    font-family: 'Montserrat', sans-serif;
+    font-variant-numeric: tabular-nums;
+}

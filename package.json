@@ -1,0 +1,91 @@
+{
+    "name": "nsg2-layouts",
+    "version": "0.1.0",
+    "description": "Broadcast graphics for the Norway Speedrunner Gathering",
+    "author": {
+        "name": "inkfarer",
+        "email": "inkfarer@inkfarer.com",
+        "url": "https://inkfarer.com"
+    },
+    "scripts": {
+        "build:clean": "run-s clean build",
+        "build": "run-p build:browser build:extension",
+        "build:browser": "vite --config vite.config.browser.mjs build",
+        "build:extension": "vite --config vite.config.extension.ts build",
+        "clean": "trash node_modules/.cache && trash dashboard && trash graphics && trash shared && trash extension",
+        "start": "node ../..",
+        "watch": "run-p watch:*",
+        "watch:browser": "vite --config vite.config.browser.mjs",
+        "watch:extension": "vite --config vite.config.extension.ts",
+        "schema-types": "nodecg schema-types"
+    },
+    "nodecg": {
+        "compatibleRange": "^1.7.0 || ^2.0.0",
+        "dashboardPanels": [
+            {
+                "name": "data-import",
+                "title": "Data Import",
+                "width": 2,
+                "file": "data-import.html",
+                "workspace": "2 - Setup",
+                "headerColor": "#262F40"
+            }
+        ],
+        "graphics": [
+            {
+                "file": "omnibar.html",
+                "width": 1920,
+                "height": 1080
+            }
+        ],
+        "assetCategories": [
+            {
+                "name": "sponsors",
+                "title": "Sponsor Logos",
+                "allowedTypes": [
+                    "jpg",
+                    "jpeg",
+                    "png",
+                    "gif"
+                ]
+            }
+        ]
+    },
+    "repository": "https://github.com/nodecg/nodecg.git",
+    "devDependencies": {
+        "@fortawesome/fontawesome-svg-core": "^6.4.0",
+        "@fortawesome/free-solid-svg-icons": "^6.4.0",
+        "@fortawesome/vue-fontawesome": "^3.0.0-4",
+        "@iplsplatoon/vue-components": "3.3.2",
+        "@nodecg/types": "^2.1.12",
+        "@tourneyview/common": "~0.6.0",
+        "@tourneyview/importer": "~0.6.0",
+        "@tourneyview/renderer": "~0.6.0",
+        "@types/lodash": "^4.14.171",
+        "@types/luxon": "^3.4.2",
+        "@types/node": "^15.14.9",
+        "@types/obs-studio": "^2.17.2",
+        "@types/uuid": "^9.0.8",
+        "@vitejs/plugin-vue": "^4.4.0",
+        "@vue/compiler-sfc": "^3.3.7",
+        "gsap": "3.12.5",
+        "lodash": "^4.17.21",
+        "npm-run-all": "^4.1.5",
+        "pinia": "^2.1.7",
+        "sass": "^1.69.5",
+        "trash-cli": "^5.0.0",
+        "typescript": "^5.4.5",
+        "vite": "^4.5.0",
+        "vite-plugin-checker": "^0.7.2",
+        "vite-plugin-nodecg": "2.1.0",
+        "vite-tsconfig-paths": "^4.3.2",
+        "vue": "^3.3.7",
+        "vue-tsc": "^2.0.29",
+        "vuedraggable": "^4.1.0"
+    },
+    "dependencies": {
+        "axios": "^1.6.8",
+        "luxon": "^3.4.4",
+        "uuid": "^10.0.0"
+    }
+}

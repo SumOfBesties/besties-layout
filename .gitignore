@@ -1,0 +1,17 @@
+node_modules
+coverage
+bower_components
+
+/dashboard
+/graphics
+/shared/dist
+/extension
+
+/.idea
+/.vscode
+
+result.json
+
+.npmrc
+
+.DS_Store

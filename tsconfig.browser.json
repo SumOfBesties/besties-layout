@@ -1,0 +1,42 @@
+{
+    "compilerOptions": {
+        "allowJs": true,
+        "noImplicitAny": true,
+        "module": "esnext",
+        "target": "es6",
+        "lib": [
+            "esnext",
+            "dom",
+            "dom.iterable"
+        ],
+        "esModuleInterop": true,
+        "experimentalDecorators": true,
+        "skipLibCheck": true,
+        "sourceMap": true,
+        "moduleResolution": "Node",
+        "baseUrl": ".",
+        "types": [
+            "@nodecg/types/augment-window",
+            "@types/obs-studio/index"
+        ],
+        "strictNullChecks": true,
+        "paths": {
+            "types/*": [
+                "src/types/*"
+            ],
+            "client-shared/*": [
+                "src/client-shared/*"
+            ],
+            "components/*": [
+                "src/graphics/components/*"
+            ]
+        }
+    },
+    "include": [
+        "src/dashboard/**/*.ts",
+        "src/dashboard/**/*.vue",
+        "src/graphics/**/*.ts",
+        "src/graphics/**/*.vue",
+        "src/client-shared/**/*.ts"
+    ]
+}
