@@ -19,6 +19,8 @@ export abstract class BaseController {
                     (cb as NodeCG.UnhandledAcknowledgement)(null, result);
                 }
             } catch (e) {
+                this.nodecg.log.error(`Error in ${this.constructor.name}:`, String(e));
+                this.nodecg.log.debug(`Error in ${this.constructor.name}:`, e);
                 if (cb && !cb.handled) {
                     (cb as NodeCG.UnhandledAcknowledgement)(e);
                 }

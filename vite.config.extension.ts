@@ -4,6 +4,9 @@ import tsconfigPaths from 'vite-tsconfig-paths';
 import checker from 'vite-plugin-checker';
 
 export default defineConfig({
+    esbuild: {
+        keepNames: true
+    },
     build: {
         outDir: 'extension',
         lib: {
