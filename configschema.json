@@ -8,6 +8,12 @@
             "properties": {
                 "timezone": { "type": "string" }
             }
+        },
+        "oengus": {
+            "type": "object",
+            "properties": {
+                "useSandbox": { "type": "boolean" }
+            }
         }
     }
 }

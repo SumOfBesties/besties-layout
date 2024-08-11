@@ -17,7 +17,8 @@
         "watch": "run-p watch:*",
         "watch:browser": "vite --config vite.config.browser.mjs",
         "watch:extension": "vite --config vite.config.extension.ts",
-        "schema-types": "nodecg schema-types"
+        "schema-types": "nodecg schema-types",
+        "test": "jest"
     },
     "nodecg": {
         "compatibleRange": "^1.7.0 || ^2.0.0",
@@ -57,6 +58,7 @@
         "@fortawesome/free-solid-svg-icons": "^6.4.0",
         "@fortawesome/vue-fontawesome": "^3.0.0-4",
         "@iplsplatoon/vue-components": "3.3.2",
+        "@jest/globals": "^29.7.0",
         "@nodecg/types": "^2.1.12",
         "@tourneyview/common": "~0.6.0",
         "@tourneyview/importer": "~0.6.0",
@@ -69,11 +71,14 @@
         "@vitejs/plugin-vue": "^4.4.0",
         "@vue/compiler-sfc": "^3.3.7",
         "gsap": "3.12.5",
+        "jest": "^29.7.0",
+        "jest-mock-extended": "^3.0.7",
         "lodash": "^4.17.21",
         "npm-run-all": "^4.1.5",
         "pinia": "^2.1.7",
         "sass": "^1.69.5",
         "trash-cli": "^5.0.0",
+        "ts-jest": "^29.2.4",
         "typescript": "^5.4.5",
         "vite": "^4.5.0",
         "vite-plugin-checker": "^0.7.2",
@@ -87,5 +92,10 @@
         "axios": "^1.6.8",
         "luxon": "^3.4.4",
         "uuid": "^10.0.0"
+    },
+    "jest": {
+        "projects": [
+            "<rootDir>/src/extension/jest.config.ts"
+        ]
     }
 }

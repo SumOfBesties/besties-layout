@@ -15,7 +15,8 @@ export default defineConfig({
         rollupOptions: {
             external: [
                 'axios',
-                /lodash\/.*/
+                /lodash\/.*/,
+                'uuid'
             ]
         }
     },

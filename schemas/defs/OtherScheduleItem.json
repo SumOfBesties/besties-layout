@@ -1,0 +1,30 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "type": "object",
+    "properties": {
+        "id": { "type": "string" },
+        "externalId": { "type": ["string", "null"] },
+        "title": { "type": "string" },
+        "type": {
+            "type": "string",
+            "enum": ["SETUP", "OTHER"]
+        },
+        "twitchCategory": { "type": ["string", "null"] },
+        "estimate": { "type": "string" },
+        "setupTime": { "type": ["string", "null"] },
+        "scheduledStartTime": { "type": "string" },
+        "talentIds": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "id": { "type": "string" },
+                    "externalId": { "type": ["string", "null"] }
+                },
+                "required": ["id"]
+            }
+        }
+    },
+    "required": ["id", "title", "estimate", "type", "scheduledStartTime", "talentIds"]
+}

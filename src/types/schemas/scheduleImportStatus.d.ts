@@ -5,14 +5,9 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
-export interface Configschema {
-	event?: {
-		timezone: string;
-		[k: string]: unknown;
-	};
-	oengus?: {
-		useSandbox?: boolean;
-		[k: string]: unknown;
-	};
+export interface ScheduleImportStatus {
+	inProgress: boolean;
+	totalItems?: number;
+	currentItem?: number;
 	[k: string]: unknown;
 }

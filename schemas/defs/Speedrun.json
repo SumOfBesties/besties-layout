@@ -1,0 +1,58 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "type": "object",
+    "properties": {
+        "id": { "type": "string" },
+        "externalId": { "type": ["string", "null"] },
+        "title": { "type": "string" },
+        "type": {
+            "type": "string",
+            "enum": ["SPEEDRUN"]
+        },
+        "twitchCategory": { "type": ["string", "null"] },
+        "system": { "type": ["string", "null"] },
+        "releaseYear": { "type": ["string", "null"] },
+        "category": { "type": ["string", "null"] },
+        "estimate": { "type": "string" },
+        "setupTime": { "type": ["string", "null"] },
+        "scheduledStartTime": { "type": "string" },
+        "relay": { "type": ["boolean", "null"] },
+        "teams": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "id": { "type": "string" },
+                    "name": { "type": "string" },
+                    "playerIds": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties": {
+                                "id": { "type": "string" },
+                                "externalId": { "type": ["string", "null"] }
+                            },
+                            "required": ["id"]
+                        }
+                    }
+                },
+                "required": ["id", "playerIds"]
+            }
+        },
+        "commentatorIds": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "id": { "type": "string" },
+                    "externalId": { "type": ["string", "null"] }
+                },
+                "required": ["id"]
+            }
+        }
+    },
+    "required": ["id", "title", "type", "estimate", "scheduledStartTime", "teams", "commentatorIds"]
+}

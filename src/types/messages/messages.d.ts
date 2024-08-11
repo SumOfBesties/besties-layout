@@ -1,5 +1,5 @@
 export interface MessageInputMap {
-
+    'schedule:import': { slug: string }
 }
 
 type MessagesWithoutReturnValues = Exclude<keyof MessageInputMap, keyof InnerMessageResultMap>;

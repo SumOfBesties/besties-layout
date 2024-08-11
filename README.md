@@ -16,6 +16,9 @@ To configure this bundle, create the file `[nodecg]/cfg/nsg2-layouts.json` with 
 {
   "event": {
     "timezone": "Europe/Oslo"
+  },
+  "oengus": {
+    "useSandbox": false
   }
 }
 ```
@@ -31,3 +34,4 @@ Find a list of time zones [here](https://en.wikipedia.org/wiki/List_of_tz_databa
 - `start`: Starts NodeCG.
 - `watch`: Runs a build and rebuilds when changes are found.
 - `schema-types`: Create or update type definitions for replicant schemas found in the `schemas` directory
+- `test`: Run project tests. As of writing, tests are only written for a limited set of more complicated logic in the application.
