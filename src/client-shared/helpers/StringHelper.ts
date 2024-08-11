@@ -1,3 +1,5 @@
+import { Duration } from 'luxon';
+
 export function addDots(value: string, maxLength?: number): string;
 export function addDots(value: string | undefined | null, maxLength?: number): string | undefined | null;
 export function addDots(value: string | undefined | null, maxLength = 48): string | undefined | null {
@@ -15,11 +17,20 @@ export function isBlank(value: unknown): boolean {
     return typeof value !== 'string' || value.trim() === '';
 }
 
-export function formatPlayType(playType: 'BEST_OF' | 'PLAY_ALL', numberOfGames?: number): string {
-    switch (playType) {
-        case 'BEST_OF':
-            return numberOfGames == null ? 'Best of X' : `Best of ${numberOfGames}`;
-        case 'PLAY_ALL':
-            return numberOfGames == null ? 'Play all X' : `Play all ${numberOfGames}`;
-    }
+export function prettyPrintList(arr: Array<string>): string {
+    return arr.reduce((result, item, index) => {
+        result += item;
+
+        if (index === arr.length - 2) {
+            result += ' & ';
+        } else if (index !== arr.length - 1) {
+            result += ', ';
+        }
+
+        return result;
+    }, '');
+}
+
+export function formatDuration(duration: string): string {
+    return Duration.fromISO(duration).toFormat('h:mm:ss');
 }

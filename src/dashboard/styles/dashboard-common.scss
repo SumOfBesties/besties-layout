@@ -12,6 +12,13 @@ body {
     margin-bottom: 5px;
     text-align: center;
     display: block;
+
+    &.large {
+        font-size: 1.25em;
+        padding-bottom: 4px;
+        border-bottom: 1px solid var(--ipl-input-color);
+        margin-bottom: 8px;
+    }
 }
 
 .top-margin {
@@ -20,4 +27,6 @@ body {
 
 hr {
     border-color: #737373;
+    border-width: 0.5px;
+    border-style: solid;
 }

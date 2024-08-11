@@ -30,6 +30,13 @@
                 "file": "data-import.html",
                 "workspace": "2 - Setup",
                 "headerColor": "#262F40"
+            },
+            {
+                "name": "stream-tech",
+                "title": "1 - Stream Tech Dashboard",
+                "file": "stream-tech.html",
+                "headerColor": "#262F40",
+                "fullbleed": true
             }
         ],
         "graphics": [
