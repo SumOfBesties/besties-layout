@@ -10,5 +10,9 @@ export class ScheduleController extends BaseController {
         this.listen('schedule:import', async (data) => {
             await scheduleService.importSchedule(data.slug);
         });
+
+        this.listen('schedule:setInterstitialCompleted', data => {
+            scheduleService.setInterstitialCompleted(data.scheduleItemId, data.completed);
+        });
     }
 }

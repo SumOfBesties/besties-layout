@@ -13,6 +13,7 @@
         "estimate": { "type": "string" },
         "setupTime": { "type": ["string", "null"] },
         "scheduledStartTime": { "type": "string" },
+        "completed": { "type": ["boolean", "null"] },
         "talentIds": {
             "type": "array",
             "items": {

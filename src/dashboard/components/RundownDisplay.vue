@@ -17,6 +17,7 @@
         <template v-else>
             <rundown-display-interstitial
                 v-for="interstitial in interstitialsBeforeActiveRun"
+                allow-completion-change
                 :key="`interstitial_${interstitial.id}`"
                 :interstitial="interstitial"
                 class="m-b-8"

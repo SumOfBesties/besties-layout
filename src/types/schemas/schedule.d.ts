@@ -52,6 +52,7 @@ export interface OtherScheduleItem {
 	estimate: string;
 	setupTime?: string | null;
 	scheduledStartTime: string;
+	completed?: boolean | null;
 	talentIds: {
 		id: string;
 		externalId?: string | null;

@@ -46,6 +46,22 @@ export class ScheduleService {
         }
     }
 
+    setInterstitialCompleted(scheduleItemId: string, completed: boolean) {
+        const scheduleItem = this.getScheduleItem(scheduleItemId);
+        if (scheduleItem.type === 'SPEEDRUN') {
+            throw new Error(`Schedule item with ID ${scheduleItemId} is not an interstitial`);
+        }
+        scheduleItem.completed = completed;
+    }
+
+    getScheduleItem(scheduleItemId: string): Schedule['items'][number] {
+        const scheduleItem = this.schedule.value.items.find(scheduleItem => scheduleItem.id === scheduleItemId);
+        if (scheduleItem == null) {
+            throw new Error(`Could not get schedule item with ID ${scheduleItemId}`);
+        }
+        return scheduleItem;
+    }
+
     private generateScheduleItemAndTeamIds(schedule: Schedule['items']): Schedule['items'] {
         return cloneDeep(schedule).map(scheduleItem => {
             if (scheduleItem.type !== 'SPEEDRUN') {
