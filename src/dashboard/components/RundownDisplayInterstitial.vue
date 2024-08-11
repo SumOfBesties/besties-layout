@@ -21,13 +21,14 @@
                 v-if="props.allowCompletionChange"
                 small
                 :color="props.interstitial.completed ? 'red' : 'green'"
+                class="completion-button"
                 @click="setCompleted(!props.interstitial.completed)"
             >
                 <font-awesome-icon
                     :icon="props.interstitial.completed ? 'rotate-left' : 'check'"
                     size="xl"
                 />
-                <div style="margin-top: -2px">{{ props.interstitial.completed ? 'Not completed' : 'Complete' }}</div>
+                <div>{{ props.interstitial.completed ? 'Not completed' : 'Complete' }}</div>
             </ipl-button>
         </div>
     </ipl-space>
@@ -66,9 +67,16 @@ async function setCompleted(completed: boolean) {
 }
 
 .interstitial-display {
-    display: grid;
+    display: flex;
     align-items: center;
-    grid-template-columns: 1fr 95px;
-    gap: 8px;
+
+    > *:first-child {
+        flex-grow: 1;
+    }
+}
+
+.completion-button {
+    width: 95px;
+    margin-left: 8px;
 }
 </style>
