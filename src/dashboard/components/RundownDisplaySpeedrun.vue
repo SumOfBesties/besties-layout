@@ -6,7 +6,7 @@
             class="m-b-2"
         >
             <font-awesome-icon icon="circle" size="xs" />
-            Active speedrun
+            Active run
         </ipl-badge>
         <div class="speedrun-title">{{ props.speedrun.title }}</div>
         <div class="m-t-2">
