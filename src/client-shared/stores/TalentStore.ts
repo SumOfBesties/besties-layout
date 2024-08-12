@@ -19,6 +19,29 @@ export const useTalentStore = defineStore('talent', {
             return (talentList: { id: string }[]) => {
                 return prettyPrintList(talentList.map(talentId => this.findTalentItemById(talentId.id)?.name ?? `Unknown Talent ${talentId.id}`));
             }
+        },
+        formatSpeedrunTeamList() {
+            return (teams: { playerIds: { id: string }[] }[]) => {
+                const playerCount = teams.reduce((result, team) => {
+                    result += team.playerIds.length;
+                    return result;
+                }, 0);
+
+                if (playerCount === 0) {
+                    return 'No players?!';
+                } else if (playerCount >= 6) {
+                    return `${playerCount} players`;
+                }
+
+                return teams.reduce((result, team, index, array) => {
+                    result += prettyPrintList(team.playerIds.map(playerId =>
+                        this.findTalentItemById(playerId.id)?.name ?? `Unknown Talent ${playerId.id}`));
+                    if (index !== array.length - 1) {
+                        result += ' vs. ';
+                    }
+                    return result;
+                }, '');
+            }
         }
     }
 });

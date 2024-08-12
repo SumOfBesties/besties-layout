@@ -17,6 +17,7 @@
         "setupTime": { "type": ["string", "null"] },
         "scheduledStartTime": { "type": "string" },
         "relay": { "type": ["boolean", "null"] },
+        "emulated": { "type": ["boolean", "null"] },
         "teams": {
             "type": "array",
             "items": {

@@ -1,4 +1,5 @@
 import { Duration } from 'luxon';
+import { ScheduleItem } from 'types/ScheduleHelpers';
 
 export function addDots(value: string, maxLength?: number): string;
 export function addDots(value: string | undefined | null, maxLength?: number): string | undefined | null;
@@ -29,6 +30,20 @@ export function prettyPrintList(arr: Array<string>): string {
 
         return result;
     }, '');
+}
+
+export function formatScheduleItemEstimate(scheduleItem: ScheduleItem): string {
+    const estimate = Duration.fromISO(scheduleItem.estimate);
+    // If a schedule item has a zero-second estimate, try using the setup time instead
+    if (estimate.as('seconds') === 0) {
+        if (scheduleItem.setupTime == null) {
+            return formatDuration('PT0S');
+        } else {
+            return formatDuration(scheduleItem.setupTime);
+        }
+    } else {
+        return formatDuration(scheduleItem.estimate);
+    }
 }
 
 export function formatDuration(duration: string): string {

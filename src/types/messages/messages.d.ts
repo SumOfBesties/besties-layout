@@ -4,6 +4,7 @@ export interface MessageInputMap {
 
     'speedrun:seekToNextRun': never
     'speedrun:seekToPreviousRun': never
+    'speedrun:setActiveSpeedrun': { scheduleItemId: string }
 }
 
 type MessagesWithoutReturnValues = Exclude<keyof MessageInputMap, keyof InnerMessageResultMap>;

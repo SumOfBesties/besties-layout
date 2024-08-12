@@ -10,10 +10,10 @@
             </ipl-button>
             <ipl-button
                 color="transparent"
-                disabled
+                @click="scheduleItemSearchDialog?.open"
             >
                 <font-awesome-icon icon="search" />
-                Search for a run...
+                Search the schedule...
             </ipl-button>
             <ipl-button
                 :disabled="!canSeekForwards"
@@ -23,6 +23,9 @@
                 <font-awesome-icon icon="chevron-right" />
             </ipl-button>
         </ipl-space>
+        <schedule-item-search-dialog
+            ref="scheduleItemSearchDialog"
+        />
     </div>
 </template>
 
@@ -34,11 +37,13 @@ import { faChevronLeft } from '@fortawesome/free-solid-svg-icons/faChevronLeft';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons/faSearch';
 import { useScheduleStore } from 'client-shared/stores/ScheduleStore';
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { sendMessage } from 'client-shared/helpers/NodecgHelper';
+import ScheduleItemSearchDialog from './ScheduleItemSearchDialog.vue';
 
 library.add(faChevronRight, faChevronLeft, faSearch);
 
+const scheduleItemSearchDialog = ref<InstanceType<typeof ScheduleItemSearchDialog>>();
 const scheduleStore = useScheduleStore();
 
 const canSeekBackwards = computed(() => {

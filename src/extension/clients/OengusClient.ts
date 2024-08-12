@@ -168,7 +168,8 @@ export class OengusClient {
                     category: line.categoryName,
                     relay: line.type.includes('RELAY'),
                     teams: this.getTeamListV1(line),
-                    commentatorIds: []
+                    commentatorIds: [],
+                    emulated: line.emulated
                 } satisfies Speedrun;
             }
         });

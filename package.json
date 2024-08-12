@@ -64,7 +64,7 @@
         "@fortawesome/fontawesome-svg-core": "^6.4.0",
         "@fortawesome/free-solid-svg-icons": "^6.4.0",
         "@fortawesome/vue-fontawesome": "^3.0.0-4",
-        "@iplsplatoon/vue-components": "3.3.2",
+        "@iplsplatoon/vue-components": "3.5.1",
         "@jest/globals": "^29.7.0",
         "@nodecg/types": "^2.1.12",
         "@tourneyview/common": "~0.6.0",

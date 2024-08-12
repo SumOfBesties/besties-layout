@@ -14,5 +14,9 @@ export class SpeedrunController extends BaseController {
         this.listen('speedrun:seekToPreviousRun', () => {
             speedrunService.seekToPreviousRun();
         });
+
+        this.listen('speedrun:setActiveSpeedrun', data => {
+             speedrunService.setActiveSpeedrunById(data.scheduleItemId);
+        });
     }
 }

@@ -58,12 +58,14 @@ export class SpeedrunService {
         this.setActiveSpeedrun(previousRun);
     }
 
-    setActiveSpeedrunByIndex(scheduleItemIndex: number) {
-        const scheduleItem = this.schedule.value.items[scheduleItemIndex];
+    setActiveSpeedrunById(scheduleItemId: string) {
+        const scheduleItem = this.schedule.value.items.find(scheduleItem => scheduleItem.id === scheduleItemId);
         if (scheduleItem == null) {
-            throw new Error(`No schedule item present at index ${scheduleItemIndex}`);
+            throw new Error(`No schedule item found with ID ${scheduleItemId}`);
         }
+        const newNextRun = this.scheduleService.findScheduleItemAfter(scheduleItem.id, 'SPEEDRUN');
         this.setActiveSpeedrun(scheduleItem);
+        this.setNextSpeedrun(newNextRun);
     }
 
     private setActiveSpeedrun(scheduleItem: ScheduleItem) {
