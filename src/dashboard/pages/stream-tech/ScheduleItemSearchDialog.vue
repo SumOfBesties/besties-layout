@@ -48,7 +48,7 @@
                             – {{ result.category }}
                         </template>
                         <template v-if="result.system">
-                            – {{ result.system }}
+                            – {{ result.system }} {{ result.emulated ? '(Emulated)' : '' }}
                         </template>
                     </span>
                     <div
