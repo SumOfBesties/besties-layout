@@ -4,6 +4,8 @@ export * from './configschema';
 // @ts-ignore
 export * from './activeSpeedrun';
 // @ts-ignore
+export * from './nextSpeedrun';
+// @ts-ignore
 export * from './schedule';
 // @ts-ignore
 export * from './scheduleImportStatus';

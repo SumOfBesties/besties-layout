@@ -65,9 +65,10 @@
 import { IplMessage, IplSpace } from '@iplsplatoon/vue-components';
 import { useScheduleStore } from 'client-shared/stores/ScheduleStore';
 import { computed } from 'vue';
-import { OtherScheduleItem, Schedule } from 'types/schemas';
+import { OtherScheduleItem } from 'types/schemas';
 import RundownDisplaySpeedrun from './RundownDisplaySpeedrun.vue';
 import RundownDisplayInterstitial from './RundownDisplayInterstitial.vue';
+import { ScheduleItem } from 'types/ScheduleHelpers';
 
 const scheduleStore = useScheduleStore();
 
@@ -83,7 +84,7 @@ const interstitialsBeforeActiveRun = computed<OtherScheduleItem[]>(() => {
     return result;
 });
 
-const scheduleItemsAfterActiveRun = computed<Schedule['items'][number][]>(() => {
+const scheduleItemsAfterActiveRun = computed<ScheduleItem[]>(() => {
     if (scheduleStore.activeSpeedrunIndex === -1 || scheduleStore.activeSpeedrunIndex === scheduleStore.schedule.items.length - 1) return [];
 
     return scheduleStore.schedule.items.slice(scheduleStore.activeSpeedrunIndex + 1, scheduleStore.activeSpeedrunIndex + 7);

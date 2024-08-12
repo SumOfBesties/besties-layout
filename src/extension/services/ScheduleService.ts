@@ -5,6 +5,7 @@ import { TalentService } from './TalentService';
 import { v4 as uuidV4 } from 'uuid';
 import mergeWith from 'lodash/mergeWith';
 import cloneDeep from 'lodash/cloneDeep';
+import { ScheduleItem, ScheduleItemType } from 'types/ScheduleHelpers';
 
 export class ScheduleService {
     private readonly logger: NodeCG.Logger;
@@ -60,6 +61,30 @@ export class ScheduleService {
             throw new Error(`Could not get schedule item with ID ${scheduleItemId}`);
         }
         return scheduleItem;
+    }
+
+    findScheduleItemAfter(scheduleItemId: string | undefined | null, type?: ScheduleItemType): ScheduleItem | null {
+        if (scheduleItemId == null) return null;
+        const scheduleItemIndex = this.schedule.value.items.findIndex(scheduleItem => scheduleItem.id === scheduleItemId);
+        if (scheduleItemIndex === -1) return null;
+
+        for (let i = scheduleItemIndex + 1; i < this.schedule.value.items.length; i++) {
+            const scheduleItem = this.schedule.value.items[i];
+            if (type == null || scheduleItem.type === type) return scheduleItem;
+        }
+        return null;
+    }
+
+    findScheduleItemBefore(scheduleItemId: string | undefined | null, type?: ScheduleItemType): ScheduleItem | null {
+        if (scheduleItemId == null) return null;
+        const scheduleItemIndex = this.schedule.value.items.findIndex(scheduleItem => scheduleItem.id === scheduleItemId);
+        if (scheduleItemIndex <= 0) return null;
+
+        for (let i = scheduleItemIndex - 1; i >= 0; i--) {
+            const scheduleItem = this.schedule.value.items[i];
+            if (type == null || scheduleItem.type === type) return scheduleItem;
+        }
+        return null;
     }
 
     private generateScheduleItemAndTeamIds(schedule: Schedule['items']): Schedule['items'] {
