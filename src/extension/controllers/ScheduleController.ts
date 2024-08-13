@@ -14,5 +14,9 @@ export class ScheduleController extends BaseController {
         this.listen('schedule:setInterstitialCompleted', data => {
             scheduleService.setInterstitialCompleted(data.scheduleItemId, data.completed);
         });
+
+        this.listen('schedule:updateItem', data => {
+            scheduleService.updateScheduleItem(data);
+        })
     }
 }

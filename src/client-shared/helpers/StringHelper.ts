@@ -49,3 +49,10 @@ export function formatScheduleItemEstimate(scheduleItem: ScheduleItem): string {
 export function formatDuration(duration: string): string {
     return Duration.fromISO(duration).toFormat('h:mm:ss');
 }
+
+export function padNumber(number: unknown, minLength = 2): string {
+    if (typeof number !== 'number') return '';
+    const result = String(number);
+    if (result.length >= minLength) return result;
+    return '0'.repeat(minLength - result.length) + result;
+}

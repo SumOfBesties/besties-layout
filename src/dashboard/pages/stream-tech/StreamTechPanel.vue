@@ -9,12 +9,19 @@
         </ipl-space>
         <rundown-display class="rundown-display" />
     </div>
+    <schedule-item-editor ref="scheduleItemEditor" />
 </template>
 
 <script setup lang="ts">
 import RundownDisplay from '../../components/RundownDisplay.vue';
 import { IplSpace } from '@iplsplatoon/vue-components';
 import ActiveRunManager from './ActiveRunManager.vue';
+import ScheduleItemEditor from '../../components/ScheduleItemEditor.vue';
+import { provide, ref } from 'vue';
+import { ScheduleItemEditorInjectionKey } from '../../helpers/Injections';
+
+const scheduleItemEditor = ref<InstanceType<typeof ScheduleItemEditor>>();
+provide(ScheduleItemEditorInjectionKey, scheduleItemEditor);
 </script>
 
 <style lang="scss">

@@ -68,6 +68,14 @@ export class SpeedrunService {
         this.setNextSpeedrun(newNextRun);
     }
 
+    updateSpeedruns(scheduleItem: ScheduleItem) {
+        if (scheduleItem.id === this.activeSpeedrun.value?.id) {
+            this.setActiveSpeedrun(scheduleItem);
+        } else if (scheduleItem.id === this.nextSpeedrun.value?.id) {
+            this.setNextSpeedrun(scheduleItem);
+        }
+    }
+
     private setActiveSpeedrun(scheduleItem: ScheduleItem) {
         if (scheduleItem.type !== 'SPEEDRUN') {
             throw new Error(`Schedule item is type "${scheduleItem.type}"; Expected "SPEEDRUN"`);

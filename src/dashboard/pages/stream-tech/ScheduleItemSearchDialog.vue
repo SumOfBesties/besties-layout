@@ -75,16 +75,16 @@
                         :disabled="result.id === scheduleStore.activeSpeedrun?.id"
                         @click="setActiveSpeedrun(result.id)"
                     >
-                        <font-awesome-icon icon="circle" size="xs" />
+                        <font-awesome-icon icon="circle" size="sm" />
                         Set as active run
                     </ipl-button>
                     <ipl-button
                         color="transparent"
                         inline
-                        disabled
                         class="m-r-8"
+                        @click="editScheduleItem(result.id)"
                     >
-                        <font-awesome-icon icon="pen-to-square" size="xs" />
+                        <font-awesome-icon icon="pen-to-square" size="sm" />
                         Edit
                     </ipl-button>
                 </div>
@@ -102,7 +102,7 @@ import {
     IplInput,
     IplSpace
 } from '@iplsplatoon/vue-components';
-import { computed, ref, watch } from 'vue';
+import { computed, inject, ref, watch } from 'vue';
 import { formatScheduleItemEstimate, isBlank } from 'client-shared/helpers/StringHelper';
 import { useScheduleStore } from 'client-shared/stores/ScheduleStore';
 import { library } from '@fortawesome/fontawesome-svg-core';
@@ -119,6 +119,7 @@ import { faCircle } from '@fortawesome/free-solid-svg-icons/faCircle';
 import { faPenToSquare } from '@fortawesome/free-solid-svg-icons';
 import { sendMessage } from 'client-shared/helpers/NodecgHelper';
 import ScheduleItemTypeBadge from '../../components/ScheduleItemTypeBadge.vue';
+import { ScheduleItemEditorInjectionKey } from '../../helpers/Injections';
 
 library.add(faGamepad, faHeadset, faCircle, faPenToSquare);
 
@@ -129,6 +130,8 @@ const isOpen = ref(false);
 const query = ref('');
 const searchByTalentName = ref(true);
 const searchByTitle = ref(true);
+
+const scheduleItemEditor = inject(ScheduleItemEditorInjectionKey);
 
 watch(isOpen, newValue => {
     if (!newValue) {
@@ -185,6 +188,10 @@ const searchResults = computed(() => {
 async function setActiveSpeedrun(scheduleItemId: string) {
     await sendMessage('speedrun:setActiveSpeedrun', { scheduleItemId });
     isOpen.value = false;
+}
+
+function editScheduleItem(scheduleItemId: string) {
+    scheduleItemEditor?.value?.open(scheduleItemId);
 }
 
 defineExpose({

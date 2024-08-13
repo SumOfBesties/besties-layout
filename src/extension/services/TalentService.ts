@@ -64,6 +64,26 @@ export class TalentService {
         });
     }
 
+    updateTalentItems(talent: Talent) {
+        const newTalent = cloneDeep(this.talent.value);
+        talent.forEach(talentItem => {
+            if (!talentItem.id) {
+                throw new Error('All provided talent items must have IDs');
+            }
+            const existingTalentIndex = this.talent.value.findIndex(existingTalent => existingTalent.id === talentItem.id);
+            if (existingTalentIndex === -1) {
+                newTalent.push(talentItem);
+            } else {
+                newTalent[existingTalentIndex] = talentItem;
+            }
+        });
+        this.talent.value = newTalent;
+    }
+
+    talentItemExists(talentId: string) {
+        return this.talent.value.some(talent => talent.id === talentId);
+    }
+
     private findTalentIdForScheduleTalentItem(ids: { id: string, externalId?: string | null }, talent: Talent): { id: string, externalId?: string | null } {
         if (!!ids.id) {
             return ids;

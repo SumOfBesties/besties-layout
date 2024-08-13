@@ -6,6 +6,8 @@ import { v4 as uuidV4 } from 'uuid';
 import mergeWith from 'lodash/mergeWith';
 import cloneDeep from 'lodash/cloneDeep';
 import { ScheduleItem, ScheduleItemType } from 'types/ScheduleHelpers';
+import { DateTime, Duration } from 'luxon';
+import { SpeedrunService } from './SpeedrunService';
 
 export class ScheduleService {
     private readonly logger: NodeCG.Logger;
@@ -14,14 +16,23 @@ export class ScheduleService {
     private readonly talent: NodeCG.ServerReplicantWithSchemaDefault<Talent>;
     private readonly oengusClient: OengusClient;
     private readonly talentService: TalentService;
+    private speedrunService?: SpeedrunService;
 
-    constructor(nodecg: NodeCG.ServerAPI<Configschema>, oengusClient: OengusClient, talentService: TalentService) {
+    constructor(
+        nodecg: NodeCG.ServerAPI<Configschema>,
+        oengusClient: OengusClient,
+        talentService: TalentService
+    ) {
         this.logger = new nodecg.Logger('ScheduleService');
         this.scheduleImportStatus = nodecg.Replicant('scheduleImportStatus', { persistent: false }) as unknown as NodeCG.ServerReplicantWithSchemaDefault<ScheduleImportStatus>;
         this.schedule = nodecg.Replicant('schedule') as unknown as NodeCG.ServerReplicantWithSchemaDefault<Schedule>;
         this.talent = nodecg.Replicant('talent') as unknown as NodeCG.ServerReplicantWithSchemaDefault<Talent>;
         this.oengusClient = oengusClient;
         this.talentService = talentService;
+    }
+
+    init(speedrunService: SpeedrunService) {
+        this.speedrunService = speedrunService;
     }
 
     async importSchedule(slug: string): Promise<void> {
@@ -85,6 +96,53 @@ export class ScheduleService {
             if (type == null || scheduleItem.type === type) return scheduleItem;
         }
         return null;
+    }
+
+    updateScheduleItem(item: ScheduleItem) {
+        if (!item.id) {
+            throw new Error('Schedule item ID must not be blank');
+        }
+        const scheduleItemIndex = this.schedule.value.items.findIndex(scheduleItem => scheduleItem.id === item.id);
+        if (scheduleItemIndex === -1) {
+            throw new Error(`Schedule item with ID ${item.id} does not already exist`);
+        }
+
+        this.validateDuration(item.estimate);
+        this.validateDuration(item.setupTime);
+        this.validateDate(item.scheduledStartTime);
+
+        const normalizedItem: ScheduleItem = cloneDeep(item);
+
+        if (normalizedItem.type === 'SPEEDRUN') {
+            normalizedItem.commentatorIds = normalizedItem.commentatorIds.filter(commentatorId => this.talentService.talentItemExists(commentatorId.id));
+            normalizedItem.teams = normalizedItem.teams
+                .map(team => ({
+                    ...team,
+                    id: !team.id ? uuidV4() : team.id,
+                    playerIds: team.playerIds.filter(playerId => this.talentService.talentItemExists(playerId.id))
+                }))
+                .filter(team => team.playerIds.length > 0);
+            if (normalizedItem.teams.length === 0) {
+                throw new Error('Schedule item has no players!');
+            }
+        } else {
+            normalizedItem.talentIds = normalizedItem.talentIds.filter(talentId => this.talentService.talentItemExists(talentId.id));
+        }
+
+        this.schedule.value.items[scheduleItemIndex] = normalizedItem;
+        this.speedrunService?.updateSpeedruns(normalizedItem);
+    }
+
+    private validateDate(date: string | undefined | null) {
+        if (!!date && !DateTime.fromISO(date).isValid) {
+            throw new Error(`"${date}" is not a valid ISO 8601 date`);
+        }
+    }
+
+    private validateDuration(duration: string | undefined | null) {
+        if (!!duration && !Duration.fromISO(duration).isValid) {
+            throw new Error(`"${duration}" is not a valid ISO 8601 duration`);
+        }
     }
 
     private generateScheduleItemAndTeamIds(schedule: Schedule['items']): Schedule['items'] {
