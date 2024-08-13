@@ -1,5 +1,8 @@
 <template>
-    <div>
+    <div
+        class="layout vertical"
+        style="overflow: hidden;"
+    >
         <ipl-space class="run-selector-space">
             <ipl-button
                 :disabled="!canSeekBackwards"
