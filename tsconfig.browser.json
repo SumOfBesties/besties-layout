@@ -30,7 +30,8 @@
             "components/*": [
                 "src/graphics/components/*"
             ]
-        }
+        },
+        "resolveJsonModule": true
     },
     "include": [
         "src/dashboard/**/*.ts",

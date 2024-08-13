@@ -10,6 +10,7 @@
         <rundown-display class="rundown-display" />
     </div>
     <schedule-item-editor ref="scheduleItemEditor" />
+    <country-select-dialog ref="countrySelectDialog" />
 </template>
 
 <script setup lang="ts">
@@ -18,10 +19,13 @@ import { IplSpace } from '@iplsplatoon/vue-components';
 import ActiveRunManager from './ActiveRunManager.vue';
 import ScheduleItemEditor from '../../components/ScheduleItemEditor.vue';
 import { provide, ref } from 'vue';
-import { ScheduleItemEditorInjectionKey } from '../../helpers/Injections';
+import { CountrySelectDialogInjectionKey, ScheduleItemEditorInjectionKey } from '../../helpers/Injections';
+import CountrySelectDialog from '../../components/CountrySelectDialog.vue';
 
 const scheduleItemEditor = ref<InstanceType<typeof ScheduleItemEditor>>();
 provide(ScheduleItemEditorInjectionKey, scheduleItemEditor);
+const countrySelectDialog = ref<InstanceType<typeof CountrySelectDialog>>();
+provide(CountrySelectDialogInjectionKey, countrySelectDialog);
 </script>
 
 <style lang="scss">

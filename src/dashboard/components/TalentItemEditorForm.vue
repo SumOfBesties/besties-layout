@@ -12,10 +12,9 @@
                 label="Pronouns"
                 class="max-width"
             />
-            <ipl-input
+            <country-code-select
                 v-model="props.modelValue.countryCode"
-                name="countryCode"
-                label="Country code"
+                :color="props.color === 'secondary' ? 'primary' : 'secondary'"
                 class="max-width m-l-8"
             />
             <ipl-input
@@ -51,8 +50,10 @@
 <script setup lang="ts">
 import { IplInput } from '@iplsplatoon/vue-components';
 import { Talent } from 'types/schemas';
+import CountryCodeSelect from './CountryCodeSelect.vue';
 
 const props = defineProps<{
     modelValue: Talent[number]
+    color: 'primary' | 'secondary'
 }>();
 </script>

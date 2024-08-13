@@ -29,7 +29,10 @@
                             />
                         </div>
                     </template>
-                    <talent-item-editor-form :model-value="props.talentItemMap[element.id]" />
+                    <talent-item-editor-form
+                        :model-value="props.talentItemMap[element.id]"
+                        :color="props.color"
+                    />
                 </ipl-expanding-space>
             </template>
         </draggable>

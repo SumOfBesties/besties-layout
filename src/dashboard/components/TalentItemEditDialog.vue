@@ -15,6 +15,7 @@
         >
             <talent-item-editor-form
                 :model-value="props.modelValue"
+                color="secondary"
             />
             <ipl-button
                 class="m-t-8"
