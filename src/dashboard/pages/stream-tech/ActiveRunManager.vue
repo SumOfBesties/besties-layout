@@ -33,9 +33,7 @@
             No speedrun is currently active
         </ipl-message>
         <template v-else>
-            <ipl-space
-                class="m-t-8"
-            >
+            <ipl-space class="m-t-8">
                 <div class="text-low-emphasis m-t-8">Active run ({{ speedrunCount.current === -1 ? '?' : speedrunCount.current }}/{{ speedrunCount.total }})</div>
                 <div class="speedrun-name m-b-8">{{ scheduleStore.activeSpeedrun.title }}</div>
                 <div class="speedrun-details">
@@ -55,7 +53,6 @@
                 <div class="m-t-8 text-center">
                     <ipl-button
                         inline
-                        color="red"
                         @click="scheduleItemEditor?.openForActiveSpeedrun"
                     >
                         <font-awesome-icon icon="pen-to-square" />

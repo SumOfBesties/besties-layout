@@ -54,7 +54,7 @@
                     <ipl-button
                         :disabled="timerStore.timer.state === 'STOPPED'"
                         small
-                        :color="timerStore.timer.teamResults[team.id] ? 'red' : 'green'"
+                        :color="timerStore.timer.teamResults[team.id] ? 'yellow' : 'green'"
                         @click="stopUndoTeamTimer(team.id)"
                     >
                         <font-awesome-icon :icon="timerStore.timer.teamResults[team.id] ? 'rotate-left' : 'flag-checkered'" />
@@ -111,7 +111,7 @@ const startStopUndoButton = computed(() => {
             return {
                 icon: 'rotate-left',
                 label: 'Resume',
-                color: 'red'
+                color: 'yellow'
             };
         case 'PAUSED':
         case 'RUNNING':
