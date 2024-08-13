@@ -29,37 +29,39 @@
         >
             No speedrun is currently active
         </ipl-message>
-        <ipl-space
-            v-else
-            class="m-t-8"
-        >
-            <div class="text-low-emphasis m-t-8">Active run ({{ speedrunCount.current === -1 ? '?' : speedrunCount.current }}/{{ speedrunCount.total }})</div>
-            <div class="speedrun-name m-b-8">{{ scheduleStore.activeSpeedrun.title }}</div>
-            <div class="speedrun-details">
-                <ipl-data-row
-                    label="System"
-                    :value="`${scheduleStore.activeSpeedrun.system ?? 'Unknown'}${scheduleStore.activeSpeedrun.emulated ? ' (Emulated)' : ''}`"
-                />
-                <ipl-data-row
-                    label="Release year"
-                    :value="scheduleStore.activeSpeedrun.releaseYear"
-                />
-                <ipl-data-row
-                    label="Category"
-                    :value="scheduleStore.activeSpeedrun.category"
-                />
-            </div>
-            <div class="m-t-8 text-center">
-                <ipl-button
-                    inline
-                    color="red"
-                    @click="scheduleItemEditor?.openForActiveSpeedrun"
-                >
-                    <font-awesome-icon icon="pen-to-square" />
-                    Edit active run
-                </ipl-button>
-            </div>
-        </ipl-space>
+        <template v-else>
+            <ipl-space
+                class="m-t-8"
+            >
+                <div class="text-low-emphasis m-t-8">Active run ({{ speedrunCount.current === -1 ? '?' : speedrunCount.current }}/{{ speedrunCount.total }})</div>
+                <div class="speedrun-name m-b-8">{{ scheduleStore.activeSpeedrun.title }}</div>
+                <div class="speedrun-details">
+                    <ipl-data-row
+                        label="System"
+                        :value="`${scheduleStore.activeSpeedrun.system ?? 'Unknown'}${scheduleStore.activeSpeedrun.emulated ? ' (Emulated)' : ''}`"
+                    />
+                    <ipl-data-row
+                        label="Release year"
+                        :value="scheduleStore.activeSpeedrun.releaseYear"
+                    />
+                    <ipl-data-row
+                        label="Category"
+                        :value="scheduleStore.activeSpeedrun.category"
+                    />
+                </div>
+                <div class="m-t-8 text-center">
+                    <ipl-button
+                        inline
+                        color="red"
+                        @click="scheduleItemEditor?.openForActiveSpeedrun"
+                    >
+                        <font-awesome-icon icon="pen-to-square" />
+                        Edit active run
+                    </ipl-button>
+                </div>
+            </ipl-space>
+            <timer-manager class="m-t-8" />
+        </template>
         <schedule-item-search-dialog
             ref="scheduleItemSearchDialog"
         />
@@ -79,6 +81,7 @@ import { sendMessage } from 'client-shared/helpers/NodecgHelper';
 import ScheduleItemSearchDialog from './ScheduleItemSearchDialog.vue';
 import { faPenToSquare } from '@fortawesome/free-solid-svg-icons';
 import { ScheduleItemEditorInjectionKey } from '../../helpers/Injections';
+import TimerManager from './TimerManager.vue';
 
 library.add(faChevronRight, faChevronLeft, faSearch, faPenToSquare);
 

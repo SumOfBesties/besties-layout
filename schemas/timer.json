@@ -1,0 +1,44 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "state": {
+            "type": "string",
+            "enum": ["STOPPED", "RUNNING", "PAUSED", "FINISHED"]
+        },
+        "time": {
+            "$ref": "defs/Duration.json"
+        },
+        "teamResults": {
+            "type": "object",
+            "additionalProperties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "state": {
+                        "type": "string",
+                        "enum": ["FORFEIT", "FINISHED"]
+                    },
+                    "time": {
+                        "$ref": "defs/Duration.json"
+                    }
+                },
+                "required": ["state", "time"]
+            }
+        }
+    },
+    "required": ["state", "time", "teamResults"],
+    "default": {
+        "state": "STOPPED",
+        "time": {
+            "hours": 0,
+            "minutes": 0,
+            "seconds": 0,
+            "milliseconds": 0,
+            "rawTime": 0,
+            "timestamp": 0
+        },
+        "teamResults": {}
+    }
+}

@@ -11,6 +11,12 @@ export interface MessageInputMap {
     'speedrun:setActiveSpeedrun': { scheduleItemId: string }
 
     'talent:updateTalentItems': Talent
+
+    'timer:start': never
+    'timer:stop': { teamId?: string, forfeit?: boolean } | undefined
+    'timer:undoStop': { teamId?: string } | undefined
+    'timer:pause': never
+    'timer:reset': never
 }
 
 type MessagesWithoutReturnValues = Exclude<keyof MessageInputMap, keyof InnerMessageResultMap>;

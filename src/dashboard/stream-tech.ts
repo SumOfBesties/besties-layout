@@ -7,6 +7,7 @@ import { initInternalStatusStore } from 'client-shared/stores/InternalStatusStor
 import StreamTechPanel from './pages/stream-tech/StreamTechPanel.vue';
 import { initScheduleStore } from 'client-shared/stores/ScheduleStore';
 import { initTalentStore } from 'client-shared/stores/TalentStore';
+import { initTimerStore } from 'client-shared/stores/TimerStore';
 
 (async () => {
     const app = createApp(StreamTechPanel);
@@ -16,5 +17,6 @@ import { initTalentStore } from 'client-shared/stores/TalentStore';
     await initInternalStatusStore();
     await initScheduleStore();
     await initTalentStore();
+    await initTimerStore();
     app.mount('#app');
 })();

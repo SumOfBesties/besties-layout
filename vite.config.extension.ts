@@ -19,7 +19,8 @@ export default defineConfig({
             external: [
                 'axios',
                 /lodash\/.*/,
-                'uuid'
+                'uuid',
+                'livesplit-core'
             ]
         }
     },

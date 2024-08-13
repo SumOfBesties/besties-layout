@@ -52,7 +52,5 @@ export function formatDuration(duration: string): string {
 
 export function padNumber(number: unknown, minLength = 2): string {
     if (typeof number !== 'number') return '';
-    const result = String(number);
-    if (result.length >= minLength) return result;
-    return '0'.repeat(minLength - result.length) + result;
+    return String(number).padStart(minLength, '0');
 }

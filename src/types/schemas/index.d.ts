@@ -11,3 +11,5 @@ export * from './schedule';
 export * from './scheduleImportStatus';
 // @ts-ignore
 export * from './talent';
+// @ts-ignore
+export * from './timer';
