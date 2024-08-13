@@ -52,23 +52,27 @@ export class TimerService {
         if (!['RUNNING', 'PAUSED'].includes(this.timerRep.value.state)) {
             throw new Error('Timer must be running or paused');
         }
-        if (teamId == null && this.activeSpeedrun.value != null && this.activeSpeedrun.value.teams.length > 1) {
+        const teamCount = this.activeSpeedrun.value?.teams.length ?? 0;
+        if (teamId == null && this.activeSpeedrun.value != null && teamCount > 1) {
             throw new Error('Active speedrun has more than one team, but team to stop timer for was not provided');
         }
         if (teamId != null && this.timerRep.value.teamResults[teamId] != null) {
             throw new Error('Team timer is already stopped');
         }
 
-        if (teamId != null) {
-            this.timerRep.value.teamResults[teamId] = {
+
+        if (teamId != null || teamCount === 1) {
+            if (teamCount === 1) {
+                teamId = this.activeSpeedrun.value!.teams[0].id;
+            }
+            this.timerRep.value.teamResults[teamId!] = {
                 state: forfeit ? 'FORFEIT' : 'FINISHED',
                 time: cloneDeep(this.timerRep.value.time)
             };
         }
 
-        const teamCount = this.activeSpeedrun.value?.teams.length ?? 0;
         const finishedTeamCount = Object.keys(this.timerRep.value.teamResults).length;
-        if (teamId == null || finishedTeamCount >= teamCount) {
+        if (finishedTeamCount >= teamCount) {
             if (this.timerRep.value.state === 'PAUSED') {
                 this.timer.resume();
             }
@@ -81,12 +85,16 @@ export class TimerService {
         if (!['FINISHED', 'RUNNING'].includes(this.timerRep.value.state)) {
             throw new Error('Timer must be finished or running');
         }
-        if (teamId == null && this.activeSpeedrun.value != null && this.activeSpeedrun.value.teams.length > 1) {
+        const teamCount = this.activeSpeedrun.value?.teams.length ?? 0;
+        if (teamId == null && this.activeSpeedrun.value != null && teamCount > 1) {
             throw new Error('Active speedrun has more than one team, but team to undo stop for was not provided');
         }
 
-        if (teamId != null) {
-            delete this.timerRep.value.teamResults[teamId];
+        if (teamId != null || teamCount === 1) {
+            if (teamCount === 1) {
+                teamId = this.activeSpeedrun.value!.teams[0].id;
+            }
+            delete this.timerRep.value.teamResults[teamId!];
         }
 
         if (this.timerRep.value.state === 'FINISHED') {
