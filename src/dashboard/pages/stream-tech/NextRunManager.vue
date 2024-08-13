@@ -1,12 +1,12 @@
 <template>
-    <ipl-message
-        v-if="scheduleStore.nextSpeedrun == null"
-        type="info"
-    >
-        The next speedrun is unknown.
-    </ipl-message>
-    <div v-else>
-        <ipl-space>
+    <div>
+        <ipl-message
+            v-if="scheduleStore.nextSpeedrun == null"
+            type="info"
+        >
+            The next speedrun is unknown.
+        </ipl-message>
+        <ipl-space v-else>
             <div class="m-t-4 m-b-2">
                 <div class="text-low-emphasis">Next run ({{ speedrunCount.current === -1 ? '?' : speedrunCount.current }}/{{ speedrunCount.total }})</div>
                 <div class="speedrun-name">{{ scheduleStore.nextSpeedrun.title }}</div>
