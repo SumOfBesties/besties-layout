@@ -19,7 +19,14 @@ export const useScheduleStore = defineStore('schedule', {
         nextSpeedrun: null
     } as unknown as ScheduleStore),
     getters: {
-        activeSpeedrunIndex: state => state.activeSpeedrun == null ? -1 : state.schedule.items.findIndex(scheduleItem => scheduleItem.id === state.activeSpeedrun!.id)
+        activeSpeedrunIndex: state => state.activeSpeedrun == null ? -1 : state.schedule.items.findIndex(scheduleItem => scheduleItem.id === state.activeSpeedrun!.id),
+        speedrunCount: state => (currentScheduleItemId?: string) => {
+            const speedruns = state.schedule.items.filter(scheduleItem => scheduleItem.type === 'SPEEDRUN');
+            return {
+                total: speedruns.length,
+                current: currentScheduleItemId == null ? -1 : (speedruns.findIndex(speedrun => speedrun.id === currentScheduleItemId) + 1)
+            };
+        }
     }
 });
 

@@ -21,6 +21,7 @@ export interface Speedrun {
 	scheduledStartTime: string;
 	relay?: boolean | null;
 	emulated?: boolean | null;
+	layout?: string | null;
 	teams: {
 		id: string;
 		name?: string;

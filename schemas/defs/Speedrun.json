@@ -18,6 +18,7 @@
         "scheduledStartTime": { "type": "string" },
         "relay": { "type": ["boolean", "null"] },
         "emulated": { "type": ["boolean", "null"] },
+        "layout": { "type": ["string", "null"] },
         "teams": {
             "type": "array",
             "items": {

@@ -34,8 +34,11 @@
         </ipl-message>
         <template v-else>
             <ipl-space class="m-t-8">
-                <div class="text-low-emphasis m-t-8">Active run ({{ speedrunCount.current === -1 ? '?' : speedrunCount.current }}/{{ speedrunCount.total }})</div>
-                <div class="speedrun-name m-b-8">{{ scheduleStore.activeSpeedrun.title }}</div>
+                <div class="m-y-8">
+                    <div class="text-low-emphasis">Active run ({{ speedrunCount.current === -1 ? '?' : speedrunCount.current }}/{{ speedrunCount.total }})</div>
+                    <div class="speedrun-name">{{ scheduleStore.activeSpeedrun.title }}</div>
+                    <div>{{ scheduleStore.activeSpeedrun.category }}</div>
+                </div>
                 <div class="speedrun-details">
                     <ipl-data-row
                         label="System"
@@ -44,10 +47,6 @@
                     <ipl-data-row
                         label="Release year"
                         :value="scheduleStore.activeSpeedrun.releaseYear"
-                    />
-                    <ipl-data-row
-                        label="Category"
-                        :value="scheduleStore.activeSpeedrun.category"
                     />
                 </div>
                 <div class="m-t-8 text-center">
@@ -112,13 +111,7 @@ const canSeekForwards = computed(() => {
     return false;
 });
 
-const speedrunCount = computed(() => {
-    const speedruns = scheduleStore.schedule.items.filter(scheduleItem => scheduleItem.type === 'SPEEDRUN');
-    return {
-        total: speedruns.length,
-        current: scheduleStore.activeSpeedrun == null ? -1 : (speedruns.findIndex(speedrun => speedrun.id === scheduleStore.activeSpeedrun!.id) + 1)
-    };
-});
+const speedrunCount = computed(() => scheduleStore.speedrunCount(scheduleStore.activeSpeedrun?.id));
 
 async function seekToNextRun() {
     await sendMessage('speedrun:seekToNextRun');
@@ -145,9 +138,5 @@ async function seekToPreviousRun() {
     display: grid;
     column-gap: 8px;
     grid-template-columns: repeat(2, 1fr);
-
-    > *:last-child {
-        grid-column: span 2;
-    }
 }
 </style>

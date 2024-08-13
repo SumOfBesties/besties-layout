@@ -4,9 +4,7 @@
             placeholder for something more
         </ipl-space>
         <active-run-manager />
-        <ipl-space>
-            placeholder for something more
-        </ipl-space>
+        <next-run-manager />
         <rundown-display class="rundown-display" />
     </div>
     <schedule-item-editor ref="scheduleItemEditor" />
@@ -21,6 +19,7 @@ import ScheduleItemEditor from '../../components/ScheduleItemEditor.vue';
 import { provide, ref } from 'vue';
 import { CountrySelectDialogInjectionKey, ScheduleItemEditorInjectionKey } from '../../helpers/Injections';
 import CountrySelectDialog from '../../components/CountrySelectDialog.vue';
+import NextRunManager from './NextRunManager.vue';
 
 const scheduleItemEditor = ref<InstanceType<typeof ScheduleItemEditor>>();
 provide(ScheduleItemEditorInjectionKey, scheduleItemEditor);
