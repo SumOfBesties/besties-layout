@@ -11,7 +11,10 @@ interface TimerStore {
 export const useTimerStore = defineStore('timer', {
     state: () => ({
         timer: null
-    } as unknown as TimerStore)
+    } as unknown as TimerStore),
+    getters: {
+        timerActive: state => ['RUNNING', 'PAUSED'].includes(state.timer.state)
+    }
 });
 
 export const initTimerStore = createReplicantStoreInitializer([timer], useTimerStore);

@@ -72,7 +72,7 @@
                         color="transparent"
                         inline
                         class="m-r-8"
-                        :disabled="result.id === scheduleStore.activeSpeedrun?.id"
+                        :disabled="result.id === scheduleStore.activeSpeedrun?.id || timerStore.timerActive"
                         @click="setActiveSpeedrun(result.id)"
                     >
                         <font-awesome-icon icon="circle" size="sm" />
@@ -120,11 +120,13 @@ import { faPenToSquare } from '@fortawesome/free-solid-svg-icons';
 import { sendMessage } from 'client-shared/helpers/NodecgHelper';
 import ScheduleItemTypeBadge from '../../components/ScheduleItemTypeBadge.vue';
 import { ScheduleItemEditorInjectionKey } from '../../helpers/Injections';
+import { useTimerStore } from 'client-shared/stores/TimerStore';
 
 library.add(faGamepad, faHeadset, faCircle, faPenToSquare);
 
 const scheduleStore = useScheduleStore();
 const talentStore = useTalentStore();
+const timerStore = useTimerStore();
 
 const isOpen = ref(false);
 const query = ref('');

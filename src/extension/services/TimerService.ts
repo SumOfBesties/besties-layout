@@ -16,8 +16,6 @@ export class TimerService {
         run.pushSegment(livesplitCore.Segment.new('done!'));
 
         this.timer = livesplitCore.Timer.new(run)!;
-        this.timer.start();
-        this.timer.pause();
         this.initGameTime();
         if (this.timerRep.value.state === 'RUNNING') {
             const missedTime = Date.now() - this.timerRep.value.time.timestamp;
@@ -81,6 +79,7 @@ export class TimerService {
         }
     }
 
+    // todo: doesn't work properly if nodecg is restarted after the timer is finished
     undoStop(teamId?: string) {
         if (!['FINISHED', 'RUNNING'].includes(this.timerRep.value.state)) {
             throw new Error('Timer must be finished or running');
@@ -133,6 +132,10 @@ export class TimerService {
             },
             teamResults: {}
         };
+    }
+
+    isActive() {
+        return ['RUNNING', 'PAUSED'].includes(this.timerRep.value.state);
     }
 
     private tick() {

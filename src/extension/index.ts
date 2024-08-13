@@ -16,7 +16,7 @@ export = (nodecg: NodeCG.ServerAPI<Configschema>): void => {
     const timerService = new TimerService(nodecg);
     const talentService = new TalentService(nodecg);
     const scheduleService = new ScheduleService(nodecg, oengusClient, talentService);
-    const speedrunService = new SpeedrunService(nodecg, scheduleService);
+    const speedrunService = new SpeedrunService(nodecg, scheduleService, timerService);
     scheduleService.init(speedrunService);
 
     new ScheduleController(nodecg, scheduleService);

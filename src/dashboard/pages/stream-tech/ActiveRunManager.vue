@@ -81,16 +81,18 @@ import ScheduleItemSearchDialog from './ScheduleItemSearchDialog.vue';
 import { faPenToSquare } from '@fortawesome/free-solid-svg-icons';
 import { ScheduleItemEditorInjectionKey } from '../../helpers/Injections';
 import TimerManager from './TimerManager.vue';
+import { useTimerStore } from 'client-shared/stores/TimerStore';
 
 library.add(faChevronRight, faChevronLeft, faSearch, faPenToSquare);
 
 const scheduleItemSearchDialog = ref<InstanceType<typeof ScheduleItemSearchDialog>>();
 const scheduleStore = useScheduleStore();
+const timerStore = useTimerStore();
 
 const scheduleItemEditor = inject(ScheduleItemEditorInjectionKey);
 
 const canSeekBackwards = computed(() => {
-    if (scheduleStore.activeSpeedrunIndex <= 0) return false;
+    if (scheduleStore.activeSpeedrunIndex <= 0 || timerStore.timerActive) return false;
 
     for (let i = scheduleStore.activeSpeedrunIndex - 1; i >= 0; i--) {
         const scheduleItem = scheduleStore.schedule.items[i];
@@ -101,7 +103,11 @@ const canSeekBackwards = computed(() => {
 });
 
 const canSeekForwards = computed(() => {
-    if (scheduleStore.activeSpeedrunIndex === -1 || scheduleStore.activeSpeedrunIndex === scheduleStore.schedule.items.length - 1) return false;
+    if (
+        scheduleStore.activeSpeedrunIndex === -1
+        || scheduleStore.activeSpeedrunIndex === scheduleStore.schedule.items.length - 1
+        || timerStore.timerActive
+    ) return false;
 
     for (let i = scheduleStore.activeSpeedrunIndex + 1; i < scheduleStore.schedule.items.length; i++) {
         const scheduleItem = scheduleStore.schedule.items[i];

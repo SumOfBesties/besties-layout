@@ -8,18 +8,21 @@ import type {
 import cloneDeep from 'lodash/cloneDeep';
 import { ScheduleService } from './ScheduleService';
 import { ScheduleItem } from 'types/ScheduleHelpers';
+import { TimerService } from './TimerService';
 
 export class SpeedrunService {
     private readonly schedule: NodeCG.ServerReplicantWithSchemaDefault<Schedule>;
     private readonly activeSpeedrun: NodeCG.ServerReplicantWithSchemaDefault<ActiveSpeedrun>;
     private readonly nextSpeedrun: NodeCG.ServerReplicantWithSchemaDefault<NextSpeedrun>;
     private readonly scheduleService: ScheduleService;
+    private readonly timerService: TimerService;
 
-    constructor(nodecg: NodeCG.ServerAPI<Configschema>, scheduleService: ScheduleService) {
+    constructor(nodecg: NodeCG.ServerAPI<Configschema>, scheduleService: ScheduleService, timerService: TimerService) {
         this.schedule = nodecg.Replicant('schedule') as unknown as NodeCG.ServerReplicantWithSchemaDefault<Schedule>;
         this.activeSpeedrun = nodecg.Replicant('activeSpeedrun') as unknown as NodeCG.ServerReplicantWithSchemaDefault<ActiveSpeedrun>;
         this.nextSpeedrun = nodecg.Replicant('nextSpeedrun') as unknown as NodeCG.ServerReplicantWithSchemaDefault<NextSpeedrun>;
         this.scheduleService = scheduleService;
+        this.timerService = timerService;
 
         this.schedule.on('change', newValue => {
             if (newValue.items.length === 0) return;
@@ -42,6 +45,9 @@ export class SpeedrunService {
         if (this.nextSpeedrun.value == null) {
             throw new Error('Cannot determine next run to seek to');
         }
+        if (this.timerService.isActive()) {
+            throw new Error('Cannot seek runs while timer is running');
+        }
 
         const newNextRun = this.scheduleService.findScheduleItemAfter(this.nextSpeedrun.value.id, 'SPEEDRUN');
         this.setActiveSpeedrun(this.nextSpeedrun.value);
@@ -52,6 +58,9 @@ export class SpeedrunService {
         const previousRun = this.scheduleService.findScheduleItemBefore(this.activeSpeedrun.value?.id, 'SPEEDRUN');
         if (previousRun == null) {
             throw new Error('Cannot determine previous run to seek to');
+        }
+        if (this.timerService.isActive()) {
+            throw new Error('Cannot seek runs while timer is running');
         }
 
         this.setNextSpeedrun(this.activeSpeedrun.value);
@@ -80,12 +89,22 @@ export class SpeedrunService {
         if (scheduleItem.type !== 'SPEEDRUN') {
             throw new Error(`Schedule item is type "${scheduleItem.type}"; Expected "SPEEDRUN"`);
         }
+        const activeRunChanging = scheduleItem.id !== this.activeSpeedrun.value?.id;
+        if (this.timerService.isActive() && activeRunChanging) {
+            throw new Error('Cannot change active speedrun while timer is running');
+        }
         this.activeSpeedrun.value = cloneDeep(scheduleItem);
+        if (activeRunChanging) {
+            this.timerService.reset();
+        }
     }
 
     private setNextSpeedrun(scheduleItem: ScheduleItem | null) {
         if (scheduleItem != null && scheduleItem.type !== 'SPEEDRUN') {
             throw new Error(`Schedule item is type "${scheduleItem.type}"; Expected "SPEEDRUN"`);
+        }
+        if (this.timerService.isActive() && scheduleItem?.id !== this.nextSpeedrun.value?.id) {
+            throw new Error('Cannot change next speedrun while timer is running');
         }
         this.nextSpeedrun.value = cloneDeep(scheduleItem);
     }
