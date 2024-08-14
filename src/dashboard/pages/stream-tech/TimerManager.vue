@@ -9,6 +9,7 @@
                 <timer-display
                     :time="timerStore.timer.time"
                     class="main-timer-display"
+                    :style="{ color: timerColor }"
                 />
             </div>
             <div class="max-width main-timer-controls-layout">
@@ -120,6 +121,18 @@ const startStopUndoButton = computed(() => {
                 label: 'Finish',
                 color: 'green'
             };
+    }
+});
+
+const timerColor = computed(() => {
+    switch (timerStore.timer.state) {
+        case 'STOPPED':
+        case 'RUNNING':
+            return '#FFF';
+        case 'PAUSED':
+            return '#FFD337';
+        default:
+            return '#06D669';
     }
 });
 
