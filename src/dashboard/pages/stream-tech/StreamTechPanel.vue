@@ -30,6 +30,7 @@ provide(CountrySelectDialogInjectionKey, countrySelectDialog);
 <style lang="scss">
 body {
     margin: 0;
+    overflow-y: hidden;
 }
 </style>
 
@@ -41,5 +42,7 @@ body {
     grid-template-columns: 0.75fr 1.5fr 1fr 1fr;
     gap: 8px;
     box-sizing: border-box;
+    min-width: 1500px;
+    overflow-x: auto;
 }
 </style>
