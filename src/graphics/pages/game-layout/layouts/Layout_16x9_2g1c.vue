@@ -35,7 +35,7 @@
 
 <script setup lang="ts">
 import LargeSeparator from 'components/LargeSeparator.vue';
-import PlayerNameplate from 'components/PlayerNameplate.vue';
+import PlayerNameplate from '../PlayerNameplate.vue';
 </script>
 
 <style scoped lang="scss">

@@ -50,9 +50,11 @@ const talentList = computed<Talent>(() => {
 </script>
 
 <style scoped lang="scss">
+@use '../../styles/colors';
+
 .player-nameplate {
-    color: #99FBF9;
-    background-color: #000;
+    color: colors.$vfd-teal;
+    background-color: colors.$vfd-background;
     text-align: center;
     min-height: 80px;
     font-size: 30px;

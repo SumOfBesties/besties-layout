@@ -18,9 +18,11 @@ const bundleName = nodecg.bundleName;
 </script>
 
 <style scoped lang="scss">
+@use '../styles/colors';
+
 img {
     display: inline-block;
     height: 0.85em;
-    border: 2px solid #99FBF9;
+    border: 2px solid colors.$vfd-teal;
 }
 </style>
