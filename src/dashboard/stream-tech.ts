@@ -8,6 +8,7 @@ import StreamTechPanel from './pages/stream-tech/StreamTechPanel.vue';
 import { initScheduleStore } from 'client-shared/stores/ScheduleStore';
 import { initTalentStore } from 'client-shared/stores/TalentStore';
 import { initTimerStore } from 'client-shared/stores/TimerStore';
+import { initObsStore } from 'client-shared/stores/ObsStore';
 
 (async () => {
     const app = createApp(StreamTechPanel);
@@ -18,5 +19,6 @@ import { initTimerStore } from 'client-shared/stores/TimerStore';
     await initScheduleStore();
     await initTalentStore();
     await initTimerStore();
+    await initObsStore();
     app.mount('#app');
 })();

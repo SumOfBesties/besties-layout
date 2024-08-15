@@ -1,0 +1,20 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "cameraCaptures": {
+            "type": "array",
+            "items": { "type": ["string", "null"] }
+        },
+        "gameCaptures": {
+            "type": "array",
+            "items": { "type": ["string", "null"] }
+        }
+    },
+    "required": ["gameCaptures", "cameraCaptures"],
+    "default": {
+        "cameraCaptures": [],
+        "gameCaptures": []
+    }
+}

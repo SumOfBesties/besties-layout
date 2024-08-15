@@ -1,8 +1,6 @@
 <template>
     <div class="stream-tech-layout">
-        <ipl-space>
-            placeholder for something more
-        </ipl-space>
+        <layout-manager />
         <active-run-manager />
         <next-run-manager />
         <rundown-display class="rundown-display" />
@@ -13,13 +11,13 @@
 
 <script setup lang="ts">
 import RundownDisplay from '../../components/RundownDisplay.vue';
-import { IplSpace } from '@iplsplatoon/vue-components';
 import ActiveRunManager from './ActiveRunManager.vue';
 import ScheduleItemEditor from '../../components/ScheduleItemEditor.vue';
 import { provide, ref } from 'vue';
 import { CountrySelectDialogInjectionKey, ScheduleItemEditorInjectionKey } from '../../helpers/Injections';
 import CountrySelectDialog from '../../components/CountrySelectDialog.vue';
 import NextRunManager from './NextRunManager.vue';
+import LayoutManager from './LayoutManager.vue';
 
 const scheduleItemEditor = ref<InstanceType<typeof ScheduleItemEditor>>();
 provide(ScheduleItemEditorInjectionKey, scheduleItemEditor);

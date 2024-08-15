@@ -1,7 +1,9 @@
-import { Talent } from '../schemas';
+import { ObsConfig, ObsConnectionInfo, Talent } from '../schemas';
 import { ScheduleItem } from '../ScheduleHelpers';
 
 export interface MessageInputMap {
+    'log:warning': string
+
     'schedule:import': { slug: string }
     'schedule:setInterstitialCompleted': { scheduleItemId: string, completed: boolean }
     'schedule:updateItem': ScheduleItem
@@ -17,6 +19,10 @@ export interface MessageInputMap {
     'timer:undoStop': { teamId?: string } | undefined
     'timer:pause': never
     'timer:reset': never
+
+    'obs:connect': ObsConnectionInfo
+    'obs:setConfig': ObsConfig
+    'obs:setEnabled': { enabled: boolean }
 }
 
 type MessagesWithoutReturnValues = Exclude<keyof MessageInputMap, keyof InnerMessageResultMap>;

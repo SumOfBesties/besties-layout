@@ -38,6 +38,14 @@
                 "headerColor": "#262F40"
             },
             {
+                "name": "settings",
+                "title": "Settings",
+                "width": 2,
+                "file": "settings.html",
+                "workspace": "2 - Setup",
+                "headerColor": "#262F40"
+            },
+            {
                 "name": "stream-tech",
                 "title": "1 - Stream Tech Dashboard",
                 "file": "stream-tech.html",
@@ -48,6 +56,11 @@
         "graphics": [
             {
                 "file": "omnibar.html",
+                "width": 1920,
+                "height": 1080
+            },
+            {
+                "file": "game-layout.html",
                 "width": 1920,
                 "height": 1080
             }
@@ -105,6 +118,7 @@
         "axios": "^1.6.8",
         "livesplit-core": "^0.10.2",
         "luxon": "^3.4.4",
+        "obs-websocket-js": "^5.0.6",
         "uuid": "^10.0.0"
     },
     "jest": {

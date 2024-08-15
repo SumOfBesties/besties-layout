@@ -20,7 +20,8 @@ export default defineConfig({
                 'axios',
                 /lodash\/.*/,
                 'uuid',
-                'livesplit-core'
+                'livesplit-core',
+                'obs-websocket-js'
             ]
         }
     },

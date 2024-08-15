@@ -1,0 +1,36 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "definitions": {
+        "videoInputPosition": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "x": { "type": "number" },
+                "y": { "type": "number" },
+                "width": { "type": "number" },
+                "height": { "type": "number" }
+            },
+            "required": ["x", "y", "width", "height"]
+        }
+    },
+    "type": "object",
+    "properties": {
+        "cameraCaptures": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/videoInputPosition"
+            }
+        },
+        "gameCaptures": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/videoInputPosition"
+            }
+        }
+    },
+    "required": ["cameraCaptures", "gameCaptures"],
+    "default": {
+        "cameraCaptures": [],
+        "gameCaptures": []
+    }
+}
