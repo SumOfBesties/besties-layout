@@ -16,7 +16,12 @@
             <div class="column">
                 <player-nameplate :index="0" />
                 <div class="timer-wrapper">
-
+                    <speedrun-details />
+                    <speedrun-timer class="m-t-8" />
+                    <img
+                        src="../../../assets/img/lslogo-white.png"
+                        class="livesplit-logo"
+                    >
                 </div>
             </div>
             <div
@@ -36,6 +41,8 @@
 <script setup lang="ts">
 import LargeSeparator from 'components/LargeSeparator.vue';
 import PlayerNameplate from '../PlayerNameplate.vue';
+import SpeedrunDetails from '../SpeedrunDetails.vue';
+import SpeedrunTimer from '../SpeedrunTimer.vue';
 </script>
 
 <style scoped lang="scss">
@@ -72,6 +79,25 @@ import PlayerNameplate from '../PlayerNameplate.vue';
 .timer-wrapper {
     background: colors.$timer-background;
     height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 8px;
+    position: relative;
+
+    > *:not(img) {
+        width: 100%;
+        height: 105px;
+    }
+
+    .livesplit-logo {
+        width: 150px;
+        position: absolute;
+        opacity: 75%;
+        bottom: 18px;
+        left: 50%;
+        transform: translateX(-50%);
+    }
 }
 
 .column {

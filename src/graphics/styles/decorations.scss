@@ -1,0 +1,6 @@
+@use './colors';
+
+@mixin inset-container {
+    background-color: colors.$vfd-background;
+    border: 3px inset #393939;
+}

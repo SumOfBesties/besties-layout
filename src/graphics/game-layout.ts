@@ -7,6 +7,7 @@ import GameLayoutGraphic from './pages/game-layout/GameLayoutGraphic.vue';
 import { initObsStore } from 'client-shared/stores/ObsStore';
 import { initScheduleStore } from 'client-shared/stores/ScheduleStore';
 import { initTalentStore } from 'client-shared/stores/TalentStore';
+import { initTimerStore } from 'client-shared/stores/TimerStore';
 
 (async () => {
     const app = createApp(GameLayoutGraphic);
@@ -15,5 +16,6 @@ import { initTalentStore } from 'client-shared/stores/TalentStore';
     await initObsStore();
     await initScheduleStore();
     await initTalentStore();
+    await initTimerStore();
     app.mount('#app');
 })();

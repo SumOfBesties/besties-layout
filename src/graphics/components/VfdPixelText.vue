@@ -1,0 +1,62 @@
+<template>
+    <div
+        ref="wrapper"
+        class="vfd-pixel-text"
+        :style="{
+            fontSize: `${props.fontSize}px`,
+            height: `${characterHeight}px`
+        }"
+    >
+        <span class="background">{{ '▓'.repeat(characterCount) }}</span>
+        <fitted-content align="center">
+            {{ props.textContent }}
+        </fitted-content>
+    </div>
+</template>
+
+<script setup lang="ts">
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
+import FittedContent from 'components/FittedContent.vue';
+
+const props = defineProps<{
+    fontSize: number
+    textContent?: string | null
+}>();
+
+const wrapper = ref<HTMLDivElement>();
+const wrapperWidth = ref(1);
+const wrapperResizeObserver = new ResizeObserver(entries => {
+    wrapperWidth.value = entries[0].contentRect.width;
+});
+onMounted(() => {
+    wrapperResizeObserver.observe(wrapper.value!);
+});
+onUnmounted(() => {
+    wrapperResizeObserver.disconnect();
+});
+
+const characterHeight = computed(() => Math.round(props.fontSize * 1.1425));
+const characterWidth = computed(() => props.fontSize * 0.857);
+const characterCount = computed(() => Math.floor(wrapperWidth.value / characterWidth.value));
+</script>
+
+<style scoped lang="scss">
+@use '../styles/colors';
+
+.vfd-pixel-text {
+    font-family: 'HD44780A00 5x8';
+    color: colors.$vfd-teal;
+    display: flex;
+    justify-content: center;
+    text-rendering: geometricPrecision;
+
+    > span {
+        position: absolute;
+    }
+}
+
+.background {
+    color: colors.$vfd-teal-unlit;
+    position: absolute;
+}
+</style>

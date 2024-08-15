@@ -16,7 +16,8 @@
                 data-capture-index="0"
             />
             <div class="timer-wrapper">
-
+                <speedrun-timer />
+                <speedrun-details class="m-l-16" />
             </div>
         </div>
         <large-separator
@@ -29,6 +30,8 @@
 <script setup lang="ts">
 import LargeSeparator from 'components/LargeSeparator.vue';
 import PlayerNameplate from '../PlayerNameplate.vue';
+import SpeedrunTimer from '../SpeedrunTimer.vue';
+import SpeedrunDetails from '../SpeedrunDetails.vue';
 </script>
 
 <style scoped lang="scss">
@@ -73,5 +76,13 @@ import PlayerNameplate from '../PlayerNameplate.vue';
     background: colors.$timer-background;
     border-right: 3px solid colors.$layout-gap;
     border-bottom: 3px solid colors.$layout-gap;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    > * {
+        width: 590px;
+        height: 110px;
+    }
 }
 </style>
