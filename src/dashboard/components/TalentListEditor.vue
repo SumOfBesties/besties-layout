@@ -13,7 +13,7 @@
                     :color="props.color"
                 >
                     <template #title>
-                        {{ props.talentItemMap[element.id].name }}
+                        {{ props.talentItemMap[element.id]?.name }}
                     </template>
                     <template #header-extra>
                         <div class="layout horizontal center-vertical">
@@ -30,6 +30,7 @@
                         </div>
                     </template>
                     <talent-item-editor-form
+                        v-if="props.talentItemMap[element.id] != null"
                         :model-value="props.talentItemMap[element.id]"
                         :color="props.color"
                     />
@@ -64,7 +65,7 @@ const emit = defineEmits<{
 
 const internalTalentList = ref<{ id: string }[]>([]);
 watch(props.talentList, newValue => {
-    internalTalentList.value = newValue.filter(talentId => props.talentItemMap[talentId.id] != null);
+    internalTalentList.value = newValue;
 }, { immediate: true });
 
 function onRemove(talentIndex: number) {
