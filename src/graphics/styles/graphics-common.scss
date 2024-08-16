@@ -41,6 +41,18 @@ body {
     }
 }
 
+.layout-gap {
+    background-color: colors.$layout-gap;
+
+    &.horizontal {
+        height: 3px;
+    }
+
+    &.vertical {
+        width: 3px;
+    }
+}
+
 .layout-wrapper {
     height: 100%;
 }
