@@ -1,7 +1,7 @@
 <template>
-    <div class="layout-wrapper layout vertical" style="overflow:hidden;">
-        <div class="layout horizontal grow">
-            <div class="layout vertical">
+    <div class="layout-wrapper layout vertical" style="overflow: hidden;">
+        <div class="layout horizontal grow" style="overflow: hidden;">
+            <div class="layout vertical" style="max-width: 500px">
                 <div
                     class="camera-capture layout-gap-bottom"
                     data-capture-index="0"
@@ -19,10 +19,14 @@
                 </div>
             </div>
             <large-separator direction="vertical" />
-            <div
-                class="game-capture"
-                data-capture-index="0"
-            />
+            <div class="layout vertical max-width">
+                <div class="bg-panel grow" />
+                <div
+                    class="game-capture"
+                    data-capture-index="0"
+                />
+                <div class="bg-panel grow" />
+            </div>
         </div>
         <large-separator direction="horizontal" />
     </div>
@@ -45,11 +49,12 @@ import MediaBox from 'components/MediaBox.vue';
 }
 
 .game-capture {
-    aspect-ratio: 4 / 3;
-    flex-grow: 1;
+    aspect-ratio: 3 / 2;
+    width: 100%;
+    align-self: center;
 }
 
 .timer-wrapper {
-    padding: 8px 48px;
+    padding: 8px 14px;
 }
 </style>

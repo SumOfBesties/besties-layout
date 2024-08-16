@@ -86,6 +86,7 @@ const commentators = computed(() => {
 
 table {
     width: 100%;
+    height: 100%;
     border-collapse: collapse;
     table-layout: fixed;
 

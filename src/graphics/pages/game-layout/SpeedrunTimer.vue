@@ -9,7 +9,7 @@
                     :value="speedrunCount.current"
                 />
             </fieldset>
-            <div class="m-l-8">
+            <div style="margin-left: -2px;">
                 <div class="run-info-text-segments">
                     <div>
                         <span :class="{ lit: isCoop }">CO-OP</span>
@@ -137,7 +137,7 @@ fieldset {
     border-color: colors.$vfd-red;
     height: 100%;
     padding: 4px 4px 4px 0;
-    margin: -7px 0 0;
+    margin: 0 8px 0 -4px;
 
     > legend {
         color: colors.$vfd-red;
