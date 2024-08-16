@@ -1,6 +1,7 @@
-import { ActiveSpeedrun, NextSpeedrun, PlayerNameplateAssignments, Schedule } from 'types/schemas';
+import { ActiveSpeedrun, NextSpeedrun, OtherScheduleItem, PlayerNameplateAssignments, Schedule } from 'types/schemas';
 import { defineStore } from 'pinia';
 import { createReplicantStoreInitializer } from 'client-shared/helpers/StoreHelper';
+import { ScheduleItem, ScheduleItemType } from 'types/ScheduleHelpers';
 
 const schedule = nodecg.Replicant<Schedule>('schedule');
 const activeSpeedrun = nodecg.Replicant<ActiveSpeedrun>('activeSpeedrun');
@@ -29,6 +30,31 @@ export const useScheduleStore = defineStore('schedule', {
                 total: speedruns.length,
                 current: currentScheduleItemId == null ? -1 : (speedruns.findIndex(speedrun => speedrun.id === currentScheduleItemId) + 1)
             };
+        },
+        findScheduleItemAfter: state => (scheduleItemId: string | undefined | null, types?: ScheduleItemType[], completed?: boolean): ScheduleItem | null => {
+            if (scheduleItemId == null) return null;
+            const scheduleItemIndex = state.schedule.items.findIndex(scheduleItem => scheduleItem.id === scheduleItemId);
+            if (scheduleItemIndex === -1) return null;
+
+            for (let i = scheduleItemIndex + 1; i < state.schedule.items.length; i++) {
+                const scheduleItem = state.schedule.items[i];
+                if (
+                    (types == null || types.includes(scheduleItem.type))
+                    && (completed == null || scheduleItem.type === 'SPEEDRUN' || (!completed && scheduleItem.completed == null) || scheduleItem.completed === completed)
+                ) return scheduleItem;
+            }
+            return null;
+        },
+        interstitialsBeforeActiveRun(state) {
+            if (this.activeSpeedrunIndex <= 0) return [];
+
+            const result: OtherScheduleItem[] = [];
+            for (let i = this.activeSpeedrunIndex - 1; i >= 0; i--) {
+                const scheduleItem = state.schedule.items[i];
+                if (scheduleItem.type === 'SPEEDRUN') break;
+                result.push(scheduleItem);
+            }
+            return result;
         }
     }
 });

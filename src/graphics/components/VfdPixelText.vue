@@ -10,7 +10,7 @@
     >
         <span class="background">{{ '▓'.repeat(characterCount) }}</span>
         <fitted-content
-            align="center"
+            :align="props.textAlign"
             :style="{ width: `${characterWidth * characterCount}px` }"
         >
             {{ props.textContent }}
@@ -26,8 +26,10 @@ const props = withDefaults(defineProps<{
     fontSize: number
     textContent?: string | null
     align?: 'center' | 'left' | 'right'
+    textAlign?: 'center' | 'left' | 'right'
 }>(), {
-    align: 'center'
+    align: 'center',
+    textAlign: 'center'
 });
 
 const wrapper = ref<HTMLDivElement>();
@@ -69,7 +71,6 @@ const justifyContent = computed(() => {
 
     > span {
         position: absolute;
-        text-align: center;
     }
 }
 

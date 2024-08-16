@@ -9,14 +9,14 @@
             The active speedrun is not present in the schedule. The full rundown cannot be calculated.
         </ipl-message>
         <div
-            v-if="interstitialsBeforeActiveRun.length === 0 && scheduleStore.activeSpeedrunIndex !== -1"
+            v-if="scheduleStore.interstitialsBeforeActiveRun.length === 0 && scheduleStore.activeSpeedrunIndex !== -1"
             class="text-center text-low-emphasis"
         >
             No interstitials before active run
         </div>
         <template v-else>
             <rundown-display-interstitial
-                v-for="interstitial in interstitialsBeforeActiveRun"
+                v-for="interstitial in scheduleStore.interstitialsBeforeActiveRun"
                 allow-completion-change
                 :key="`interstitial_${interstitial.id}`"
                 :interstitial="interstitial"
@@ -71,18 +71,6 @@ import RundownDisplayInterstitial from './RundownDisplayInterstitial.vue';
 import { ScheduleItem } from 'types/ScheduleHelpers';
 
 const scheduleStore = useScheduleStore();
-
-const interstitialsBeforeActiveRun = computed<OtherScheduleItem[]>(() => {
-    if (scheduleStore.activeSpeedrunIndex <= 0) return [];
-
-    const result: OtherScheduleItem[] = [];
-    for (let i = scheduleStore.activeSpeedrunIndex - 1; i >= 0; i--) {
-        const scheduleItem = scheduleStore.schedule.items[i];
-        if (scheduleItem.type === 'SPEEDRUN') break;
-        result.push(scheduleItem);
-    }
-    return result;
-});
 
 const scheduleItemsAfterActiveRun = computed<ScheduleItem[]>(() => {
     if (scheduleStore.activeSpeedrunIndex === -1 || scheduleStore.activeSpeedrunIndex === scheduleStore.schedule.items.length - 1) return [];
