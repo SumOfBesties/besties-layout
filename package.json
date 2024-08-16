@@ -67,8 +67,8 @@
         ],
         "assetCategories": [
             {
-                "name": "sponsors",
-                "title": "Sponsor Logos",
+                "name": "mediaBoxImages",
+                "title": "Media box images",
                 "allowedTypes": [
                     "jpg",
                     "jpeg",

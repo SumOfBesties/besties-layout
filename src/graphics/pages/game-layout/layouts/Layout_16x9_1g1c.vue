@@ -1,12 +1,14 @@
 <template>
-    <div class="layout">
+    <div class="layout-wrapper">
         <div class="camera-capture-column">
             <div
                 class="camera-capture"
                 data-capture-index="0"
             />
-            <div class="below-camera">
+            <div class="below-camera layout vertical">
                 <player-nameplate :index="0" />
+                <other-nameplate-grid class="other-nameplate-grid" />
+                <media-box class="media-box" />
             </div>
         </div>
         <large-separator direction="vertical" />
@@ -32,12 +34,14 @@ import LargeSeparator from 'components/LargeSeparator.vue';
 import PlayerNameplate from '../PlayerNameplate.vue';
 import SpeedrunTimer from '../SpeedrunTimer.vue';
 import SpeedrunDetails from '../SpeedrunDetails.vue';
+import OtherNameplateGrid from '../OtherNameplateGrid.vue';
+import MediaBox from 'components/MediaBox.vue';
 </script>
 
 <style scoped lang="scss">
 @use '../../../styles/colors';
 
-.layout {
+.layout-wrapper {
     display: grid;
     grid-template-columns: 445px 14px 1fr;
     grid-template-rows: 1fr 14px;
@@ -69,6 +73,15 @@ import SpeedrunDetails from '../SpeedrunDetails.vue';
 .below-camera {
     flex-grow: 1;
     background: colors.$layout-panel-background;
+}
+
+.other-nameplate-grid {
+    margin: 16px 12px;
+}
+
+.media-box {
+    flex-grow: 1;
+    margin: 0 12px 12px 12px;
 }
 
 .timer-wrapper {

@@ -1,5 +1,5 @@
 <template>
-    <div class="layout">
+    <div class="layout-wrapper">
         <div class="game-captures-row">
             <div
                 class="game-capture"
@@ -30,8 +30,9 @@
             />
             <div class="column">
                 <player-nameplate :index="1" />
-                <div class="something-else">
-
+                <div class="third-column layout vertical">
+                    <other-nameplate-grid class="m-t-12 m-x-16" />
+                    <media-box class="grow m-x-8 m-y-8" />
                 </div>
             </div>
         </div>
@@ -43,12 +44,14 @@ import LargeSeparator from 'components/LargeSeparator.vue';
 import PlayerNameplate from '../PlayerNameplate.vue';
 import SpeedrunDetails from '../SpeedrunDetails.vue';
 import SpeedrunTimer from '../SpeedrunTimer.vue';
+import OtherNameplateGrid from '../OtherNameplateGrid.vue';
+import MediaBox from 'components/MediaBox.vue';
 </script>
 
 <style scoped lang="scss">
 @use '../../../styles/colors';
 
-.layout {
+.layout-wrapper {
     height: 100%;
     display: flex;
     flex-direction: column;
@@ -94,7 +97,7 @@ import SpeedrunTimer from '../SpeedrunTimer.vue';
         width: 150px;
         position: absolute;
         opacity: 75%;
-        bottom: 18px;
+        bottom: 17px;
         left: 50%;
         transform: translateX(-50%);
     }
@@ -114,7 +117,7 @@ import SpeedrunTimer from '../SpeedrunTimer.vue';
     height: 100%;
 }
 
-.something-else {
+.third-column {
     background: colors.$layout-panel-background;
     height: 100%;
 }

@@ -8,6 +8,7 @@ import { initObsStore } from 'client-shared/stores/ObsStore';
 import { initScheduleStore } from 'client-shared/stores/ScheduleStore';
 import { initTalentStore } from 'client-shared/stores/TalentStore';
 import { initTimerStore } from 'client-shared/stores/TimerStore';
+import { initAssetStore } from 'client-shared/stores/AssetStore';
 
 (async () => {
     const app = createApp(GameLayoutGraphic);
@@ -17,5 +18,6 @@ import { initTimerStore } from 'client-shared/stores/TimerStore';
     await initScheduleStore();
     await initTalentStore();
     await initTimerStore();
+    await initAssetStore();
     app.mount('#app');
 })();
