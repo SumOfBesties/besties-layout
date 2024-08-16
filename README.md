@@ -25,6 +25,15 @@ To configure this bundle, create the file `[nodecg]/cfg/nsg2-layouts.json` with 
 
 Find a list of time zones [here](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones#List).
 
+## Usage
+
+### Game layout
+
+Opening the game layout graphic with the `is-layout-leader` query parameter allows it to take charge of positioning 
+camera sources in OBS. This allows multiple game layout graphics to be open without them potentially interfering with 
+one another.  
+Example: `http://localhost:9090/bundles/nsg2-layouts/graphics/game-layout.html?is-layout-leader`
+
 #### Other npm commands
 
 - `build`: Create a production-ready build.
