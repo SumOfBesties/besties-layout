@@ -15,8 +15,8 @@
             <div class="column">
                 <player-nameplate :index="0" />
                 <div class="timer-wrapper bg-timer layout vertical center-vertical max-height">
-                    <speedrun-details />
-                    <speedrun-timer class="m-t-8" />
+                    <speedrun-details class="bg-inset" />
+                    <speedrun-timer class="m-t-8 bg-inset" />
                     <img
                         src="../../../assets/img/lslogo-white.png"
                         class="livesplit-logo"
@@ -35,6 +35,7 @@
                 </div>
             </div>
         </div>
+        <large-separator direction="horizontal" />
     </div>
 </template>
 
@@ -63,7 +64,7 @@ import MediaBox from 'components/MediaBox.vue';
 }
 
 .timer-wrapper {
-    padding: 8px;
+    padding: 18px;
     position: relative;
 
     > *:not(img) {
@@ -75,7 +76,7 @@ import MediaBox from 'components/MediaBox.vue';
         width: 150px;
         position: absolute;
         opacity: 75%;
-        bottom: 17px;
+        bottom: 11px;
         left: 50%;
         transform: translateX(-50%);
     }

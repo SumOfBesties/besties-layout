@@ -18,8 +18,8 @@
                 data-capture-index="0"
             />
             <div class="timer-wrapper grow bg-timer layout-gap-bottom layout-gap-right layout horizontal center-vertical center-horizontal">
-                <speedrun-timer />
-                <speedrun-details class="m-l-16" />
+                <speedrun-timer class="bg-inset" />
+                <speedrun-details class="m-l-16 bg-inset" />
             </div>
         </div>
         <large-separator
@@ -58,7 +58,7 @@ import MediaBox from 'components/MediaBox.vue';
 }
 
 .timer-wrapper > * {
-    width: 590px;
+    width: 580px;
     height: 110px;
 }
 </style>

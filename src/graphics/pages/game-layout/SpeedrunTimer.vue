@@ -1,7 +1,7 @@
 <template>
     <div class="speedrun-timer">
         <div class="layout horizontal center-vertical center-horizontal">
-            <fieldset>
+            <fieldset v-if="!props.hideRunNumber">
                 <legend>RUN NO.</legend>
                 <seven-segment-digits
                     :digit-count="3"
@@ -68,6 +68,12 @@ import { Duration } from 'luxon';
 const scheduleStore = useScheduleStore();
 const timerStore = useTimerStore();
 
+const props = withDefaults(defineProps<{
+    hideRunNumber?: boolean
+}>(), {
+    hideRunNumber: false
+});
+
 const speedrunCount = computed(() => scheduleStore.speedrunCount(scheduleStore.activeSpeedrun?.id));
 const formattedTimer = computed(() => {
     let hours: string | number = timerStore.timer.time.hours;
@@ -109,14 +115,12 @@ const isOverEstimate = computed(() => {
 @use '../../styles/decorations';
 
 .speedrun-timer {
-    @include decorations.inset-container;
-
-    padding: 8px 4px;
     font-size: 20px;
     font-weight: 700;
     display: flex;
     align-items: center;
     justify-content: center;
+    box-sizing: border-box;
 }
 
 fieldset {

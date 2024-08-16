@@ -1,5 +1,6 @@
 @use 'fonts.scss';
 @use 'colors.scss';
+@use 'decorations.scss';
 @import '../../client-shared/styles/layout';
 
 * {
@@ -27,6 +28,11 @@ body {
 
 .bg-panel {
     background: colors.$layout-panel-background;
+}
+
+.bg-inset {
+    @include decorations.inset-container;
+    padding: 8px;
 }
 
 @each $direction in 'top', 'bottom', 'left', 'right' {

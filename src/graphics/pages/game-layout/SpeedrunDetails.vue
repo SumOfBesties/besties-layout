@@ -13,10 +13,12 @@
                 <vfd-pixel-text
                     :font-size="20"
                     :text-content="systemAndReleaseYear"
+                    align="left"
                 />
                 <vfd-pixel-text
                     :font-size="20"
                     :text-content="scheduleStore.activeSpeedrun?.category"
+                    align="left"
                 />
             </div>
             <div class="estimate-label">EST.</div>
@@ -65,12 +67,10 @@ const parsedEstimate = computed(() =>
 @use '../../styles/decorations';
 
 .speedrun-details {
-    @include decorations.inset-container;
-
-    padding: 8px 12px;
     display: flex;
     flex-direction: column;
     justify-content: center;
+    box-sizing: border-box;
 }
 
 .speedrun-title {

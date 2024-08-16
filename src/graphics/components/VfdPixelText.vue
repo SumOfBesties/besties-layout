@@ -4,11 +4,15 @@
         class="vfd-pixel-text"
         :style="{
             fontSize: `${props.fontSize}px`,
-            height: `${characterHeight}px`
+            height: `${characterHeight}px`,
+            justifyContent
         }"
     >
         <span class="background">{{ '▓'.repeat(characterCount) }}</span>
-        <fitted-content align="center">
+        <fitted-content
+            align="center"
+            :style="{ width: `${characterWidth * characterCount}px` }"
+        >
             {{ props.textContent }}
         </fitted-content>
     </div>
@@ -18,10 +22,13 @@
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import FittedContent from 'components/FittedContent.vue';
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
     fontSize: number
     textContent?: string | null
-}>();
+    align?: 'center' | 'left' | 'right'
+}>(), {
+    align: 'center'
+});
 
 const wrapper = ref<HTMLDivElement>();
 const wrapperWidth = ref(1);
@@ -38,6 +45,16 @@ onUnmounted(() => {
 const characterHeight = computed(() => Math.round(props.fontSize * 1.1425));
 const characterWidth = computed(() => props.fontSize * 0.857);
 const characterCount = computed(() => Math.floor(wrapperWidth.value / characterWidth.value));
+const justifyContent = computed(() => {
+    switch (props.align) {
+        case 'center':
+            return 'center';
+        case 'left':
+            return 'flex-start';
+        case 'right':
+            return 'flex-end';
+    }
+});
 </script>
 
 <style scoped lang="scss">
@@ -47,11 +64,12 @@ const characterCount = computed(() => Math.floor(wrapperWidth.value / characterW
     font-family: 'HD44780A00 5x8';
     color: colors.$vfd-teal;
     display: flex;
-    justify-content: center;
     text-rendering: geometricPrecision;
+    position: relative;
 
     > span {
         position: absolute;
+        text-align: center;
     }
 }
 

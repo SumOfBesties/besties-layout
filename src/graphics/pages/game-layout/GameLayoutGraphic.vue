@@ -15,12 +15,14 @@ import { useObsStore } from 'client-shared/stores/ObsStore';
 import range from 'lodash/range';
 import { ObsVideoInputPositions } from 'types/schemas';
 import { sendMessage } from 'client-shared/helpers/NodecgHelper';
+import Layout_4x3_1g1c from './layouts/Layout_4x3_1g1c.vue';
 
 const obsStore = useObsStore();
 
 const gameLayoutComponentMap: Record<typeof layoutKeys[number], Component> = {
     '16x9-1g1c': Layout_16x9_1g1c,
-    '16x9-2g1c': Layout_16x9_2g1c
+    '16x9-2g1c': Layout_16x9_2g1c,
+    '4x3-1g1c': Layout_4x3_1g1c
 };
 
 onMounted(() => {
