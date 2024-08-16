@@ -4,35 +4,51 @@
             src="../../assets/img/small-logo.png"
             class="omnibar-logo"
         >
-        <div class="bg-inset omnibar-slides">
-            <transition name="slide-swap">
+        <div class="omnibar-main-content">
+            <transition name="donation-reminder">
                 <div
-                    :key="slideTitle"
-                    class="slide-title"
+                    v-if="slides.activeComponent.value?.startsWith('donationReminder')"
+                    class="omnibar-donation-reminder"
                 >
-                    <fitted-content class="slide-title-text">{{ slideTitle }}</fitted-content>
-                    <div class="slide-title-icon">»</div>
+                    <opacity-swap-transition mode="default">
+                        <span v-if="slides.activeComponent.value === 'donationReminder1'">You are watching <span class="emphasis">{{ eventName }}</span></span>
+                        <span v-else>In support of the NABP - <span class="emphasis">{{ donationUrl }}</span></span>
+                    </opacity-swap-transition>
+                </div>
+                <div
+                    v-else
+                    class="bg-inset omnibar-slides"
+                >
+                    <transition name="slide-swap">
+                        <div
+                            :key="slideTitle"
+                            class="slide-title"
+                        >
+                            <fitted-content class="slide-title-text">{{ slideTitle }}</fitted-content>
+                            <div class="slide-title-icon">»</div>
+                        </div>
+                    </transition>
+                    <div class="slide-content">
+                        <transition name="slide-swap">
+                            <omnibar-schedule-item-display
+                                v-if="slides.activeComponent.value === 'nextUp'"
+                                :key="nextScheduleItem?.id"
+                                :schedule-item="nextScheduleItem"
+                            />
+                            <omnibar-schedule-item-display
+                                v-else-if="slides.activeComponent.value === 'later'"
+                                :key="scheduleItemAfterNext?.id"
+                                :schedule-item="scheduleItemAfterNext"
+                            />
+                            <omnibar-schedule-item-display
+                                v-else-if="slides.activeComponent.value === 'nextSpeedrun'"
+                                :key="nextSpeedrun?.id"
+                                :schedule-item="nextSpeedrun"
+                            />
+                        </transition>
+                    </div>
                 </div>
             </transition>
-            <div class="slide-content">
-                <transition name="slide-swap">
-                    <omnibar-schedule-item-display
-                        v-if="slides.activeComponent.value === 'nextUp'"
-                        :key="nextScheduleItem?.id"
-                        :schedule-item="nextScheduleItem"
-                    />
-                    <omnibar-schedule-item-display
-                        v-else-if="slides.activeComponent.value === 'later'"
-                        :key="scheduleItemAfterNext?.id"
-                        :schedule-item="scheduleItemAfterNext"
-                    />
-                    <omnibar-schedule-item-display
-                        v-else-if="slides.activeComponent.value === 'nextSpeedrun'"
-                        :key="nextSpeedrun?.id"
-                        :schedule-item="nextSpeedrun"
-                    />
-                </transition>
-            </div>
         </div>
         <div class="bg-inset logo-and-total layout horizontal center-vertical">
             <svg
@@ -48,6 +64,7 @@
             <clock />
         </div>
     </div>
+
 </template>
 
 <script setup lang="ts">
@@ -58,19 +75,35 @@ import { useSlides } from '../../helpers/useSlides';
 import { computed } from 'vue';
 import { useScheduleStore } from 'client-shared/stores/ScheduleStore';
 import OmnibarScheduleItemDisplay from './OmnibarScheduleItemDisplay.vue';
+import { Configschema } from 'types/schemas';
+import OpacitySwapTransition from 'components/OpacitySwapTransition.vue';
+
+const eventName = (nodecg.bundleConfig as Configschema).event?.name ?? 'the Norway Speedrunner Gathering';
+const donationUrl = (nodecg.bundleConfig as Configschema).event?.donationUrl;
+const hasDonationUrl = computed(() => donationUrl != null);
 
 const scheduleStore = useScheduleStore();
 
 const interstitialsBeforeActiveRun = computed(() => scheduleStore.interstitialsBeforeActiveRun.filter(interstitial => !interstitial.completed));
-const nextScheduleItem = computed(() =>
-    interstitialsBeforeActiveRun.value.length > 0
-        ? interstitialsBeforeActiveRun.value[0]
-        : scheduleStore.findScheduleItemAfter(scheduleStore.activeSpeedrun?.id, undefined, false));
+const nextScheduleItem = computed(() => {
+    if (interstitialsBeforeActiveRun.value.length === 1) {
+        return scheduleStore.activeSpeedrun;
+    } else if (interstitialsBeforeActiveRun.value.length > 1) {
+        return interstitialsBeforeActiveRun.value[1];
+    } else {
+        return scheduleStore.findScheduleItemAfter(scheduleStore.activeSpeedrun?.id, undefined, false);
+    }
+});
 const scheduleItemAfterNext = computed(() =>
-    interstitialsBeforeActiveRun.value.length > 1
-        ? interstitialsBeforeActiveRun.value[1]
+    interstitialsBeforeActiveRun.value.length > 2
+        ? interstitialsBeforeActiveRun.value[2]
         : scheduleStore.findScheduleItemAfter(nextScheduleItem.value?.id, undefined, false));
 const nextSpeedrun = computed(() => {
+    if (
+        interstitialsBeforeActiveRun.value.length > 1
+        && nextScheduleItem.value?.id !== scheduleStore.activeSpeedrun?.id
+        && scheduleItemAfterNext.value?.id !== scheduleStore.activeSpeedrun?.id
+    ) return scheduleStore.activeSpeedrun;
     if (
         nextScheduleItem.value?.id === scheduleStore.nextSpeedrun?.id
         || scheduleItemAfterNext.value?.id === scheduleStore.nextSpeedrun?.id
@@ -80,9 +113,11 @@ const nextSpeedrun = computed(() => {
 });
 
 const slides = useSlides([
-    { component: 'nextUp', enabled: computed(() => nextScheduleItem.value != null) },
-    { component: 'later', enabled: computed(() => scheduleItemAfterNext.value != null) },
-    { component: 'nextSpeedrun', enabled: computed(() => nextSpeedrun.value != null) }
+    { component: 'nextUp', enabled: computed(() => nextScheduleItem.value != null), duration: 30 },
+    { component: 'later', enabled: computed(() => scheduleItemAfterNext.value != null), duration: 30 },
+    { component: 'nextSpeedrun', enabled: computed(() => nextSpeedrun.value != null), duration: 30 },
+    { component: 'donationReminder1', enabled: hasDonationUrl, duration: 10 },
+    { component: 'donationReminder2', enabled: hasDonationUrl, duration: 10 }
 ]);
 
 const slideTitle = computed(() => {
@@ -122,9 +157,21 @@ body {
 
 .omnibar-slides {
     height: 110%;
-    width: 1250px;
+    width: 100%;
     display: flex;
     align-items: center;
+    transform: rotate3d(1, 0, 0, 0deg) translateZ(40px) scale(0.98);
+}
+
+.omnibar-main-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1250px;
+    height: 100%;
+    perspective: 1920px;
+    position: relative;
+    transform-style: preserve-3d;
 }
 
 .slide-title {
@@ -180,6 +227,33 @@ body {
     margin-right: 8px;
 }
 
+.omnibar-donation-reminder {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(to bottom, #93FFFB 0%, #B5FAF7 100%);
+    font-size: 40px;
+    font-weight: 500;
+    text-align: center;
+    transform-origin: center;
+    transform: rotate3d(1, 0, 0, 0deg) translateZ(40px) scale(0.98);
+    opacity: 100%;
+    border-color: colors.$layout-gap;
+    border-width: 0 2px 0 2px;
+    border-style: solid;
+
+    .emphasis {
+        color: colors.$vfd-red;
+        font-weight: 700;
+    }
+}
+
 .slide-swap-enter-active {
     transition: transform 350ms ease-in-out;
 }
@@ -187,7 +261,8 @@ body {
     position: absolute;
     transition: transform 350ms ease-in-out;
 }
-.slide-swap-leave-from {
+.slide-swap-leave-from,
+.slide-swap-enter-to {
     transform: translateY(0px);
 }
 .slide-swap-leave-to {
@@ -196,7 +271,22 @@ body {
 .slide-swap-enter-from {
     transform: translateY(constants.$omnibarHeight);
 }
-.slide-swap-enter-to {
-    transform: translateY(0px);
+
+.donation-reminder-leave-active {
+    position: absolute;
+}
+.donation-reminder-enter-active,
+.donation-reminder-leave-active {
+    transition-duration: 500ms;
+    transition-property: transform, opacity;
+    transition-timing-function: ease-in-out;
+}
+.donation-reminder-leave-to {
+    transform: rotate3d(1, 0, 0, -90deg) translateZ(40px) scale(0.98);
+    opacity: 10%;
+}
+.donation-reminder-enter-from {
+    transform: rotate3d(1, 0, 0, 90deg) translateZ(40px) scale(0.98);
+    opacity: 10%;
 }
 </style>

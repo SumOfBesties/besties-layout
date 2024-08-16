@@ -15,7 +15,9 @@ To configure this bundle, create the file `[nodecg]/cfg/nsg2-layouts.json` with 
 ```json
 {
   "event": {
-    "timezone": "Europe/Oslo"
+    "timezone": "Europe/Oslo",
+    "name": "NSG Fall 2024",
+    "donationUrl": "donate.nsgmarathon.com"
   },
   "oengus": {
     "useSandbox": false

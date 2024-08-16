@@ -6,7 +6,9 @@
             "type": "object",
             "required": ["timezone"],
             "properties": {
-                "timezone": { "type": "string" }
+                "timezone": { "type": "string" },
+                "name": { "type": "string" },
+                "donationUrl": { "type": "string" }
             }
         },
         "oengus": {

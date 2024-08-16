@@ -8,6 +8,8 @@
 export interface Configschema {
 	event?: {
 		timezone: string;
+		name?: string;
+		donationUrl?: string;
 		[k: string]: unknown;
 	};
 	oengus?: {
