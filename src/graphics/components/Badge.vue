@@ -1,5 +1,5 @@
 <template>
-    <span class="pronoun-badge">
+    <span class="badge">
         <slot />
     </span>
 </template>
@@ -11,7 +11,7 @@
 <style scoped lang="scss">
 @use '../styles/colors';
 
-.pronoun-badge {
+.badge {
     background-color: colors.$vfd-teal;
     color: #000;
     padding: 1px 4px;
