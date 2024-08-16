@@ -64,7 +64,7 @@ const emit = defineEmits<{
 }>();
 
 const internalTalentList = ref<{ id: string }[]>([]);
-watch(props.talentList, newValue => {
+watch(() => props.talentList, newValue => {
     internalTalentList.value = newValue;
 }, { immediate: true });
 
