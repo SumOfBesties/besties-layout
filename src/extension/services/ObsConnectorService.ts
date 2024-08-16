@@ -122,10 +122,18 @@ export class ObsConnectorService {
         }
 
         this.obsVideoInputPositions.on('change', async () => {
-            await this.setGameLayoutVideoFeedPositions();
+            try {
+                await this.setGameLayoutVideoFeedPositions();
+            } catch (e) {
+                nodecg.log.error('Error updating capture positions:', e);
+            }
         });
         this.obsVideoInputAssignments.on('change', async () => {
-            await this.setGameLayoutVideoFeedPositions();
+            try {
+                await this.setGameLayoutVideoFeedPositions();
+            } catch (e) {
+                nodecg.log.error('Error updating capture positions:', e);
+            }
         });
     }
 
