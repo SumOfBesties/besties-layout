@@ -54,7 +54,7 @@ export const useScheduleStore = defineStore('schedule', {
                 if (scheduleItem.type === 'SPEEDRUN') break;
                 result.push(scheduleItem);
             }
-            return result;
+            return result.reverse();
         }
     }
 });
