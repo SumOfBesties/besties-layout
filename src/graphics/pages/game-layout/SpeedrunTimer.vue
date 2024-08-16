@@ -25,9 +25,11 @@
                 <div class="layout horizontal center-vertical">
                     <seven-segment-digits
                         unlit-segment="8:88:88 .8"
+                        :always-lit-segment="formattedTimer.alwaysLitSegment"
                         class="run-timer"
                         style="width: max-content"
-                        :value="formattedTimer"
+                        :value="formattedTimer.timer"
+                        :flash="timerStore.timer.state === 'FINISHED'"
                     />
                     <div class="m-l-8">
                         <div class="layout horizontal play-pause-section">
@@ -79,16 +81,23 @@ const formattedTimer = computed(() => {
     let hours: string | number = timerStore.timer.time.hours;
     if (hours > 0) {
         // Hours above 10 become letters until we run out of letters.
-        // These letters aren't really readable, but we don't expect a run to go above 10 hours anyway, so it's a cute easter egg.
+        // These letters aren't really readable, but we don't expect a run to go above 10 hours anyway,
+        // so it's a cute easter egg.
         if (hours > 9 && hours < 36) {
             hours = String.fromCharCode(55 + hours);
         } else if (hours >= 36) {
             hours = '?';
         }
 
-        return `${hours}:${padNumber(timerStore.timer.time.minutes, 2)}:${padNumber(timerStore.timer.time.seconds, 2)} .${String(Math.round(timerStore.timer.time.milliseconds)).padStart(3, '0')[0]}`;
+        return {
+            timer: `${hours}:${padNumber(timerStore.timer.time.minutes, 2)}:${padNumber(timerStore.timer.time.seconds, 2)} .${String(Math.round(timerStore.timer.time.milliseconds)).padStart(3, '0')[0]}`,
+            alwaysLitSegment: '!:!!:!! .!'
+        };
     } else {
-        return `${padNumber(timerStore.timer.time.minutes, 2)}:${padNumber(timerStore.timer.time.seconds, 2)} .${String(Math.round(timerStore.timer.time.milliseconds)).padStart(3, '0')[0]}`;
+        return {
+            timer: `${padNumber(timerStore.timer.time.minutes, 2)}:${padNumber(timerStore.timer.time.seconds, 2)} .${String(Math.round(timerStore.timer.time.milliseconds)).padStart(3, '0')[0]}`,
+            alwaysLitSegment: '!!:!! .!'
+        };
     }
 });
 
