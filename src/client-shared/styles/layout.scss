@@ -24,6 +24,10 @@
         &.center-horizontal {
             align-items: center;
         }
+
+        &.center-vertical {
+            justify-content: center;
+        }
     }
 }
 
@@ -58,6 +62,10 @@ $layout-margins: 2, 4, 6, 8, 12, 16;
 
 .max-width {
     width: 100%;
+}
+
+.max-height {
+    height: 100%;
 }
 
 .d-block {

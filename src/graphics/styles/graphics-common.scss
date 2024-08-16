@@ -1,4 +1,5 @@
 @use 'fonts.scss';
+@use 'colors.scss';
 @import '../../client-shared/styles/layout';
 
 * {
@@ -18,4 +19,22 @@ body {
         height: 100%;
         width: 100%;
     }
+}
+
+.bg-timer {
+    background: colors.$timer-background;
+}
+
+.bg-panel {
+    background: colors.$layout-panel-background;
+}
+
+@each $direction in 'top', 'bottom', 'left', 'right' {
+    .layout-gap-#{$direction} {
+        border-#{$direction}: 3px solid colors.$layout-gap;
+    }
+}
+
+.layout-wrapper {
+    height: 100%;
 }

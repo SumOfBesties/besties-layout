@@ -1,23 +1,23 @@
 <template>
     <div class="layout-wrapper">
-        <div class="camera-capture-column">
+        <div class="layout vertical">
             <div
-                class="camera-capture"
+                class="camera-capture layout-gap-bottom"
                 data-capture-index="0"
             />
-            <div class="below-camera layout vertical">
+            <div class="grow layout vertical bg-panel">
                 <player-nameplate :index="0" />
-                <other-nameplate-grid class="other-nameplate-grid" />
-                <media-box class="media-box" />
+                <other-nameplate-grid class="m-y-12 m-x-16" />
+                <media-box class="grow m-b-12 m-x-12" />
             </div>
         </div>
         <large-separator direction="vertical" />
-        <div class="game-capture-column">
+        <div class="layout vertical">
             <div
-                class="game-capture"
+                class="game-capture layout-gap-bottom"
                 data-capture-index="0"
             />
-            <div class="timer-wrapper">
+            <div class="timer-wrapper grow bg-timer layout-gap-bottom layout-gap-right layout horizontal center-vertical center-horizontal">
                 <speedrun-timer />
                 <speedrun-details class="m-l-16" />
             </div>
@@ -45,57 +45,20 @@ import MediaBox from 'components/MediaBox.vue';
     display: grid;
     grid-template-columns: 445px 14px 1fr;
     grid-template-rows: 1fr 14px;
-    height: 100%;
 }
 
 .camera-capture {
     aspect-ratio: 4 / 3;
     width: 100%;
-    border-bottom: 3px solid colors.$layout-gap;
 }
 
 .game-capture {
     aspect-ratio: 16 / 9;
     width: 100%;
-    border-bottom: 3px solid colors.$layout-gap;
 }
 
-.camera-capture-column {
-    display: flex;
-    flex-direction: column;
-}
-
-.game-capture-column {
-    display: flex;
-    flex-direction: column;
-}
-
-.below-camera {
-    flex-grow: 1;
-    background: colors.$layout-panel-background;
-}
-
-.other-nameplate-grid {
-    margin: 16px 12px;
-}
-
-.media-box {
-    flex-grow: 1;
-    margin: 0 12px 12px 12px;
-}
-
-.timer-wrapper {
-    flex-grow: 1;
-    background: colors.$timer-background;
-    border-right: 3px solid colors.$layout-gap;
-    border-bottom: 3px solid colors.$layout-gap;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    > * {
-        width: 590px;
-        height: 110px;
-    }
+.timer-wrapper > * {
+    width: 590px;
+    height: 110px;
 }
 </style>

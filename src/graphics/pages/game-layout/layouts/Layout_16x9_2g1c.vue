@@ -1,6 +1,6 @@
 <template>
-    <div class="layout-wrapper">
-        <div class="game-captures-row">
+    <div class="layout-wrapper layout vertical">
+        <div class="max-width layout horizontal layout-gap-bottom">
             <div
                 class="game-capture"
                 data-capture-index="0"
@@ -11,11 +11,10 @@
                 data-capture-index="1"
             />
         </div>
-        <div class="small-separator" />
         <div class="other-content-row">
             <div class="column">
                 <player-nameplate :index="0" />
-                <div class="timer-wrapper">
+                <div class="timer-wrapper bg-timer layout vertical center-vertical max-height">
                     <speedrun-details />
                     <speedrun-timer class="m-t-8" />
                     <img
@@ -30,7 +29,7 @@
             />
             <div class="column">
                 <player-nameplate :index="1" />
-                <div class="third-column layout vertical">
+                <div class="max-height bg-panel layout vertical">
                     <other-nameplate-grid class="m-t-12 m-x-16" />
                     <media-box class="grow m-x-8 m-y-8" />
                 </div>
@@ -51,25 +50,9 @@ import MediaBox from 'components/MediaBox.vue';
 <style scoped lang="scss">
 @use '../../../styles/colors';
 
-.layout-wrapper {
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-}
-
-.game-captures-row {
-    width: 100%;
-    display: flex;
-}
-
 .game-capture {
     aspect-ratio: 16 / 9;
     width: 100%;
-}
-
-.small-separator {
-    background-color: colors.$layout-gap;
-    min-height: 3px;
 }
 
 .other-content-row {
@@ -80,11 +63,6 @@ import MediaBox from 'components/MediaBox.vue';
 }
 
 .timer-wrapper {
-    background: colors.$timer-background;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
     padding: 8px;
     position: relative;
 
@@ -110,15 +88,5 @@ import MediaBox from 'components/MediaBox.vue';
     border-style: solid;
     border-width: 0 3px 3px 3px;
     border-color: colors.$layout-gap;
-}
-
-.camera-capture {
-    width: 100%;
-    height: 100%;
-}
-
-.third-column {
-    background: colors.$layout-panel-background;
-    height: 100%;
 }
 </style>
