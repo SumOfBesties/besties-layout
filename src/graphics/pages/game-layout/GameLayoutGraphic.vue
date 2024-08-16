@@ -22,6 +22,7 @@ import Layout_4x3_4g1c from './layouts/Layout_4x3_4g1c.vue';
 import Layout_3x2_1g1c from './layouts/Layout_3x2_1g1c.vue';
 import Layout_16x9_4g1c from './layouts/Layout_16x9_4g1c.vue';
 import Layout_16x9_3g1c from './layouts/Layout_16x9_3g1c.vue';
+import Layout_4x3_2x1_sonics_gameworld from './layouts/Layout_4x3_2x1_sonics_gameworld.vue';
 
 const obsStore = useObsStore();
 
@@ -34,7 +35,8 @@ const gameLayoutComponentMap: Record<typeof layoutKeys[number], Component> = {
     '4x3-2g1c': Layout_4x3_2g1c,
     '4x3-3g1c': Layout_4x3_3g1c,
     '4x3-4g1c': Layout_4x3_4g1c,
-    '3x2-1g1c': Layout_3x2_1g1c
+    '3x2-1g1c': Layout_3x2_1g1c,
+    '4x3-2x1-sonic-gameworld': Layout_4x3_2x1_sonics_gameworld
 };
 
 onMounted(() => {
