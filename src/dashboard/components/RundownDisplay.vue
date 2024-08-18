@@ -65,7 +65,6 @@
 import { IplMessage, IplSpace } from '@iplsplatoon/vue-components';
 import { useScheduleStore } from 'client-shared/stores/ScheduleStore';
 import { computed } from 'vue';
-import { OtherScheduleItem } from 'types/schemas';
 import RundownDisplaySpeedrun from './RundownDisplaySpeedrun.vue';
 import RundownDisplayInterstitial from './RundownDisplayInterstitial.vue';
 import { ScheduleItem } from 'types/ScheduleHelpers';
