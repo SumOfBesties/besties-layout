@@ -89,6 +89,7 @@
         "@tourneyview/common": "~0.6.0",
         "@tourneyview/importer": "~0.6.0",
         "@tourneyview/renderer": "~0.6.0",
+        "@types/cookie": "^0.6.0",
         "@types/lodash": "^4.14.171",
         "@types/luxon": "^3.4.2",
         "@types/node": "^15.14.9",
@@ -116,6 +117,7 @@
     },
     "dependencies": {
         "axios": "^1.6.8",
+        "cookie": "^0.6.0",
         "livesplit-core": "^0.10.2",
         "luxon": "^3.4.4",
         "obs-websocket-js": "^5.0.6",

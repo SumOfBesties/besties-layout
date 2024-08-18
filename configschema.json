@@ -16,6 +16,15 @@
             "properties": {
                 "useSandbox": { "type": "boolean" }
             }
+        },
+        "tracker": {
+            "type": "object",
+            "properties": {
+                "address": { "type": "string" },
+                "username": { "type": "string" },
+                "password": { "type": "string" },
+                "eventId": { "type": "number" }
+            }
         }
     }
 }

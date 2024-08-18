@@ -14,12 +14,11 @@
 
 <script setup lang="ts">
 import SevenSegmentDigits from 'components/SevenSegmentDigits.vue';
-import { ref } from 'vue';
 import { useTweenedNumber } from '../helpers/useTweenedNumber';
+import { useDonationStore } from 'client-shared/stores/DonationStore';
 
-// todo
-const donationTotal = ref(39573);
-const tweenedTotal = useTweenedNumber(donationTotal);
+const donationStore = useDonationStore();
+const tweenedTotal = useTweenedNumber(() => Math.floor(donationStore.donationTotal));
 </script>
 
 <style scoped lang="scss">

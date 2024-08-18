@@ -6,6 +6,8 @@ export * from './activeGameLayout';
 // @ts-ignore
 export * from './activeSpeedrun';
 // @ts-ignore
+export * from './donationTotal';
+// @ts-ignore
 export * from './nextSpeedrun';
 // @ts-ignore
 export * from './obsConfig';

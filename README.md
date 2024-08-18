@@ -21,6 +21,12 @@ To configure this bundle, create the file `[nodecg]/cfg/nsg2-layouts.json` with 
   },
   "oengus": {
     "useSandbox": false
+  },
+  "tracker": {
+    "address": "tracker.example.org",
+    "username": "example-user",
+    "password": "example-pwd",
+    "eventId": 2
   }
 }
 ```

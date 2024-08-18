@@ -13,6 +13,7 @@ import { ObsConnectorService } from './services/ObsConnectorService';
 import { ObsConnectorController } from './controllers/ObsConnectorController';
 import { LogController } from './controllers/LogController';
 import { NameplateAssignmentService } from './services/NameplateAssignmentService';
+import { TrackerService } from './services/TrackerService';
 
 export = (nodecg: NodeCG.ServerAPI<Configschema>): void => {
     const oengusClient = new OengusClient(nodecg);
@@ -24,6 +25,7 @@ export = (nodecg: NodeCG.ServerAPI<Configschema>): void => {
     scheduleService.init(speedrunService);
     const obsConnectorService = new ObsConnectorService(nodecg);
     new NameplateAssignmentService(nodecg);
+    new TrackerService(nodecg);
 
     new ScheduleController(nodecg, scheduleService);
     new SpeedrunController(nodecg, speedrunService);

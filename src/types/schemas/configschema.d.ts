@@ -16,5 +16,12 @@ export interface Configschema {
 		useSandbox?: boolean;
 		[k: string]: unknown;
 	};
+	tracker?: {
+		address?: string;
+		username?: string;
+		password?: string;
+		eventId?: number;
+		[k: string]: unknown;
+	};
 	[k: string]: unknown;
 }
