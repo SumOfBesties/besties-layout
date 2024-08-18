@@ -34,7 +34,7 @@ export class TrackerClient {
 
     constructor(nodecg: NodeCG.ServerAPI<Configschema>) {
         if (!TrackerClient.hasRequiredTrackerConfig(nodecg)) {
-            throw new Error('GDQ tracker config is missing.');
+            throw new Error('GDQ tracker config is missing');
         }
 
         this.username = nodecg.bundleConfig.tracker!.username;

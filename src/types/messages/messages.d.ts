@@ -23,6 +23,8 @@ export interface MessageInputMap {
     'obs:connect': ObsConnectionInfo
     'obs:setConfig': ObsConfig
     'obs:setEnabled': { enabled: boolean }
+
+    'tracker:newDonation': { amount: number, displayName: string | undefined | null }
 }
 
 type MessagesWithoutReturnValues = Exclude<keyof MessageInputMap, keyof InnerMessageResultMap>;

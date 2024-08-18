@@ -21,7 +21,8 @@ export default defineConfig({
                 /lodash\/.*/,
                 'uuid',
                 'livesplit-core',
-                'obs-websocket-js'
+                'obs-websocket-js',
+                'ws'
             ]
         }
     },

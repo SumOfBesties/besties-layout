@@ -1,11 +1,13 @@
 import type NodeCG from '@nodecg/types';
 import type { Configschema, DonationTotal } from 'types/schemas';
 import { TrackerClient } from '../clients/TrackerClient';
+import { TrackerSocketClient } from '../clients/TrackerSocketClient';
 
 export class TrackerService {
     private readonly nodecg: NodeCG.ServerAPI<Configschema>;
     private readonly logger: NodeCG.Logger;
     private readonly trackerClient?: TrackerClient;
+    private readonly trackerSocketClient?: TrackerSocketClient;
     private readonly donationTotal: NodeCG.ServerReplicantWithSchemaDefault<DonationTotal>;
     private donationTotalApiUpdateTimeout: NodeJS.Timeout | undefined = undefined;
     private isFirstLogin = true;
@@ -28,6 +30,28 @@ export class TrackerService {
 
             this.updateDonationTotal(true);
         }
+
+        if (!TrackerSocketClient.hasRequiredConfig(nodecg)) {
+            this.logger.warn('GDQ tracker socket URL is missing. Donations may take longer to appear on stream.');
+        } else {
+            this.trackerSocketClient = new TrackerSocketClient(nodecg);
+            this.trackerSocketClient.start();
+            this.trackerSocketClient.on('donation', this.onDonation.bind(this));
+        }
+    }
+
+    private onDonation(amount: number, newTotal: number, displayName?: string | null) {
+        if (this.donationTotal.value < newTotal) {
+            this.donationTotal.value = newTotal;
+        }
+        this.nodecg.sendMessage('tracker:newDonation', {
+            amount,
+            displayName
+        });
+        if (this.donationTotalApiUpdateTimeout) {
+            clearTimeout(this.donationTotalApiUpdateTimeout);
+        }
+        this.donationTotalApiUpdateTimeout = setTimeout(this.updateDonationTotal.bind(this), 60 * 1000);
     }
 
     private async doLoginLoop() {
@@ -61,7 +85,6 @@ export class TrackerService {
             this.logger.error('Error updating donation total:', e instanceof Error ? e.message : String(e));
             this.logger.debug('Error updating donation total:', e);
         } finally {
-            // todo: reset this timeout when the socket updates the total
             this.donationTotalApiUpdateTimeout = setTimeout(this.updateDonationTotal.bind(this), 60 * 1000);
         }
     }

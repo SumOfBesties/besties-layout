@@ -24,6 +24,7 @@ To configure this bundle, create the file `[nodecg]/cfg/nsg2-layouts.json` with 
   },
   "tracker": {
     "address": "tracker.example.org",
+    "socketAddress": "wss://tracker.example.org/tracker/ws/donations/",
     "username": "example-user",
     "password": "example-pwd",
     "eventId": 2

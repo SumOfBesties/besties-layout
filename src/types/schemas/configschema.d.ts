@@ -18,6 +18,7 @@ export interface Configschema {
 	};
 	tracker?: {
 		address?: string;
+		socketAddress?: string;
 		username?: string;
 		password?: string;
 		eventId?: number;
