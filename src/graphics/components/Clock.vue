@@ -50,5 +50,6 @@ setDate(getCurrentTime());
     font-size: 1.7em;
     margin-bottom: 2px;
     margin-top: -2px;
+    margin-left: -4px;
 }
 </style>
