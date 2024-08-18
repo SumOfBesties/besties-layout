@@ -1,9 +1,12 @@
 import type { AxiosInstance } from 'axios';
 import type NodeCG from '@nodecg/types';
-import type { Configschema } from 'types/schemas';
+import type { AllBids, AllPrizes, Configschema, Milestones } from 'types/schemas';
 import { generateUserAgent } from '../helpers/GenerateUserAgent';
 import axios, { isAxiosError } from 'axios';
 import cookie from 'cookie';
+import { URLSearchParams } from 'url';
+import { isBlank } from '../../client-shared/helpers/StringHelper';
+import { DateTime } from 'luxon';
 
 interface TrackerEventIndexResponse {
     count: {
@@ -20,6 +23,130 @@ interface TrackerEventIndexResponse {
         median: number
         target: number
         amount: number
+    }
+}
+
+interface TrackerMilestoneSearchResponseItem {
+    model: 'tracker.milestone'
+    pk: number
+    fields: {
+        event: number
+        start: number
+        amount: number
+        name: string
+        visible: boolean
+        description: string
+        short_description: string
+        public: string
+    }
+}
+
+type TrackerBidState = 'PENDING' | 'DENIED' | 'HIDDEN' | 'OPENED' | 'CLOSED';
+
+interface TrackerPrizeSearchResponseItem {
+    model: 'tracker.prize'
+    pk: number
+    fields: {
+        name: string
+        category: number | null
+        image: string
+        altimage: string
+        imagefile: string
+        description: string
+        shortdescription: string
+        estimatedvalue: number | null
+        minimumbid: number
+        sumdonations: boolean
+        randomdraw: boolean
+        event: number
+        startrun: number | null
+        endrun: number | null
+        starrtime: string | null
+        endtime: string | null
+        maxwinners: number
+        maxmultiwin: number
+        provider: string
+        creator: string | null
+        creatoremail: string | null
+        creatorwebsite: string | null
+        custom_country_filter: boolean
+        key_code: boolean
+        start_draw_time: string | null
+        end_draw_time: string | null
+        canonical_url: string
+        public: string
+        numwinners: number
+        allowed_prize_countries: number[]
+        disallowed_prize_regions: number[]
+        startrun__name?: string
+        startrun__display_name?: string
+        startrun__starttime?: string
+        startrun__endtime?: string
+        startrun__order?: number | null
+        startrun__canonical_url?: string
+        startrun__public?: string
+        endrun__name?: string
+        endrun__display_name?: string
+        endrun__starttime?: string
+        endrun__endtime?: string
+        endrun__order?: number | null
+        endrun__canonical_url?: string
+        endrun__public?: string
+    }
+}
+
+interface TrackerAllBidsSearchResponseItem {
+    model: 'tracker.bid'
+    pk: number
+    fields: {
+        name: string
+        event: number
+        parent: number | null
+        speedrun: number | null
+        state: TrackerBidState
+        description: string
+        shortdescription: string
+        goal: number | null
+        repeat: number | null
+        istarget: boolean
+        allowuseroptions: boolean
+        option_max_length: number | null
+        revealedtime: string
+        biddependency: number | null
+        total: string | number
+        count: number
+        pinned: boolean
+        canonical_url: string
+        public: string
+        speedrun__name?: string
+        speedrun__display_name?: string
+        speedrun__twitch_name?: string
+        speedrun__starttime?: string
+        speedrun__endtime?: string
+        speedrun__order?: string
+        speedrun__canonical_url?: string
+        speedrun__public?: string
+        event__short: string
+        event__name: string
+        event__datetime: string
+        event__timezone: string
+        event__canonical_url: string
+        event__public: string
+        parent__name?: string
+        parent__state?: TrackerBidState
+        parent__goal?: number | null
+        parent__allowuseroptions?: boolean
+        parent__option_max_length?: number | null
+        parent__total?: string | number
+        parent__count?: number
+        parent__canonical_url?: string
+        parent__public?: string
+        parent__event__short?: string
+        parent__event__name?: string
+        parent__event__datetime?: string
+        parent__event__timezone?: string
+        parent__event__canonical_url?: string
+        parent__event__public?: string
     }
 }
 
@@ -60,6 +187,128 @@ export class TrackerClient {
             }
             return config;
         });
+    }
+
+    async getBids(getAll: boolean): Promise<AllBids> {
+        const params = new URLSearchParams(`?type=allbids&event=${this.eventId}`);
+        if (!getAll) {
+            params.append('state', 'OPENED');
+        }
+        const response = await this.axios.get<TrackerAllBidsSearchResponseItem[]>(`/tracker/search?${params.toString()}`);
+
+        const parentBidsById: Record<string, AllBids[number]> = {};
+        const rawChildBids: TrackerAllBidsSearchResponseItem[] = [];
+        response.data.forEach(bidItem => {
+            if (bidItem.fields.parent != null) {
+                rawChildBids.push(bidItem);
+            } else {
+                const formattedBid: AllBids[number] = {
+                    name: bidItem.fields.name,
+                    description: bidItem.fields.shortdescription || bidItem.fields.description,
+                    total: typeof bidItem.fields.total === 'string' ? parseFloat(bidItem.fields.total) : bidItem.fields.total ?? 0,
+                    state: bidItem.fields.state,
+                    speedrunEndTime: bidItem.fields.speedrun__endtime
+                };
+                if (bidItem.fields.istarget === false) {
+                    formattedBid.options = [];
+                } else {
+                    formattedBid.goal = bidItem.fields.goal == null ? null : typeof bidItem.fields.goal === 'string' ? parseFloat(bidItem.fields.goal) : bidItem.fields.goal;
+                }
+                parentBidsById[String(bidItem.pk)] = formattedBid;
+            }
+        });
+        rawChildBids.forEach(bidItem => {
+            const parent = parentBidsById[String(bidItem.fields.parent)];
+            if (parent == null) {
+                this.logger.warn(`Child bid (ID ${bidItem.pk}) parent (ID ${bidItem.fields.parent}) could not be found`);
+            } else {
+                parent.options?.push({
+                    name: bidItem.fields.name,
+                    description: bidItem.fields.shortdescription || bidItem.fields.description,
+                    total: typeof bidItem.fields.total === 'string' ? parseFloat(bidItem.fields.total) : bidItem.fields.total ?? 0
+                });
+            }
+        });
+        const result = Object.values(parentBidsById);
+        result.forEach(bid => {
+            bid.options?.sort((a, b) => {
+                if (a.total > b.total) {
+                    return -1;
+                } else if (a.total < b.total) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            });
+        });
+        result.sort((a, b) => {
+            if (a.speedrunEndTime == null && b.speedrunEndTime == null) {
+                return 0;
+            }
+            if (a.speedrunEndTime == null) {
+                return -1;
+            }
+            if (b.speedrunEndTime == null) {
+                return 1;
+            }
+            const parsedDateA = DateTime.fromISO(a.speedrunEndTime);
+            const parsedDateB = DateTime.fromISO(a.speedrunEndTime);
+            if (parsedDateA > parsedDateB) {
+                return -1;
+            }
+            if (parsedDateA < parsedDateB) {
+                return 1;
+            }
+            return 0;
+        });
+        return result;
+    }
+
+    async getPrizes(getAll: boolean): Promise<AllPrizes> {
+        const params = new URLSearchParams(`?type=prize&event=${this.eventId}`);
+        if (!getAll) {
+            params.append('feed', 'current');
+        }
+        const response = await this.axios.get<TrackerPrizeSearchResponseItem[]>(`/tracker/search?${params.toString()}`);
+        return response.data.map(prize => ({
+            name: prize.fields.name,
+            image: this.getPrizeImage(prize),
+            minimumBid: prize.fields.minimumbid,
+            sumDonations: prize.fields.sumdonations ?? false,
+            startRun: prize.fields.startrun == null ? undefined : {
+                id: prize.fields.startrun,
+                name: prize.fields.startrun__name,
+                displayName: prize.fields.startrun__display_name,
+                order: prize.fields.startrun__order
+            },
+            endRun: prize.fields.endrun == null ? undefined : {
+                id: prize.fields.endrun,
+                name: prize.fields.endrun__name,
+                displayName: prize.fields.endrun__display_name,
+                order: prize.fields.endrun__order
+            }
+        }));
+    }
+
+    private getPrizeImage(item: TrackerPrizeSearchResponseItem) {
+        if (!isBlank(item.fields.imagefile)) {
+            return item.fields.imagefile.startsWith('/') ? this.address + item.fields.imagefile : item.fields.imagefile;
+        } else if (!isBlank(item.fields.altimage)) {
+            return item.fields.altimage;
+        } else {
+            return item.fields.image;
+        }
+    }
+
+    async getMilestones(): Promise<Milestones> {
+        const response = await this.axios.get<TrackerMilestoneSearchResponseItem[]>(`/tracker/search?type=milestone&event=${this.eventId}`);
+        return response.data.map(milestone => ({
+            start: milestone.fields.start,
+            amount: milestone.fields.amount,
+            name: milestone.fields.name,
+            description: milestone.fields.description,
+            shortDescription: milestone.fields.short_description,
+        }));
     }
 
     async getDonationTotal(): Promise<number> {

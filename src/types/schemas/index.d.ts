@@ -6,7 +6,17 @@ export * from './activeGameLayout';
 // @ts-ignore
 export * from './activeSpeedrun';
 // @ts-ignore
+export * from './allBids';
+// @ts-ignore
+export * from './allPrizes';
+// @ts-ignore
+export * from './currentBids';
+// @ts-ignore
+export * from './currentPrizes';
+// @ts-ignore
 export * from './donationTotal';
+// @ts-ignore
+export * from './milestones';
 // @ts-ignore
 export * from './nextSpeedrun';
 // @ts-ignore

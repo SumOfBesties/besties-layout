@@ -1,0 +1,30 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "type": "array",
+    "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+            "name": { "type": "string" },
+            "description": { "type": "string" },
+            "goal": { "type": ["number", "null"] },
+            "total": { "type": "number" },
+            "state": { "type": "string" },
+            "speedrunEndTime": { "type": ["string", "null"] },
+            "options": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                        "name": { "type": "string" },
+                        "description": { "type": "string" },
+                        "total": { "type": "number" }
+                    },
+                    "required": ["name", "total"]
+                }
+            }
+        },
+        "required": ["name", "total", "state"]
+    }
+}

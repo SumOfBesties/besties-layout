@@ -1,0 +1,34 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "definitions": {
+        "prizeStartEndRun": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "id": { "type": "number" },
+                "name": { "type": "string" },
+                "displayName": { "type": "string" },
+                "order": { "type": ["number", "null"] }
+            },
+            "required": []
+        }
+    },
+    "type": "array",
+    "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+            "name": { "type": "string" },
+            "image": { "type": "string" },
+            "minimumBid": { "type": "number" },
+            "sumDonations": { "type": "boolean" },
+            "startRun": {
+                "$ref": "#/definitions/prizeStartEndRun"
+            },
+            "endRun": {
+                "$ref": "#/definitions/prizeStartEndRun"
+            }
+        },
+        "required": ["name", "minimumBid", "sumDonations"]
+    }
+}

@@ -22,7 +22,8 @@ export default defineConfig({
                 'uuid',
                 'livesplit-core',
                 'obs-websocket-js',
-                'ws'
+                'ws',
+                'url'
             ]
         }
     },
