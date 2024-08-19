@@ -23,6 +23,32 @@
                     style="width: 830px"
                 />
             </div>
+            <div class="bg-inset m-t-16 layout horizontal center-vertical">
+                <div class="host-name-display">
+                    <fitted-content
+                        style="width: 225px; margin-top: 12px"
+                        align="center"
+                    >
+                        hosty host
+                    </fitted-content>
+                    <div class="host-name-label">H</div>
+                </div>
+                <div class="music-icon">♫</div>
+                <div class="grow" style="margin-top: -4px">
+                    <vfd-pixel-text
+                        :font-size="24"
+                        text-content="artist artist"
+                        align="left"
+                        text-align="left"
+                    />
+                    <vfd-pixel-text
+                        :font-size="24"
+                        text-content="song song"
+                        align="left"
+                        text-align="left"
+                    />
+                </div>
+            </div>
         </div>
         <large-separator direction="vertical" />
         <div class="bg-panel right-panel">
@@ -44,6 +70,8 @@ import {
     MaxOmnibarBidWarItemsInjectionKey,
     MaxOmnibarBidWarTitleWidthInjectionKey
 } from '../../../dashboard/helpers/Injections';
+import FittedContent from 'components/FittedContent.vue';
+import VfdPixelText from 'components/VfdPixelText.vue';
 
 provide(MaxOmnibarBidWarItemsInjectionKey, 3);
 provide(MaxOmnibarBidWarTitleWidthInjectionKey, 200);
@@ -78,7 +106,7 @@ provide(MaxOmnibarBidWarTitleWidthInjectionKey, 200);
 
 .logos {
     justify-content: space-between;
-    margin: 50px 60px 0;
+    margin: 40px 60px 0;
 
     img {
         width: 250px;
@@ -107,5 +135,34 @@ provide(MaxOmnibarBidWarTitleWidthInjectionKey, 200);
 .charity-logo {
     height: 129px;
     margin: -8px 0;
+}
+
+.host-name-display {
+    border: 2px solid colors.$vfd-teal;
+    font-size: 30px;
+    color: colors.$vfd-teal;
+    font-weight: 700;
+    position: relative;
+    height: 65px;
+
+    > .host-name-label {
+        font-family: 'Roboto Condensed', sans-serif;
+        font-size: 20px;
+        background-color: colors.$vfd-teal;
+        color: colors.$vfd-background;
+        position: absolute;
+        bottom: -2px;
+        left: -2px;
+        padding: 0 5px;
+        min-width: 18px;
+        height: 20px;
+        line-height: 21px;
+    }
+}
+
+.music-icon {
+    font-size: 40px;
+    color: colors.$vfd-teal;
+    margin: 0 12px;
 }
 </style>
