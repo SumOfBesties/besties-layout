@@ -82,7 +82,7 @@ import Clock from 'components/Clock.vue';
 import DonationTotal from 'components/DonationTotal.vue';
 import FittedContent from 'components/FittedContent.vue';
 import { useSlides } from '../../helpers/useSlides';
-import { computed, ref } from 'vue';
+import { computed, ComputedRef, MaybeRefOrGetter, Ref, ref, toValue, UnwrapRef } from 'vue';
 import { useScheduleStore } from 'client-shared/stores/ScheduleStore';
 import OmnibarScheduleItemDisplay from './OmnibarScheduleItemDisplay.vue';
 import { Configschema, CurrentBids, Milestones } from 'types/schemas';
@@ -130,42 +130,44 @@ const nextSpeedrun = computed(() => {
     return scheduleStore.nextSpeedrun;
 });
 
-const visibleMilestone = ref<Milestones[number] | null>(null);
-const activeMilestones = computed(() => currentTrackerDataStore.milestones.filter(milestone => donationStore.donationTotal >= milestone.start && donationStore.donationTotal < milestone.amount));
-const beforeMilestoneShow = () => {
-    if (activeMilestones.value.length === 1 || visibleMilestone.value == null) {
-        visibleMilestone.value = activeMilestones.value[0];
-    } else {
-        const visibleMilestoneIndex = activeMilestones.value.findIndex(milestone => milestone.id === visibleMilestone.value!.id);
-        if (visibleMilestoneIndex === -1) {
-            visibleMilestone.value = activeMilestones.value[0];
+const useRotatingList = <T extends { id: number }>(list: MaybeRefOrGetter<UnwrapRef<T>[]>): { visibleItem: Ref<UnwrapRef<T> | null>, beforeShow: () => void, enabled: ComputedRef<boolean> } => {
+    const visibleItem = ref<T | null>(null);
+    const beforeShow = () => {
+        const unwrappedList = toValue(list);
+        if (unwrappedList.length === 1 || visibleItem.value == null) {
+            visibleItem.value = unwrappedList[0];
         } else {
-            visibleMilestone.value = activeMilestones.value[getNextIndex(activeMilestones.value, visibleMilestoneIndex)];
+            const visibleItemIndex = unwrappedList.findIndex(item => item.id === visibleItem.value!.id);
+            if (visibleItemIndex === -1) {
+                visibleItem.value = unwrappedList[0];
+            } else {
+                visibleItem.value = unwrappedList[getNextIndex(unwrappedList, visibleItemIndex)];
+            }
         }
-    }
-};
+    };
+    const enabled = computed(() => toValue(list).length > 0);
 
-const visibleIncentive = ref<CurrentBids[number] | null>(null);
-const activeIncentives = computed(() => currentTrackerDataStore.currentBids.filter(bid => (bid.options == null || bid.options.length === 0) && bid.goal != null));
-const beforeIncentiveShow = () => {
-    if (activeIncentives.value.length === 1 || visibleIncentive.value == null) {
-        visibleIncentive.value = activeIncentives.value[0];
-    } else {
-        const visibleIncentiveIndex = activeIncentives.value.findIndex(incentive => incentive.id === visibleIncentive.value!.id);
-        if (visibleIncentiveIndex === -1) {
-            visibleIncentive.value = activeIncentives.value[0];
-        } else {
-            visibleIncentive.value = activeIncentives.value[getNextIndex(activeIncentives.value, visibleIncentiveIndex)];
-        }
-    }
-};
+    return { visibleItem, beforeShow, enabled };
+}
+
+const {
+    visibleItem: visibleMilestone,
+    enabled: milestonesEnabled,
+    beforeShow: beforeMilestoneShow
+} = useRotatingList(() => currentTrackerDataStore.milestones.filter(milestone => donationStore.donationTotal >= milestone.start && donationStore.donationTotal < milestone.amount));
+
+const {
+    visibleItem: visibleIncentive,
+    enabled: incentivesEnabled,
+    beforeShow: beforeIncentiveShow
+} = useRotatingList(() => currentTrackerDataStore.currentBids.filter(bid => (bid.options == null || bid.options.length === 0) && bid.goal != null));
 
 const slides = useSlides([
     { component: 'nextUp', enabled: computed(() => nextScheduleItem.value != null), duration: 30 },
     { component: 'later', enabled: computed(() => scheduleItemAfterNext.value != null), duration: 30 },
     { component: 'nextSpeedrun', enabled: computed(() => nextSpeedrun.value != null), duration: 30 },
-    { component: 'milestone', enabled: computed(() => activeMilestones.value.length > 0), beforeChange: beforeMilestoneShow, duration: 30 },
-    { component: 'incentive', enabled: computed(() => activeIncentives.value.length > 0), beforeChange: beforeIncentiveShow, duration: 30 },
+    { component: 'milestone', enabled: milestonesEnabled, beforeChange: beforeMilestoneShow, duration: 30 },
+    { component: 'incentive', enabled: incentivesEnabled, beforeChange: beforeIncentiveShow, duration: 30 },
     { component: 'donationReminder1', enabled: hasDonationUrl, duration: 10 },
     { component: 'donationReminder2', enabled: hasDonationUrl, duration: 10 }
 ]);
