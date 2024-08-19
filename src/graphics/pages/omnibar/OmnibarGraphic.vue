@@ -136,7 +136,7 @@ const beforeMilestoneShow = () => {
     if (activeMilestones.value.length === 1 || visibleMilestone.value == null) {
         visibleMilestone.value = activeMilestones.value[0];
     } else {
-        const visibleMilestoneIndex = activeMilestones.value.findIndex(milestone => milestone.id === visibleMilestone.value.id);
+        const visibleMilestoneIndex = activeMilestones.value.findIndex(milestone => milestone.id === visibleMilestone.value!.id);
         if (visibleMilestoneIndex === -1) {
             visibleMilestone.value = activeMilestones.value[0];
         } else {
@@ -151,7 +151,7 @@ const beforeIncentiveShow = () => {
     if (activeIncentives.value.length === 1 || visibleIncentive.value == null) {
         visibleIncentive.value = activeIncentives.value[0];
     } else {
-        const visibleIncentiveIndex = activeIncentives.value.findIndex(incentive => incentive.id === visibleIncentive.value.id);
+        const visibleIncentiveIndex = activeIncentives.value.findIndex(incentive => incentive.id === visibleIncentive.value!.id);
         if (visibleIncentiveIndex === -1) {
             visibleIncentive.value = activeIncentives.value[0];
         } else {
