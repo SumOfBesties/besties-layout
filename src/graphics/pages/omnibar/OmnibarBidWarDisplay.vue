@@ -16,7 +16,7 @@
         </div>
         <div
             v-else-if="props.bidWar.options?.length === 2"
-            class="bid-war-duel-options layout horizontal"
+            class="bid-war-duel-options layout horizontal m-r-8"
         >
             <div
                 v-for="option in props.bidWar.options"
@@ -35,7 +35,7 @@
             class="bid-war-options layout horizontal grow"
         >
             <div
-                v-for="option in props.bidWar.options"
+                v-for="option in props.bidWar.options?.slice(0, 4)"
                 class="bid-war-option"
                 :class="{ 'is-winning': highestOptionTotal !== 0 && option.total === highestOptionTotal }"
             >
@@ -43,6 +43,12 @@
                     {{ option.name }}
                 </fitted-content>
                 <div class="option-total">{{ formatNumber(option.total) }}kr</div>
+            </div>
+            <div
+                v-if="(props.bidWar.options?.length ?? 0) > 4"
+                class="extra-option-box"
+            >
+                <div class="extra-option-count">+{{ props.bidWar.options!.length - 4 }}</div>
             </div>
         </div>
     </div>
@@ -152,7 +158,7 @@ const highestOptionTotal = computed(() => Math.max(...(props.bidWar.options?.map
 }
 
 .bid-war-option {
-    width: 20%;
+    width: 22%;
     margin-right: 4px;
     font-size: 20px;
     font-weight: 700;
@@ -171,6 +177,19 @@ const highestOptionTotal = computed(() => Math.max(...(props.bidWar.options?.map
         font-family: 'Roboto Condensed', sans-serif;
         font-size: 18px;
         padding: 0 4px;
+    }
+}
+
+.extra-option-box {
+    background-color: colors.$vfd-teal;
+    color: colors.$vfd-background;
+    text-align: center;
+    padding: 0 8px;
+    font-weight: 700;
+
+    .extra-option-count {
+        font-size: 32px;
+        margin-top: 10px;
     }
 }
 </style>
