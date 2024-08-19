@@ -3,37 +3,37 @@
         <table>
             <tbody>
                 <tr
-                    v-for="(commentatorRow, i) in commentators"
+                    v-for="(talentRow, i) in talent"
                     :key="i"
                 >
                     <td
-                        v-for="(commentator, j) in commentatorRow"
-                        :key="commentator?.id ?? j"
+                        v-for="(talent, j) in talentRow"
+                        :key="talent?.id ?? j"
                     >
-                        <template v-if="commentator != null">
+                        <template v-if="talent != null">
                             <fitted-content
                                 class="commentator-name"
                                 align="center"
                             >
-                                {{ commentator.name }}
+                                {{ talent.name }}
                             </fitted-content>
                             <div class="layout horizontal center-horizontal center-vertical m-t-2 m-x-4">
                                 <country-flag
-                                    v-if="commentator.countryCode != null"
-                                    :country-code="commentator.countryCode"
+                                    v-if="talent.countryCode != null"
+                                    :country-code="talent.countryCode"
                                     class="commentator-flag"
                                 />
                                 <fitted-content class="commentator-pronoun-wrapper">
                                     <badge
-                                        v-if="!isBlank(commentator.pronouns)"
+                                        v-if="!isBlank(talent.pronouns)"
                                         class="commentator-pronouns"
                                     >
-                                        {{ commentator.pronouns }}
+                                        {{ talent.pronouns }}
                                     </badge>
                                 </fitted-content>
                             </div>
                         </template>
-                        <div class="cell-index">{{ i * rowCount + j + 1 + nameplatePlayerCount }}</div>
+                        <div class="cell-index">{{ talentStore.currentHostId != null && talent?.id === talentStore.currentHostId ? 'H' : i * rowCount + j + 1 + nameplatePlayerCount }}</div>
                     </td>
                 </tr>
             </tbody>
@@ -62,10 +62,13 @@ const nameplatePlayerCount = computed(() => scheduleStore.playerNameplateAssignm
     result += assignment.playerIds.length;
     return result;
 }, 0));
-const commentators = computed(() => {
-    const result: (TalentItem | null)[] = scheduleStore.activeSpeedrun?.commentatorIds
-        .map(commentatorId => talentStore.findTalentItemById(commentatorId.id))
-        .filter(commentator => commentator != null) ?? [];
+const talent = computed(() => {
+    const result: (TalentItem | null)[] = [
+        ...((scheduleStore.activeSpeedrun?.commentatorIds ?? [])).map(commentatorId => commentatorId.id),
+        talentStore.currentHostId
+    ]
+        .map(talentId => talentStore.findTalentItemById(talentId))
+        .filter(talent => talent != null) ?? [];
     if (result.length % columnCount > 0 || result.length === 0) {
         result.push(...Array.from({ length: (result.length === 0) ? columnCount : (result.length % columnCount) }, () => null));
     }
