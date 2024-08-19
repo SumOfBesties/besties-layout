@@ -56,7 +56,7 @@ export function padNumber(number: unknown, minLength = 2): string {
 }
 
 export function formatNumber(number: number): string {
-    return new Intl.NumberFormat('et-EE', { maximumFractionDigits: 0 }).format(number);
+    return new Intl.NumberFormat('et-EE', { maximumFractionDigits: 0 }).format(Math.floor(number));
 }
 
 export function shortenLargeNumber(number: number): string {

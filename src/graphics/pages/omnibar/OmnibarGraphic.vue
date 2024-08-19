@@ -50,6 +50,11 @@
                                 :key="visibleMilestone?.id"
                                 :milestone="visibleMilestone"
                             />
+                            <omnibar-incentive-display
+                                v-else-if="slides.activeComponent.value === 'incentive'"
+                                :key="visibleIncentive?.id"
+                                :incentive="visibleIncentive"
+                            />
                         </transition>
                     </div>
                 </div>
@@ -80,12 +85,13 @@ import { useSlides } from '../../helpers/useSlides';
 import { computed, ref } from 'vue';
 import { useScheduleStore } from 'client-shared/stores/ScheduleStore';
 import OmnibarScheduleItemDisplay from './OmnibarScheduleItemDisplay.vue';
-import { Configschema, Milestones } from 'types/schemas';
+import { Configschema, CurrentBids, Milestones } from 'types/schemas';
 import OpacitySwapTransition from 'components/OpacitySwapTransition.vue';
 import { useCurrentTrackerDataStore } from 'client-shared/stores/CurrentTrackerDataStore';
 import { useDonationStore } from 'client-shared/stores/DonationStore';
 import { getNextIndex } from '../../helpers/ArrayHelper';
 import OmnibarMilestoneDisplay from './OmnibarMilestoneDisplay.vue';
+import OmnibarIncentiveDisplay from './OmnibarIncentiveDisplay.vue';
 
 const eventName = (nodecg.bundleConfig as Configschema).event?.name ?? 'the Norway Speedrunner Gathering';
 const donationUrl = (nodecg.bundleConfig as Configschema).event?.donationUrl;
@@ -139,13 +145,29 @@ const beforeMilestoneShow = () => {
     }
 };
 
+const visibleIncentive = ref<CurrentBids[number] | null>(null);
+const activeIncentives = computed(() => currentTrackerDataStore.currentBids.filter(bid => (bid.options == null || bid.options.length === 0) && bid.goal != null));
+const beforeIncentiveShow = () => {
+    if (activeIncentives.value.length === 1 || visibleIncentive.value == null) {
+        visibleIncentive.value = activeIncentives.value[0];
+    } else {
+        const visibleIncentiveIndex = activeIncentives.value.findIndex(incentive => incentive.id === visibleIncentive.value.id);
+        if (visibleIncentiveIndex === -1) {
+            visibleIncentive.value = activeIncentives.value[0];
+        } else {
+            visibleIncentive.value = activeIncentives.value[getNextIndex(activeIncentives.value, visibleIncentiveIndex)];
+        }
+    }
+};
+
 const slides = useSlides([
     { component: 'nextUp', enabled: computed(() => nextScheduleItem.value != null), duration: 30 },
     { component: 'later', enabled: computed(() => scheduleItemAfterNext.value != null), duration: 30 },
     { component: 'nextSpeedrun', enabled: computed(() => nextSpeedrun.value != null), duration: 30 },
     { component: 'milestone', enabled: computed(() => activeMilestones.value.length > 0), beforeChange: beforeMilestoneShow, duration: 30 },
-    // { component: 'donationReminder1', enabled: hasDonationUrl, duration: 10 },
-    // { component: 'donationReminder2', enabled: hasDonationUrl, duration: 10 }
+    { component: 'incentive', enabled: computed(() => activeIncentives.value.length > 0), beforeChange: beforeIncentiveShow, duration: 30 },
+    { component: 'donationReminder1', enabled: hasDonationUrl, duration: 10 },
+    { component: 'donationReminder2', enabled: hasDonationUrl, duration: 10 }
 ]);
 
 const slideTitle = computed(() => {
@@ -157,6 +179,8 @@ const slideTitle = computed(() => {
             return 'Later';
         case 'milestone':
             return 'Milestone';
+        case 'incentive':
+            return 'Incentive';
         default:
             return '???';
     }
