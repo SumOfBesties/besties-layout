@@ -13,6 +13,7 @@ export type AllBids = {
 	total: number;
 	state: string;
 	speedrunEndTime?: string | null;
+	userOptionsAllowed?: boolean;
 	options?: {
 		name: string;
 		description?: string;

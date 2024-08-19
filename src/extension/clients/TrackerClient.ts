@@ -212,6 +212,7 @@ export class TrackerClient {
                 };
                 if (bidItem.fields.istarget === false) {
                     formattedBid.options = [];
+                    formattedBid.userOptionsAllowed = bidItem.fields.allowuseroptions;
                 } else {
                     formattedBid.goal = bidItem.fields.goal == null ? null : typeof bidItem.fields.goal === 'string' ? parseFloat(bidItem.fields.goal) : bidItem.fields.goal;
                 }
