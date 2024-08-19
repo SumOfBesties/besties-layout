@@ -234,7 +234,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 225px;
+    min-width: 225px;
     margin: -4px 8px 0;
 
     .slide-title-text {

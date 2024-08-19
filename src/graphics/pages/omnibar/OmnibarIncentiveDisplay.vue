@@ -1,8 +1,10 @@
 <template>
     <div class="omnibar-milestone-display">
         <div class="first-row">
-            <div class="milestone-name">{{ props.incentive.name }}</div>
-            <div>{{ formatNumber(props.incentive.total) }}/<span class="milestone-total">{{ formatNumber(props.incentive.goal) }}kr</span></div>
+            <fitted-content class="incentive-name m-r-8">
+                {{ props.incentive.name }}
+            </fitted-content>
+            <div>{{ formatNumber(props.incentive.total) }}/<span class="incentive-total">{{ formatNumber(props.incentive.goal) }}kr</span></div>
         </div>
         <vfd-pixel-text
             :font-size="24"
@@ -16,6 +18,7 @@
 import VfdPixelText from 'components/VfdPixelText.vue';
 import { CurrentBids } from 'types/schemas';
 import { formatNumber } from 'client-shared/helpers/StringHelper';
+import FittedContent from 'components/FittedContent.vue';
 
 const props = defineProps<{
     incentive: CurrentBids[number]
@@ -37,7 +40,7 @@ const props = defineProps<{
     font-size: 25px;
 }
 
-.milestone-total, .milestone-name {
+.incentive-total, .incentive-name {
     font-weight: 700;
 }
 </style>

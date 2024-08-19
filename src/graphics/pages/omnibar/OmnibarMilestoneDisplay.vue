@@ -1,7 +1,9 @@
 <template>
     <div class="omnibar-milestone-display">
         <div class="first-row">
-            <div class="milestone-name">{{ props.milestone.name }}</div>
+            <fitted-content class="milestone-name m-r-8">
+                {{ props.milestone.name }}
+            </fitted-content>
             <div>{{ formatNumber(donationStore.donationTotal) }}/<span class="milestone-total">{{ formatNumber(props.milestone.amount) }}kr</span></div>
         </div>
         <vfd-pixel-text
@@ -14,12 +16,10 @@
 
 <script setup lang="ts">
 import VfdPixelText from 'components/VfdPixelText.vue';
-import { ScheduleItem } from 'types/ScheduleHelpers';
-import { computed } from 'vue';
-import { useTalentStore } from 'client-shared/stores/TalentStore';
 import { Milestones } from 'types/schemas';
 import { formatNumber } from '../../../client-shared/helpers/StringHelper';
 import { useDonationStore } from 'client-shared/stores/DonationStore';
+import FittedContent from 'components/FittedContent.vue';
 
 const donationStore = useDonationStore();
 
