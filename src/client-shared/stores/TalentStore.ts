@@ -1,17 +1,20 @@
-import { Talent } from 'types/schemas';
+import { CurrentHostId, Talent } from 'types/schemas';
 import { defineStore } from 'pinia';
 import { createReplicantStoreInitializer } from 'client-shared/helpers/StoreHelper';
 import { prettyPrintList } from 'client-shared/helpers/StringHelper';
 
 const talent = nodecg.Replicant<Talent>('talent');
+const currentHostId = nodecg.Replicant<CurrentHostId>('currentHostId');
 
 interface TalentStore {
     talent: Talent
+    currentHostId: CurrentHostId
 }
 
 export const useTalentStore = defineStore('talent', {
     state: () => ({
-        talent: null
+        talent: null,
+        currentHostId: null
     } as unknown as TalentStore),
     getters: {
         findTalentItemById: state => (id: string | null | undefined) => id == null ? null : state.talent.find(talentItem => talentItem.id === id),
@@ -46,4 +49,4 @@ export const useTalentStore = defineStore('talent', {
     }
 });
 
-export const initTalentStore = createReplicantStoreInitializer([talent], useTalentStore);
+export const initTalentStore = createReplicantStoreInitializer([talent, currentHostId], useTalentStore);

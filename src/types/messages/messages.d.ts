@@ -13,6 +13,7 @@ export interface MessageInputMap {
     'speedrun:setActiveSpeedrun': { scheduleItemId: string }
 
     'talent:updateTalentItems': Talent
+    'talent:setCurrentHost': Talent[number]
 
     'timer:start': never
     'timer:stop': { teamId?: string, forfeit?: boolean } | undefined

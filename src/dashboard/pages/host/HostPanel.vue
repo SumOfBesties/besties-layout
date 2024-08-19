@@ -1,32 +1,24 @@
 <template>
-    <div class="stream-tech-layout">
-        <layout-manager />
-        <active-run-manager />
-        <next-run-manager />
-        <rundown-display class="rundown-display" />
+    <div class="host-layout">
+        <current-host-manager />
+        <div />
+        <div />
+        <rundown-display />
     </div>
-    <schedule-item-editor ref="scheduleItemEditor" />
     <country-select-dialog ref="countrySelectDialog" />
-    <talent-item-edit-dialog ref="talentItemEditDialog" />
+    <talent-item-edit-dialog
+        ref="talentItemEditDialog"
+    />
 </template>
 
 <script setup lang="ts">
 import RundownDisplay from '../../components/RundownDisplay.vue';
-import ActiveRunManager from './ActiveRunManager.vue';
-import ScheduleItemEditor from '../../components/ScheduleItemEditor.vue';
-import { provide, ref } from 'vue';
-import {
-    CountrySelectDialogInjectionKey,
-    ScheduleItemEditorInjectionKey,
-    TalentItemEditDialogInjectionKey
-} from '../../helpers/Injections';
+import CurrentHostManager from './CurrentHostManager.vue';
 import CountrySelectDialog from '../../components/CountrySelectDialog.vue';
-import NextRunManager from './NextRunManager.vue';
-import LayoutManager from './LayoutManager.vue';
+import { provide, ref } from 'vue';
+import { CountrySelectDialogInjectionKey, TalentItemEditDialogInjectionKey } from '../../helpers/Injections';
 import TalentItemEditDialog from '../../components/TalentItemEditDialog.vue';
 
-const scheduleItemEditor = ref<InstanceType<typeof ScheduleItemEditor>>();
-provide(ScheduleItemEditorInjectionKey, scheduleItemEditor);
 const countrySelectDialog = ref<InstanceType<typeof CountrySelectDialog>>();
 provide(CountrySelectDialogInjectionKey, countrySelectDialog);
 const talentItemEditDialog = ref<InstanceType<typeof TalentItemEditDialog>>();
@@ -41,7 +33,7 @@ body {
 </style>
 
 <style scoped lang="scss">
-.stream-tech-layout {
+.host-layout {
     display: grid;
     height: 100vh;
     padding: 8px;

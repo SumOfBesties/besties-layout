@@ -34,7 +34,7 @@
                 "title": "Data Import",
                 "width": 2,
                 "file": "data-import.html",
-                "workspace": "2 - Setup",
+                "workspace": "3 - Setup",
                 "headerColor": "#262F40"
             },
             {
@@ -42,13 +42,20 @@
                 "title": "Settings",
                 "width": 2,
                 "file": "settings.html",
-                "workspace": "2 - Setup",
+                "workspace": "3 - Setup",
                 "headerColor": "#262F40"
             },
             {
                 "name": "stream-tech",
                 "title": "1 - Stream Tech Dashboard",
                 "file": "stream-tech.html",
+                "headerColor": "#262F40",
+                "fullbleed": true
+            },
+            {
+                "name": "host",
+                "title": "2 - Host Dashboard",
+                "file": "host.html",
                 "headerColor": "#262F40",
                 "fullbleed": true
             }

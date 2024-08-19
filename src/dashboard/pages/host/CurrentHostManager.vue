@@ -1,0 +1,71 @@
+<template>
+    <div>
+        <ipl-space>
+            <ipl-message
+                v-if="currentHost == null"
+                type="info"
+            >
+                No host is currently assigned.
+            </ipl-message>
+            <div v-else>
+                <div class="text-low-emphasis">Current host</div>
+                <span class="host-name">{{ currentHost.name }}</span><ipl-badge v-if="currentHost.pronouns" class="m-l-4">{{ currentHost.pronouns }}</ipl-badge>
+            </div>
+            <div class="layout horizontal center-horizontal m-t-8">
+                <ipl-button
+                    v-if="currentHost != null"
+                    class="m-r-8"
+                    label="Edit current"
+                    @click="editCurrentHost"
+                />
+                <ipl-button
+                    label="Set new host"
+                    color="green"
+                    @click="talentSelectOpen = true"
+                />
+            </div>
+        </ipl-space>
+    </div>
+    <talent-select-dialog
+        v-model:is-open="talentSelectOpen"
+        @select="onTalentSelect"
+    />
+</template>
+
+<script setup lang="ts">
+import { IplBadge, IplButton, IplMessage, IplSpace } from '@iplsplatoon/vue-components';
+import { useTalentStore } from 'client-shared/stores/TalentStore';
+import { computed, inject, ref } from 'vue';
+import TalentSelectDialog from '../../components/TalentSelectDialog.vue';
+import { TalentItem } from 'types/ScheduleHelpers';
+import { sendMessage } from 'client-shared/helpers/NodecgHelper';
+import { TalentItemEditDialogInjectionKey } from '../../helpers/Injections';
+
+const talentItemEditDialog = inject(TalentItemEditDialogInjectionKey);
+
+const talentStore = useTalentStore();
+
+const currentHost = computed(() => talentStore.findTalentItemById(talentStore.currentHostId));
+
+const talentSelectOpen = ref(false);
+async function onTalentSelect(talentItem: TalentItem) {
+    await sendMessage('talent:setCurrentHost', talentItem);
+    talentSelectOpen.value = false;
+}
+
+function editCurrentHost() {
+    if (!talentStore.currentHostId) return;
+    talentItemEditDialog?.value?.openForExisting(onTalentSelect, talentStore.currentHostId);
+}
+</script>
+
+<style scoped lang="scss">
+.host-name {
+    font-size: 1.5em;
+    font-weight: 700;
+}
+
+.ipl-badge {
+    transform: translateY(-2px);
+}
+</style>

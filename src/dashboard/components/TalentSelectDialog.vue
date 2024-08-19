@@ -38,23 +38,19 @@
             </ipl-space>
         </ipl-space>
     </ipl-dialog>
-    <talent-item-edit-dialog
-        v-model="newTalentItem"
-        v-model:is-open="creatingNewTalent"
-        @save="onNewTalentSave"
-    />
 </template>
 
 <script setup lang="ts">
 import { IplBadge, IplButton, IplDialog, IplInput, IplSpace } from '@iplsplatoon/vue-components';
-import { computed, ref, watch } from 'vue';
+import { computed, inject, ref, watch } from 'vue';
 import { useTalentStore } from 'client-shared/stores/TalentStore';
 import { isBlank } from 'client-shared/helpers/StringHelper';
 import { Talent } from 'types/schemas';
-import TalentItemEditDialog from './TalentItemEditDialog.vue';
-import { v4 as uuidV4 } from 'uuid';
+import { TalentItemEditDialogInjectionKey } from '../helpers/Injections';
 
 const talentStore = useTalentStore();
+
+const talentItemEditDialog = inject(TalentItemEditDialogInjectionKey);
 
 const props = defineProps<{
     isOpen: boolean
@@ -82,23 +78,10 @@ const searchResults = computed(() => {
     return talentStore.talent.filter(talentItem => talentItem.name.toLowerCase().includes(normalizedQuery));
 });
 
-const newTalentItem = ref<Talent[number]>({
-    id: '',
-    name: '',
-    socials: {}
-});
-const creatingNewTalent = ref(false);
 function onNewTalent() {
-    newTalentItem.value = {
-        id: uuidV4(),
-        name: query.value,
-        socials: {}
-    };
-    creatingNewTalent.value = true;
-}
-function onNewTalentSave() {
-    emit('select', newTalentItem.value);
-    creatingNewTalent.value = false;
+    talentItemEditDialog?.value?.openForNew(talentItem => {
+        emit('select', talentItem);
+    }, query.value);
 }
 </script>
 

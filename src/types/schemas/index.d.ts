@@ -12,6 +12,8 @@ export * from './allPrizes';
 // @ts-ignore
 export * from './currentBids';
 // @ts-ignore
+export * from './currentHostId';
+// @ts-ignore
 export * from './currentPrizes';
 // @ts-ignore
 export * from './donationTotal';
