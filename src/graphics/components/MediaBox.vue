@@ -18,7 +18,13 @@ import { useAssetStore } from 'client-shared/stores/AssetStore';
 
 const assetStore = useAssetStore();
 const slides = useSlides(computed(() => assetStore['assets:mediaBoxImages']
-    .map(sponsor => ({ component: sponsor.url, duration: 15 }))));
+    .map(sponsor => ({
+        component: sponsor.url,
+        duration: 15,
+        beforeChange: async (sponsor) => {
+            await loadAndCheckIfImageExists(sponsor);
+        }
+    }))));
 
 onMounted(async () => {
     await Promise.all(assetStore['assets:mediaBoxImages'].map(image => loadAndCheckIfImageExists(image.url)));

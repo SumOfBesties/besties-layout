@@ -5,7 +5,7 @@ interface Slide {
     component: string
     enabled?: ComputedRef<boolean> | undefined
     duration?: number | undefined
-    beforeChange?: () => void
+    beforeChange?: (component: string) => Promise<void> | void
 }
 
 function isSlideEnabled(slide: Slide): boolean {
@@ -16,9 +16,9 @@ export function useSlides(slideRef: MaybeRefOrGetter<Array<Slide>>): { activeCom
     const activeIndex = ref<number | null>(null);
     const activeComponent = ref<string | null>(null);
 
-    const setSlide = (slide: Slide) => {
+    const setSlide = async (slide: Slide) => {
         if (slide.beforeChange) {
-            slide.beforeChange();
+            await slide.beforeChange(slide.component);
         }
         activeComponent.value = slide.component;
     }

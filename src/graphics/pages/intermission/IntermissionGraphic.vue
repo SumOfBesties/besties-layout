@@ -1,7 +1,11 @@
 <template>
     <div class="intermission-layout">
         <div class="bg-panel">
-            COL 1
+            <div class="layout horizontal logos">
+                <img src="../../assets/img/large-logo.png">
+                <media-box class="media-box" />
+            </div>
+            <intermission-prize-display class="max-width prize-display" />
         </div>
         <large-separator direction="vertical" />
         <div class="bg-panel right-panel">
@@ -14,6 +18,8 @@
 <script setup lang="ts">
 import LargeSeparator from 'components/LargeSeparator.vue';
 import IntermissionSchedule from './IntermissionSchedule.vue';
+import MediaBox from 'components/MediaBox.vue';
+import IntermissionPrizeDisplay from './IntermissionPrizeDisplay.vue';
 </script>
 
 <style scoped lang="scss">
@@ -39,5 +45,23 @@ import IntermissionSchedule from './IntermissionSchedule.vue';
             }
         }
     }
+}
+
+.logos {
+    justify-content: space-between;
+    margin: 50px 60px 0;
+
+    img {
+        width: 250px;
+    }
+
+    .media-box {
+        width: 400px;
+        height: 100%;
+    }
+}
+
+.prize-display {
+    margin-top: 56px;
 }
 </style>

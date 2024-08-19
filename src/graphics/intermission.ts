@@ -9,6 +9,7 @@ import { initDonationStore } from 'client-shared/stores/DonationStore';
 import { initCurrentTrackerDataStore } from 'client-shared/stores/CurrentTrackerDataStore';
 import { initTimerStore } from 'client-shared/stores/TimerStore';
 import IntermissionGraphic from './pages/intermission/IntermissionGraphic.vue';
+import { initAssetStore } from 'client-shared/stores/AssetStore';
 
 (async () => {
     const app = createApp(IntermissionGraphic);
@@ -19,5 +20,6 @@ import IntermissionGraphic from './pages/intermission/IntermissionGraphic.vue';
     await initDonationStore();
     await initCurrentTrackerDataStore();
     await initTimerStore();
+    await initAssetStore();
     app.mount('#app');
 })();
