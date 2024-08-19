@@ -6,6 +6,7 @@
  */
 
 export type CurrentPrizes = {
+	id: number;
 	name: string;
 	image?: string;
 	minimumBid: number;

@@ -203,6 +203,7 @@ export class TrackerClient {
                 rawChildBids.push(bidItem);
             } else {
                 const formattedBid: AllBids[number] = {
+                    id: bidItem.pk,
                     name: bidItem.fields.name,
                     description: bidItem.fields.shortdescription || bidItem.fields.description,
                     total: typeof bidItem.fields.total === 'string' ? parseFloat(bidItem.fields.total) : bidItem.fields.total ?? 0,
@@ -271,6 +272,7 @@ export class TrackerClient {
         }
         const response = await this.axios.get<TrackerPrizeSearchResponseItem[]>(`/tracker/search?${params.toString()}`);
         return response.data.map(prize => ({
+            id: prize.pk,
             name: prize.fields.name,
             image: this.getPrizeImage(prize),
             minimumBid: prize.fields.minimumbid,
@@ -303,6 +305,7 @@ export class TrackerClient {
     async getMilestones(): Promise<Milestones> {
         const response = await this.axios.get<TrackerMilestoneSearchResponseItem[]>(`/tracker/search?type=milestone&event=${this.eventId}`);
         return response.data.map(milestone => ({
+            id: milestone.pk,
             start: milestone.fields.start,
             amount: milestone.fields.amount,
             name: milestone.fields.name,

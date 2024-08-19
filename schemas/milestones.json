@@ -5,13 +5,14 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
+            "id": { "type": "number" },
             "start": { "type": "number" },
             "amount": { "type": "number" },
             "name": { "type": "string" },
             "description": { "type": "string" },
             "shortDescription": { "type": "string" }
         },
-        "required": ["start", "amount", "name"]
+        "required": ["id", "start", "amount", "name"]
     },
     "default": []
 }

@@ -6,6 +6,7 @@
  */
 
 export type AllPrizes = {
+	id: number;
 	name: string;
 	image?: string;
 	minimumBid: number;

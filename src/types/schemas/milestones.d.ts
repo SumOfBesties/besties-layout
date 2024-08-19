@@ -6,6 +6,7 @@
  */
 
 export type Milestones = {
+	id: number;
 	start: number;
 	amount: number;
 	name: string;

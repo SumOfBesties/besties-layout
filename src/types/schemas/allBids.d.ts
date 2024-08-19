@@ -6,6 +6,7 @@
  */
 
 export type AllBids = {
+	id: number;
 	name: string;
 	description?: string;
 	goal?: number | null;

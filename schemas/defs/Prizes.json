@@ -18,6 +18,7 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
+            "id": { "type": "number" },
             "name": { "type": "string" },
             "image": { "type": "string" },
             "minimumBid": { "type": "number" },
@@ -29,6 +30,6 @@
                 "$ref": "#/definitions/prizeStartEndRun"
             }
         },
-        "required": ["name", "minimumBid", "sumDonations"]
+        "required": ["id", "name", "minimumBid", "sumDonations"]
     }
 }
