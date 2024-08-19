@@ -39,6 +39,14 @@ import MediaBox from 'components/MediaBox.vue';
 import IntermissionPrizeDisplay from './IntermissionPrizeDisplay.vue';
 import DonationTotal from 'components/DonationTotal.vue';
 import OmnibarSlideRotation from 'components/omnibar/OmnibarSlideRotation.vue';
+import { provide } from 'vue';
+import {
+    MaxOmnibarBidWarItemsInjectionKey,
+    MaxOmnibarBidWarTitleWidthInjectionKey
+} from '../../../dashboard/helpers/Injections';
+
+provide(MaxOmnibarBidWarItemsInjectionKey, 3);
+provide(MaxOmnibarBidWarTitleWidthInjectionKey, 200);
 </script>
 
 <style scoped lang="scss">

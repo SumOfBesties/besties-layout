@@ -1,6 +1,9 @@
 <template>
     <div class="omnibar-bid-war-display layout horizontal">
-        <div class="bid-war-title m-r-16">
+        <div
+            class="bid-war-title m-r-16"
+            :style="{ maxWidth: `${maxTitleWidth}px` }"
+        >
             <fitted-content v-if="!isBlank(props.bidWar.speedrunName)">
                 {{ props.bidWar.speedrunName }}
             </fitted-content>
@@ -32,10 +35,11 @@
         </div>
         <div
             v-else-if="(props.bidWar.options?.length ?? 0) > 0"
-            class="bid-war-options layout horizontal grow"
+            class="bid-war-options grow"
+            :style="{ gridTemplateColumns: `repeat(${maxOptions}, minmax(0, 1fr)) ${(props.bidWar.options?.length ?? 0) > maxOptions ? '55px' : ''}` }"
         >
             <div
-                v-for="option in props.bidWar.options?.slice(0, 4)"
+                v-for="option in props.bidWar.options?.slice(0, maxOptions)"
                 class="bid-war-option"
                 :class="{ 'is-winning': highestOptionTotal !== 0 && option.total === highestOptionTotal }"
             >
@@ -45,10 +49,10 @@
                 <div class="option-total">{{ formatNumber(option.total) }}kr</div>
             </div>
             <div
-                v-if="(props.bidWar.options?.length ?? 0) > 4"
+                v-if="(props.bidWar.options?.length ?? 0) > maxOptions"
                 class="extra-option-box"
             >
-                <div class="extra-option-count">+{{ props.bidWar.options!.length - 4 }}</div>
+                <div class="extra-option-count">+{{ props.bidWar.options!.length - maxOptions }}</div>
             </div>
         </div>
     </div>
@@ -58,13 +62,20 @@
 import { CurrentBids } from 'types/schemas';
 import { formatNumber, isBlank } from 'client-shared/helpers/StringHelper';
 import FittedContent from 'components/FittedContent.vue';
-import { computed } from 'vue';
+import { computed, inject } from 'vue';
+import {
+    MaxOmnibarBidWarItemsInjectionKey,
+    MaxOmnibarBidWarTitleWidthInjectionKey
+} from '../../../dashboard/helpers/Injections';
 
 const props = defineProps<{
     bidWar: CurrentBids[number]
 }>();
 
 const highestOptionTotal = computed(() => Math.max(...(props.bidWar.options?.map(option => option.total) ?? [])));
+
+const maxOptions = inject(MaxOmnibarBidWarItemsInjectionKey, 4);
+const maxTitleWidth = inject(MaxOmnibarBidWarTitleWidthInjectionKey, 275);
 </script>
 
 <style scoped lang="scss">
@@ -75,7 +86,6 @@ const highestOptionTotal = computed(() => Math.max(...(props.bidWar.options?.map
 }
 
 .bid-war-title {
-    max-width: 275px;
     color: colors.$vfd-teal;
     font-size: 25px;
     font-weight: 700;
@@ -156,8 +166,11 @@ const highestOptionTotal = computed(() => Math.max(...(props.bidWar.options?.map
     }
 }
 
+.bid-war-options {
+    display: grid;
+}
+
 .bid-war-option {
-    width: 22%;
     margin-right: 4px;
     font-size: 20px;
     font-weight: 700;
