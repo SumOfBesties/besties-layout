@@ -11,9 +11,17 @@
         <span class="background">{{ '▓'.repeat(characterCount) }}</span>
         <fitted-content
             :align="props.textAlign"
-            :style="{ width: `${characterWidth * characterCount}px` }"
+            :style="{
+                width: `${characterWidth * characterCount}px`,
+                whiteSpace: props.progressBar != null ? 'pre' : undefined
+            }"
         >
-            {{ props.textContent }}
+            <template v-if="progressBarInfo != null">
+                {{ progressBarInfo.formattedText }}
+            </template>
+            <template v-else>
+                {{ props.textContent }}
+            </template>
         </fitted-content>
     </div>
 </template>
@@ -21,12 +29,14 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 import FittedContent from 'components/FittedContent.vue';
+import { shortenLargeNumber } from 'client-shared/helpers/StringHelper';
 
 const props = withDefaults(defineProps<{
     fontSize: number
     textContent?: string | null
     align?: 'center' | 'left' | 'right'
-    textAlign?: 'center' | 'left' | 'right'
+    textAlign?: 'center' | 'left' | 'right',
+    progressBar?: { start: number, end: number, current: number, showStartEnd?: boolean }
 }>(), {
     align: 'center',
     textAlign: 'center'
@@ -55,6 +65,40 @@ const justifyContent = computed(() => {
             return 'flex-start';
         case 'right':
             return 'flex-end';
+    }
+});
+
+const progressBarInfo = computed(() => {
+    if (props.progressBar == null) return null;
+
+    const formattedStart = props.progressBar.start === 0 ? '' : shortenLargeNumber(props.progressBar.start);
+    const formattedEnd = shortenLargeNumber(props.progressBar.end);
+    const percentage = (props.progressBar.current - props.progressBar.start) / (props.progressBar.end - props.progressBar.start);
+    const fullPercentage = props.progressBar.current / props.progressBar.end;
+    const formattedFullPercentage = `${Math.round(fullPercentage * 100)}%`;
+    if (props.progressBar.showStartEnd) {
+        const progressBarCharacterCount = Math.max(
+            6 + formattedStart.length + formattedEnd.length,
+            characterCount.value - formattedStart.length - formattedEnd.length);
+        const litCharacterCount = Math.max(1, Math.floor(percentage * progressBarCharacterCount));
+        const unlitCharacterCount = progressBarCharacterCount - litCharacterCount;
+
+        const formattedText = `${formattedStart}${'▓'.repeat(litCharacterCount)}${' '.repeat(unlitCharacterCount)}${formattedEnd}`;
+
+        const percentageStartPosition = Math.floor(formattedText.length / 2) - Math.floor(formattedFullPercentage.length / 2);
+
+        // Centers the percentage on the resulting string
+        return {
+            formattedText: formattedText.substring(0, percentageStartPosition) + formattedFullPercentage + formattedText.substring(percentageStartPosition + formattedFullPercentage.length)
+        };
+    } else {
+        const progressBarCharacterCount = Math.max(6 + formattedFullPercentage.length, characterCount.value - formattedFullPercentage.length);
+        const litCharacterCount = Math.max(1, Math.floor(percentage * progressBarCharacterCount));
+        const unlitCharacterCount = progressBarCharacterCount - litCharacterCount;
+
+        return {
+            formattedText: `${'▓'.repeat(litCharacterCount)}${formattedFullPercentage}${' '.repeat(unlitCharacterCount)}`
+        };
     }
 });
 </script>

@@ -45,6 +45,11 @@
                                 :key="nextSpeedrun?.id"
                                 :schedule-item="nextSpeedrun"
                             />
+                            <omnibar-milestone-display
+                                v-else-if="slides.activeComponent.value === 'milestone'"
+                                :key="visibleMilestone?.id"
+                                :milestone="visibleMilestone"
+                            />
                         </transition>
                     </div>
                 </div>
@@ -72,18 +77,25 @@ import Clock from 'components/Clock.vue';
 import DonationTotal from 'components/DonationTotal.vue';
 import FittedContent from 'components/FittedContent.vue';
 import { useSlides } from '../../helpers/useSlides';
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { useScheduleStore } from 'client-shared/stores/ScheduleStore';
 import OmnibarScheduleItemDisplay from './OmnibarScheduleItemDisplay.vue';
-import { Configschema } from 'types/schemas';
+import { Configschema, Milestones } from 'types/schemas';
 import OpacitySwapTransition from 'components/OpacitySwapTransition.vue';
+import { useCurrentTrackerDataStore } from 'client-shared/stores/CurrentTrackerDataStore';
+import { useDonationStore } from 'client-shared/stores/DonationStore';
+import { getNextIndex } from '../../helpers/ArrayHelper';
+import OmnibarMilestoneDisplay from './OmnibarMilestoneDisplay.vue';
 
 const eventName = (nodecg.bundleConfig as Configschema).event?.name ?? 'the Norway Speedrunner Gathering';
 const donationUrl = (nodecg.bundleConfig as Configschema).event?.donationUrl;
 const hasDonationUrl = computed(() => donationUrl != null);
 
+const donationStore = useDonationStore();
 const scheduleStore = useScheduleStore();
+const currentTrackerDataStore = useCurrentTrackerDataStore();
 
+// Grab the next items on the schedule. If the next two items are interstitials, also show the next speedrun.
 const interstitialsBeforeActiveRun = computed(() => scheduleStore.interstitialsBeforeActiveRun.filter(interstitial => !interstitial.completed));
 const nextScheduleItem = computed(() => {
     if (interstitialsBeforeActiveRun.value.length === 1) {
@@ -112,12 +124,28 @@ const nextSpeedrun = computed(() => {
     return scheduleStore.nextSpeedrun;
 });
 
+const visibleMilestone = ref<Milestones[number] | null>(null);
+const activeMilestones = computed(() => currentTrackerDataStore.milestones.filter(milestone => donationStore.donationTotal >= milestone.start && donationStore.donationTotal < milestone.amount));
+const beforeMilestoneShow = () => {
+    if (activeMilestones.value.length === 1 || visibleMilestone.value == null) {
+        visibleMilestone.value = activeMilestones.value[0];
+    } else {
+        const visibleMilestoneIndex = activeMilestones.value.findIndex(milestone => milestone.id === visibleMilestone.value.id);
+        if (visibleMilestoneIndex === -1) {
+            visibleMilestone.value = activeMilestones.value[0];
+        } else {
+            visibleMilestone.value = activeMilestones.value[getNextIndex(activeMilestones.value, visibleMilestoneIndex)];
+        }
+    }
+};
+
 const slides = useSlides([
     { component: 'nextUp', enabled: computed(() => nextScheduleItem.value != null), duration: 30 },
     { component: 'later', enabled: computed(() => scheduleItemAfterNext.value != null), duration: 30 },
     { component: 'nextSpeedrun', enabled: computed(() => nextSpeedrun.value != null), duration: 30 },
-    { component: 'donationReminder1', enabled: hasDonationUrl, duration: 10 },
-    { component: 'donationReminder2', enabled: hasDonationUrl, duration: 10 }
+    { component: 'milestone', enabled: computed(() => activeMilestones.value.length > 0), beforeChange: beforeMilestoneShow, duration: 30 },
+    // { component: 'donationReminder1', enabled: hasDonationUrl, duration: 10 },
+    // { component: 'donationReminder2', enabled: hasDonationUrl, duration: 10 }
 ]);
 
 const slideTitle = computed(() => {
@@ -126,7 +154,9 @@ const slideTitle = computed(() => {
             return 'Up Next';
         case 'later':
         case 'nextSpeedrun':
-            return 'Later'
+            return 'Later';
+        case 'milestone':
+            return 'Milestone';
         default:
             return '???';
     }

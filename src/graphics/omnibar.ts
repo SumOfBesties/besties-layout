@@ -7,6 +7,7 @@ import { createPinia } from 'pinia';
 import { initScheduleStore } from 'client-shared/stores/ScheduleStore';
 import { initTalentStore } from 'client-shared/stores/TalentStore';
 import { initDonationStore } from 'client-shared/stores/DonationStore';
+import { initCurrentTrackerDataStore } from 'client-shared/stores/CurrentTrackerDataStore';
 
 (async () => {
     const app = createApp(OmnibarGraphic);
@@ -15,5 +16,6 @@ import { initDonationStore } from 'client-shared/stores/DonationStore';
     await initScheduleStore();
     await initTalentStore();
     await initDonationStore();
+    await initCurrentTrackerDataStore();
     app.mount('#app');
 })();

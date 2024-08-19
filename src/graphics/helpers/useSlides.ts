@@ -5,6 +5,7 @@ interface Slide {
     component: string
     enabled?: ComputedRef<boolean> | undefined
     duration?: number | undefined
+    beforeChange?: () => void
 }
 
 function isSlideEnabled(slide: Slide): boolean {
@@ -15,6 +16,13 @@ export function useSlides(slideRef: MaybeRefOrGetter<Array<Slide>>): { activeCom
     const activeIndex = ref<number | null>(null);
     const activeComponent = ref<string | null>(null);
 
+    const setSlide = (slide: Slide) => {
+        if (slide.beforeChange) {
+            slide.beforeChange();
+        }
+        activeComponent.value = slide.component;
+    }
+
     const findNextVisibleSlide = () => {
         const slides = toValue(slideRef);
         // If all slides are disabled, show the first one
@@ -23,7 +31,7 @@ export function useSlides(slideRef: MaybeRefOrGetter<Array<Slide>>): { activeCom
             activeComponent.value = null;
         } else if (slides.every(slide => !isSlideEnabled(slide))) {
             activeIndex.value = 0;
-            activeComponent.value = slides[activeIndex.value].component;
+            setSlide(slides[activeIndex.value]);
         } else {
             // On first run, always show the first component if possible
             activeIndex.value = activeIndex.value == null ? 0 : getNextIndex(slides, activeIndex.value);
@@ -32,7 +40,7 @@ export function useSlides(slideRef: MaybeRefOrGetter<Array<Slide>>): { activeCom
                 activeIndex.value = getNextIndex(slides, activeIndex.value);
                 newActiveSlide = slides[activeIndex.value];
             }
-            activeComponent.value = newActiveSlide.component;
+            setSlide(newActiveSlide);
         }
     };
 
@@ -58,7 +66,7 @@ export function useSlides(slideRef: MaybeRefOrGetter<Array<Slide>>): { activeCom
         clearTimeout(slideChangeTimeout);
         forceAllowSlide = true;
         activeIndex.value = newSlideIndex;
-        activeComponent.value = newSlide.component;
+        setSlide(newSlide);
         setSlideChangeTimeout();
     };
 

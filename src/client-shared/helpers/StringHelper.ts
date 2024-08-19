@@ -54,3 +54,20 @@ export function padNumber(number: unknown, minLength = 2): string {
     if (typeof number !== 'number') return '';
     return String(number).padStart(minLength, '0');
 }
+
+export function formatNumber(number: number): string {
+    return new Intl.NumberFormat('et-EE', { maximumFractionDigits: 0 }).format(number);
+}
+
+export function shortenLargeNumber(number: number): string {
+    if (number < 1000) {
+        return String(number);
+    } else if (number < 100000) {
+        // "12.5K" makes sense, while "125.5K" is less defensible, hence the distinction.
+        return `${Math.floor(number / 100) / 10}K`;
+    } else if (number < 1000000) {
+        return `${Math.floor(number / 1000)}K`;
+    } else {
+        return `${Math.floor(number / 100000) / 10}M`;
+    }
+}
