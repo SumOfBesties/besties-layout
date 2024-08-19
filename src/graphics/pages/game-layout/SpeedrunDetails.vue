@@ -21,25 +21,7 @@
                     align="left"
                 />
             </div>
-            <div class="estimate-label">EST.</div>
-            <seven-segment-digits
-                :digit-count="2"
-                :value="parsedEstimate?.hours === 0 ? null : parsedEstimate?.hours"
-                class="estimate-digits m-l-4"
-            />
-            <div
-                class="estimate-digit-label"
-                :class="{ unlit: parsedEstimate?.hours === 0 }"
-            >
-                H
-            </div>
-            <seven-segment-digits
-                :digit-count="2"
-                :value="parsedEstimate?.minutes"
-                pad-digits
-                class="estimate-digits"
-            />
-            <div class="estimate-digit-label">M</div>
+            <speedrun-estimate-display :estimate="scheduleStore.activeSpeedrun?.estimate" />
         </div>
     </div>
 </template>
@@ -49,17 +31,12 @@ import VfdPixelText from 'components/VfdPixelText.vue';
 import { useScheduleStore } from 'client-shared/stores/ScheduleStore';
 import { computed } from 'vue';
 import { isBlank } from 'client-shared/helpers/StringHelper';
-import { Duration } from 'luxon';
-import SevenSegmentDigits from 'components/SevenSegmentDigits.vue';
+import SpeedrunEstimateDisplay from 'components/SpeedrunEstimateDisplay.vue';
 
 const scheduleStore = useScheduleStore();
 
 const systemAndReleaseYear = computed(() =>
     [scheduleStore.activeSpeedrun?.system, scheduleStore.activeSpeedrun?.releaseYear].filter(item => !isBlank(item)).join('·'));
-const parsedEstimate = computed(() =>
-    scheduleStore.activeSpeedrun?.estimate == null
-        ? null
-        : Duration.fromISO(scheduleStore.activeSpeedrun.estimate).shiftTo('minutes', 'hours').toObject());
 </script>
 
 <style scoped lang="scss">
@@ -75,27 +52,5 @@ const parsedEstimate = computed(() =>
 
 .speedrun-title {
     margin-top: -8px;
-}
-
-.estimate-label, .estimate-digit-label {
-    font-weight: 700;
-    font-size: 20px;
-    margin-bottom: -3px;
-}
-
-.estimate-label {
-    color: colors.$vfd-red;
-}
-
-.estimate-digit-label {
-    color: colors.$vfd-teal;
-
-    &.unlit {
-        color: colors.$vfd-teal-unlit;
-    }
-}
-
-.estimate-digits {
-    font-size: 32px;
 }
 </style>

@@ -90,7 +90,7 @@ import { useSlides } from '../../helpers/useSlides';
 import { computed, ComputedRef, MaybeRefOrGetter, Ref, ref, toValue, UnwrapRef } from 'vue';
 import { useScheduleStore } from 'client-shared/stores/ScheduleStore';
 import OmnibarScheduleItemDisplay from './OmnibarScheduleItemDisplay.vue';
-import { Configschema, CurrentBids, Milestones } from 'types/schemas';
+import { Configschema } from 'types/schemas';
 import OpacitySwapTransition from 'components/OpacitySwapTransition.vue';
 import { useCurrentTrackerDataStore } from 'client-shared/stores/CurrentTrackerDataStore';
 import { useDonationStore } from 'client-shared/stores/DonationStore';
