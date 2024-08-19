@@ -279,6 +279,7 @@ export class TrackerClient {
             image: this.getPrizeImage(prize),
             minimumBid: prize.fields.minimumbid,
             sumDonations: prize.fields.sumdonations ?? false,
+            provider: prize.fields.provider || undefined,
             startRun: prize.fields.startrun == null ? undefined : {
                 id: prize.fields.startrun,
                 name: prize.fields.startrun__name,

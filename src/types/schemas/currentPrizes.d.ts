@@ -11,6 +11,7 @@ export type CurrentPrizes = {
 	image?: string;
 	minimumBid: number;
 	sumDonations: boolean;
+	provider?: string;
 	startRun?: PrizeStartEndRun;
 	endRun?: PrizeStartEndRun;
 }[];

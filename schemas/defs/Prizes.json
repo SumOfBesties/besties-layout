@@ -23,6 +23,7 @@
             "image": { "type": "string" },
             "minimumBid": { "type": "number" },
             "sumDonations": { "type": "boolean" },
+            "provider": { "type": "string" },
             "startRun": {
                 "$ref": "#/definitions/prizeStartEndRun"
             },
