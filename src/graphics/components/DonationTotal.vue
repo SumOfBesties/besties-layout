@@ -29,14 +29,14 @@ const tweenedTotal = useTweenedNumber(() => Math.floor(donationStore.donationTot
 }
 
 .donation-total-digits {
-    font-size: 32px;
+    font-size: 2em;
     margin-right: 4px;
 }
 
 .currency-label {
-    font-size: 20px;
+    font-size: 1.25em;
     font-weight: 700;
-    line-height: 20px;
+    line-height: 1.1em;
 
     > *:first-child {
         color: colors.$vfd-red-unlit;

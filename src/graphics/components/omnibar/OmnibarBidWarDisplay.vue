@@ -72,7 +72,6 @@ const highestOptionTotal = computed(() => Math.max(...(props.bidWar.options?.map
 
 .omnibar-bid-war-display {
     width: 100%;
-    overflow: hidden;
 }
 
 .bid-war-title {
