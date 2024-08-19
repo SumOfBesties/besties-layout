@@ -76,7 +76,7 @@ const progressBarInfo = computed(() => {
     const start = Math.floor(props.progressBar.start);
     const formattedStart = start === 0 ? '' : shortenLargeNumber(start);
     const formattedEnd = shortenLargeNumber(end);
-    const percentage = (current - start) / (end - start);
+    const percentage = Math.min(1, (current - start) / (end - start));
     const fullPercentage = current / end;
     const formattedFullPercentage = `${Math.round(fullPercentage * 100)}%`;
     if (props.progressBar.showStartEnd) {
@@ -84,7 +84,7 @@ const progressBarInfo = computed(() => {
             6 + formattedStart.length + formattedEnd.length,
             characterCount.value - formattedStart.length - formattedEnd.length);
         const litCharacterCount = Math.max(1, Math.floor(percentage * progressBarCharacterCount));
-        const unlitCharacterCount = progressBarCharacterCount - litCharacterCount;
+        const unlitCharacterCount = Math.max(0, progressBarCharacterCount - litCharacterCount);
         const formattedText = `${formattedStart}${'▓'.repeat(litCharacterCount)}${' '.repeat(unlitCharacterCount)}${formattedEnd}`;
         const percentageStartPosition = Math.floor(formattedText.length / 2) - Math.floor(formattedFullPercentage.length / 2);
 
