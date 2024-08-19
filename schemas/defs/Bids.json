@@ -12,6 +12,7 @@
             "total": { "type": "number" },
             "state": { "type": "string" },
             "speedrunEndTime": { "type": ["string", "null"] },
+            "speedrunName": { "type": ["string", "null"] },
             "userOptionsAllowed": { "type": "boolean" },
             "options": {
                 "type": "array",
