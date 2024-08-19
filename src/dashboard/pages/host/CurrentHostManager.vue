@@ -24,6 +24,14 @@
                     @click="talentSelectOpen = true"
                 />
             </div>
+            <div class="text-center m-t-8">
+                <ipl-button
+                    inline
+                    label="Remove host"
+                    color="red"
+                    @click="removeCurrentHost"
+                />
+            </div>
         </ipl-space>
     </div>
     <talent-select-dialog
@@ -56,6 +64,10 @@ async function onTalentSelect(talentItem: TalentItem) {
 function editCurrentHost() {
     if (!talentStore.currentHostId) return;
     talentItemEditDialog?.value?.openForExisting(onTalentSelect, talentStore.currentHostId);
+}
+
+async function removeCurrentHost() {
+    await sendMessage('talent:removeCurrentHost');
 }
 </script>
 

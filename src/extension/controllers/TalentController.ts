@@ -17,5 +17,9 @@ export class TalentController extends BaseController {
             talentService.updateTalentItems([data]);
             currentHostId.value = data.id;
         });
+
+        this.listen('talent:removeCurrentHost', () => {
+            currentHostId.value = null;
+        });
     }
 }

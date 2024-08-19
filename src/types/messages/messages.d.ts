@@ -14,6 +14,7 @@ export interface MessageInputMap {
 
     'talent:updateTalentItems': Talent
     'talent:setCurrentHost': Talent[number]
+    'talent:removeCurrentHost': never
 
     'timer:start': never
     'timer:stop': { teamId?: string, forfeit?: boolean } | undefined
