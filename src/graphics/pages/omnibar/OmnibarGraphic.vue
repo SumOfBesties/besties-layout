@@ -55,6 +55,11 @@
                                 :key="visibleIncentive?.id"
                                 :incentive="visibleIncentive"
                             />
+                            <omnibar-bid-war-display
+                                v-else-if="slides.activeComponent.value === 'bidwar'"
+                                :key="visibleBidWar?.id"
+                                :bid-war="visibleBidWar"
+                            />
                         </transition>
                     </div>
                 </div>
@@ -92,6 +97,7 @@ import { useDonationStore } from 'client-shared/stores/DonationStore';
 import { getNextIndex } from '../../helpers/ArrayHelper';
 import OmnibarMilestoneDisplay from './OmnibarMilestoneDisplay.vue';
 import OmnibarIncentiveDisplay from './OmnibarIncentiveDisplay.vue';
+import OmnibarBidWarDisplay from './OmnibarBidWarDisplay.vue';
 
 const eventName = (nodecg.bundleConfig as Configschema).event?.name ?? 'the Norway Speedrunner Gathering';
 const donationUrl = (nodecg.bundleConfig as Configschema).event?.donationUrl;
@@ -162,12 +168,19 @@ const {
     beforeShow: beforeIncentiveShow
 } = useRotatingList(() => currentTrackerDataStore.currentBids.filter(bid => (bid.options == null || bid.options.length === 0) && bid.goal != null));
 
+const {
+    visibleItem: visibleBidWar,
+    enabled: bidWarsEnabled,
+    beforeShow: beforeBidWarShow
+} = useRotatingList(() => currentTrackerDataStore.currentBids.filter(bid => bid.options != null && (bid.userOptionsAllowed || bid.options.length > 0)));
+
 const slides = useSlides([
     { component: 'nextUp', enabled: computed(() => nextScheduleItem.value != null), duration: 30 },
     { component: 'later', enabled: computed(() => scheduleItemAfterNext.value != null), duration: 30 },
     { component: 'nextSpeedrun', enabled: computed(() => nextSpeedrun.value != null), duration: 30 },
     { component: 'milestone', enabled: milestonesEnabled, beforeChange: beforeMilestoneShow, duration: 30 },
     { component: 'incentive', enabled: incentivesEnabled, beforeChange: beforeIncentiveShow, duration: 30 },
+    { component: 'bidwar', enabled: bidWarsEnabled, beforeChange: beforeBidWarShow, duration: 30 },
     { component: 'donationReminder1', enabled: hasDonationUrl, duration: 10 },
     { component: 'donationReminder2', enabled: hasDonationUrl, duration: 10 }
 ]);
@@ -183,6 +196,8 @@ const slideTitle = computed(() => {
             return 'Milestone';
         case 'incentive':
             return 'Incentive';
+        case 'bidwar':
+            return 'Bid War';
         default:
             return '???';
     }

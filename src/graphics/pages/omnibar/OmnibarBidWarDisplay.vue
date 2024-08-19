@@ -1,0 +1,176 @@
+<template>
+    <div class="omnibar-bid-war-display layout horizontal">
+        <div class="bid-war-title m-r-16">
+            <fitted-content v-if="!isBlank(props.bidWar.speedrunName)">
+                {{ props.bidWar.speedrunName }}
+            </fitted-content>
+            <fitted-content>
+                {{ props.bidWar.name }}
+            </fitted-content>
+        </div>
+        <div
+            v-if="props.bidWar.options?.length === 0 && props.bidWar.userOptionsAllowed"
+            class="no-options-message layout horizontal center-vertical center-horizontal"
+        >
+            <span>No options submitted. Donate now to add your own!</span>
+        </div>
+        <div
+            v-else-if="props.bidWar.options?.length === 2"
+            class="bid-war-duel-options layout horizontal"
+        >
+            <div
+                v-for="option in props.bidWar.options"
+                class="bid-war-duel-option"
+                :class="{ 'is-winning': highestOptionTotal !== 0 && option.total === highestOptionTotal }"
+            >
+                <div class="option-numbers">
+                    <div class="percentage">{{ Math.round((option.total / props.bidWar.total) * 100) }}%</div>
+                    <div class="total">{{ formatNumber(option.total) }}kr</div>
+                </div>
+                <fitted-content align="center" class="option-name">{{ option.name }}</fitted-content>
+            </div>
+        </div>
+        <div
+            v-else-if="(props.bidWar.options?.length ?? 0) > 0"
+            class="bid-war-options layout horizontal grow"
+        >
+            <div
+                v-for="option in props.bidWar.options"
+                class="bid-war-option"
+                :class="{ 'is-winning': highestOptionTotal !== 0 && option.total === highestOptionTotal }"
+            >
+                <fitted-content class="option-name">
+                    {{ option.name }}
+                </fitted-content>
+                <div class="option-total">{{ formatNumber(option.total) }}kr</div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script setup lang="ts">
+import { CurrentBids } from 'types/schemas';
+import { formatNumber, isBlank } from 'client-shared/helpers/StringHelper';
+import FittedContent from 'components/FittedContent.vue';
+import { computed } from 'vue';
+
+const props = defineProps<{
+    bidWar: CurrentBids[number]
+}>();
+
+const highestOptionTotal = computed(() => Math.max(...(props.bidWar.options?.map(option => option.total) ?? [])));
+</script>
+
+<style scoped lang="scss">
+@use '../../styles/colors';
+
+.omnibar-bid-war-display {
+    width: 100%;
+    overflow: hidden;
+}
+
+.bid-war-title {
+    max-width: 275px;
+    color: colors.$vfd-teal;
+    font-size: 25px;
+    font-weight: 700;
+}
+
+.no-options-message {
+    font-size: 25px;
+    color: colors.$vfd-teal;
+    font-weight: 700;
+
+    > span {
+        border: 2px solid colors.$vfd-teal;
+        padding: 6px 16px;
+    }
+}
+
+.bid-war-option, .bid-war-duel-option {
+    --option-color: #{colors.$vfd-teal};
+
+    border: 2px solid var(--option-color);
+    color: var(--option-color);
+
+    &.is-winning {
+        --option-color: #FF5959;
+    }
+}
+
+.bid-war-duel-options {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    overflow: hidden;
+    width: 100%;
+}
+
+.bid-war-duel-option {
+    display: flex;
+    align-items: center;
+
+    &:last-child {
+        flex-direction: row-reverse;
+
+        .option-numbers {
+            padding-left: 6px;
+            padding-right: 4px;
+        }
+    }
+
+    .option-name {
+        width: 100%;
+        font-size: 25px;
+        font-weight: 700;
+        margin: 0 4px;
+    }
+
+    .option-numbers {
+        background-color: var(--option-color);
+        color: colors.$vfd-background;
+        min-width: 54px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        padding-right: 6px;
+        padding-left: 4px;
+        height: 100%;
+
+        .percentage {
+            font-weight: 700;
+            font-size: 25px;
+        }
+
+        .total {
+            font-family: 'Roboto Condensed', sans-serif;
+            font-size: 18px;
+            margin-top: -4px;
+        }
+    }
+}
+
+.bid-war-option {
+    width: 20%;
+    margin-right: 4px;
+    font-size: 20px;
+    font-weight: 700;
+    position: relative;
+
+    .option-name {
+        margin: 6px 4px 0;
+    }
+
+    .option-total {
+        position: absolute;
+        bottom: -2px;
+        left: -2px;
+        background-color: var(--option-color);
+        color: colors.$vfd-background;
+        font-family: 'Roboto Condensed', sans-serif;
+        font-size: 18px;
+        padding: 0 4px;
+    }
+}
+</style>
