@@ -39,39 +39,11 @@
             </div>
         </div>
         <div class="team-list">
-            <div
+            <team-timer-manager
                 v-for="team in scheduleStore.activeSpeedrun?.teams ?? []"
-                class="team layout horizontal center-vertical"
+                :team="team"
                 :key="team.id"
-            >
-                <div class="team-details">
-                    <div class="team-name">{{ team.name || talentStore.formatTalentIdList(team.playerIds, 4) }}</div>
-                    <div v-if="timerStore.timer.teamResults[team.id]">
-                        {{ timerStore.timer.teamResults[team.id].state === 'FORFEIT' ? 'Forfeited' : 'Finished' }}
-                        <timer-display :time="timerStore.timer.teamResults[team.id].time" />
-                    </div>
-                </div>
-                <div class="team-timer-controls">
-                    <ipl-button
-                        :disabled="timerStore.timer.state === 'STOPPED'"
-                        small
-                        :color="timerStore.timer.teamResults[team.id] ? 'yellow' : 'green'"
-                        @click="stopUndoTeamTimer(team.id)"
-                    >
-                        <font-awesome-icon :icon="timerStore.timer.teamResults[team.id] ? 'rotate-left' : 'flag-checkered'" />
-                        {{ timerStore.timer.teamResults[team.id] ? 'Resume' : 'Finish' }}
-                    </ipl-button>
-                    <ipl-button
-                        :disabled="timerStore.timer.teamResults[team.id] != null || timerStore.timer.state === 'STOPPED'"
-                        small
-                        color="red"
-                        @click="forfeitTeam(team.id)"
-                    >
-                        <font-awesome-icon icon="stop" />
-                        Forfeit
-                    </ipl-button>
-                </div>
-            </div>
+            />
         </div>
     </ipl-space>
 </template>
@@ -93,8 +65,11 @@ import { faRotateLeft } from '@fortawesome/free-solid-svg-icons/faRotateLeft';
 import { faStop } from '@fortawesome/free-solid-svg-icons/faStop';
 import { useTalentStore } from 'client-shared/stores/TalentStore';
 import TimerDisplay from '../../components/TimerDisplay.vue';
+import { faChevronLeft } from '@fortawesome/free-solid-svg-icons/faChevronLeft';
+import { faChevronRight } from '@fortawesome/free-solid-svg-icons/faChevronRight';
+import TeamTimerManager from './TeamTimerManager.vue';
 
-library.add(faFlagCheckered, faPause, faBackward, faPlay, faRotateLeft, faStop);
+library.add(faFlagCheckered, faPause, faBackward, faPlay, faRotateLeft, faStop, faChevronLeft, faChevronRight);
 
 const scheduleStore = useScheduleStore();
 const timerStore = useTimerStore();
@@ -155,29 +130,6 @@ async function startStopUndoTimer() {
     }
 }
 
-async function stopUndoTeamTimer(teamId: string) {
-    if (timerStore.timer.teamResults[teamId]) {
-        await sendMessage('timer:undoStop', { teamId });
-        return;
-    }
-
-    switch (timerStore.timer.state) {
-        case 'RUNNING':
-        case 'PAUSED':
-            await sendMessage('timer:stop', { teamId });
-            break;
-        case 'FINISHED':
-            await sendMessage('timer:undoStop', { teamId });
-            break;
-    }
-}
-
-async function forfeitTeam(teamId: string) {
-    if (['RUNNING', 'PAUSED'].includes(timerStore.timer.state)) {
-        await sendMessage('timer:stop', { teamId, forfeit: true });
-    }
-}
-
 async function pauseResumeTimer() {
     switch (timerStore.timer.state) {
         case 'RUNNING':
@@ -210,28 +162,6 @@ async function resetTimer() {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 8px;
-}
-
-.team {
-    border-top: 1px solid var(--ipl-input-color);
-    padding: 8px;
-    min-height: 40px;
-
-    &:nth-child(odd) {
-        background-color: var(--ipl-input-color-alpha);
-    }
-}
-
-.team-timer-controls {
-    max-width: 200px;
-    flex-grow: 1;
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 8px;
-}
-
-.team-details {
-    flex-grow: 1;
 }
 
 .team-list {

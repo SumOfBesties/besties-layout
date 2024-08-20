@@ -17,7 +17,6 @@ export class NameplateAssignmentService {
 
         this.activeSpeedrun.on('change', newValue => {
             const nameplateCount = layouts[this.activeGameLayout.value as keyof typeof layouts]?.playerNameplateCount ?? 0;
-            // this.playerNameplateAssignments.value = this.playerNameplateAssignments.value.map
             this.recalculateNameplateAssignments(nameplateCount, newValue);
         });
         this.activeGameLayout.on('change', (newValue, oldValue) => {

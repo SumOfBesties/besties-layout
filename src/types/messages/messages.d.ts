@@ -12,6 +12,8 @@ export interface MessageInputMap {
     'speedrun:seekToPreviousRun': never
     'speedrun:setActiveSpeedrun': { scheduleItemId: string }
 
+    'nameplate:setActiveRelayPlayer': { teamId: string, playerId: string }
+
     'talent:updateTalentItems': Talent
     'talent:setCurrentHost': Talent[number]
     'talent:removeCurrentHost': never

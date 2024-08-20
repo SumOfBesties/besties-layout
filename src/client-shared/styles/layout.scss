@@ -76,6 +76,10 @@ $layout-margins: 2, 4, 6, 8, 12, 16;
     text-align: center !important;
 }
 
+.text-bold {
+    font-weight: 700;
+}
+
 .text-low-emphasis {
     color: var(--ipl-input-color);
     font-size: 0.9em;
