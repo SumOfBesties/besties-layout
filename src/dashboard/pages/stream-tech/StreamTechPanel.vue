@@ -2,7 +2,27 @@
     <div class="stream-tech-layout">
         <layout-manager />
         <active-run-manager />
-        <next-run-manager />
+        <div>
+            <next-run-manager />
+            <div class="alerts m-t-8">
+                <ipl-message
+                    v-if="showLongTwitchTitleWarning"
+                    type="warning"
+                    closeable
+                    class="m-t-8"
+                    @close="showLongTwitchTitleWarning = false"
+                >
+                    Generated a Twitch title that was too long! It should be manually edited to fit within the character limit.
+                </ipl-message>
+                <ipl-message
+                    v-if="showRemainingInterstitialsMessage"
+                    type="info"
+                    class="m-t-8"
+                >
+                    Remember to complete all interstitials before starting the next run.
+                </ipl-message>
+            </div>
+        </div>
         <rundown-display class="rundown-display" />
     </div>
     <schedule-item-editor ref="scheduleItemEditor" />
@@ -15,7 +35,7 @@
 import RundownDisplay from '../../components/RundownDisplay.vue';
 import ActiveRunManager from './ActiveRunManager.vue';
 import ScheduleItemEditor from '../../components/ScheduleItemEditor.vue';
-import { provide, ref } from 'vue';
+import { computed, provide, ref } from 'vue';
 import {
     CountrySelectDialogInjectionKey,
     ScheduleItemEditorInjectionKey,
@@ -26,6 +46,8 @@ import NextRunManager from './NextRunManager.vue';
 import LayoutManager from './LayoutManager.vue';
 import TalentItemEditDialog from '../../components/TalentItemEditDialog.vue';
 import TwitchCategorySearchDialog from '../../components/TwitchCategorySearchDialog.vue';
+import { IplMessage } from '@iplsplatoon/vue-components';
+import { useScheduleStore } from 'client-shared/stores/ScheduleStore';
 
 const scheduleItemEditor = ref<InstanceType<typeof ScheduleItemEditor>>();
 provide(ScheduleItemEditorInjectionKey, scheduleItemEditor);
@@ -35,6 +57,15 @@ const talentItemEditDialog = ref<InstanceType<typeof TalentItemEditDialog>>();
 provide(TalentItemEditDialogInjectionKey, talentItemEditDialog);
 const twitchCategorySearchDialog = ref<InstanceType<typeof TwitchCategorySearchDialog>>();
 provide(TwitchCategorySearchDialogInjectionKey, twitchCategorySearchDialog);
+
+const scheduleStore = useScheduleStore();
+
+const showLongTwitchTitleWarning = ref(false);
+nodecg.listenFor('twitch:generatedTitleTooLong', () => {
+    showLongTwitchTitleWarning.value = true;
+});
+const showRemainingInterstitialsMessage = computed(() =>
+    scheduleStore.interstitialsBeforeActiveRun.filter(interstitial => !interstitial.completed).length > 0);
 </script>
 
 <style lang="scss">
