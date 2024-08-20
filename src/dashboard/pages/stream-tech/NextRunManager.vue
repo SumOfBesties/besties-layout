@@ -42,6 +42,11 @@
                     label="Relay?"
                     :value="scheduleStore.nextSpeedrun.relay ? 'Yes' : 'No'"
                 />
+                <ipl-data-row
+                    label="Twitch category"
+                    :value="scheduleStore.activeSpeedrun?.twitchCategory?.name ?? 'N/A'"
+                    style="grid-column: span 2"
+                />
             </div>
             <div class="text-center">
                 <ipl-button

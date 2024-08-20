@@ -48,6 +48,11 @@
                         label="Release year"
                         :value="scheduleStore.activeSpeedrun.releaseYear"
                     />
+                    <ipl-data-row
+                        label="Twitch category"
+                        :value="scheduleStore.activeSpeedrun?.twitchCategory?.name ?? 'N/A'"
+                        style="grid-column: span 2"
+                    />
                 </div>
                 <div class="m-t-8 text-center">
                     <ipl-button
