@@ -296,10 +296,10 @@ export class TrackerClient {
     }
 
     private getPrizeImage(item: TrackerPrizeSearchResponseItem) {
-        if (!isBlank(item.fields.imagefile)) {
-            return item.fields.imagefile.startsWith('/') ? this.address + item.fields.imagefile : item.fields.imagefile;
-        } else if (!isBlank(item.fields.altimage)) {
+        if (!isBlank(item.fields.altimage)) {
             return item.fields.altimage;
+        } else if (!isBlank(item.fields.imagefile)) {
+            return item.fields.imagefile.startsWith('/') ? this.address + item.fields.imagefile : item.fields.imagefile;
         } else {
             return item.fields.image;
         }
