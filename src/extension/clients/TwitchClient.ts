@@ -13,6 +13,15 @@ interface TwitchCategorySearchResponse {
     }[]
 }
 
+interface TwitchGetGameResponse {
+    data: {
+        id: string
+        name: string
+        box_art_url: string
+        igdb_id: string
+    }[]
+}
+
 export class TwitchClient {
     private readonly axios: AxiosInstance;
     private readonly twitchData: NodeCG.ServerReplicantWithSchemaDefault<TwitchData>;
@@ -45,6 +54,20 @@ export class TwitchClient {
         });
     }
 
+    async getGameId(name: string): Promise<string | null> {
+        if (!this.isLoggedIn()) return null;
+        const response = await this.axios.get<TwitchGetGameResponse>('/games', {
+            params: {
+                name
+            }
+        });
+        if (response.data.data.length > 0) {
+            return response.data.data[0].id;
+        } else {
+            return null;
+        }
+    }
+
     async searchForCategory(name: string): Promise<{ id: string, name: string, boxArtUrl: string }[] | undefined> {
         if (!this.isLoggedIn()) return undefined;
         const response = await this.axios.get<TwitchCategorySearchResponse>('/search/categories', {
@@ -55,6 +78,18 @@ export class TwitchClient {
         });
 
         return response.data.data.map(category => ({ id: category.id, name: category.name, boxArtUrl: category.box_art_url }));
+    }
+
+    async setChannelInfo(title: string, gameId: string): Promise<void> {
+        if (!this.isLoggedIn() || this.twitchData.value.loggedInUser == null) return;
+        return this.axios.patch('/channels', {
+            game_id: gameId,
+            title
+        }, {
+            params: {
+                broadcaster_id: this.twitchData.value.loggedInUser.id
+            }
+        });
     }
 
     isLoggedIn(): boolean {

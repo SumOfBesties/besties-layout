@@ -3,6 +3,8 @@ import type { Configschema, OtherScheduleItem, Schedule, Speedrun, Talent } from
 import { v4 as uuidV4 } from 'uuid';
 import mergeWith from 'lodash/mergeWith';
 import cloneDeep from 'lodash/cloneDeep';
+import { ScheduleItem, TalentItem } from 'types/ScheduleHelpers';
+import { isBlank, prettyPrintList } from '../../client-shared/helpers/StringHelper';
 
 export class TalentService {
     private readonly logger: NodeCG.Logger;
@@ -82,6 +84,36 @@ export class TalentService {
 
     talentItemExists(talentId: string) {
         return this.talent.value.some(talent => talent.id === talentId);
+    }
+
+    formatScheduleItemTalentList(scheduleItem: ScheduleItem): string {
+        if (scheduleItem.type === 'SPEEDRUN') {
+            const maxTalentItemsPerTeam = scheduleItem.teams.length > 2 ? 3 : 6;
+            return scheduleItem.teams.reduce((result, team, index, array) => {
+                result += isBlank(team.name) ? this.prettyPrintTalentIdList(team.playerIds, maxTalentItemsPerTeam) : team.name;
+                if (index !== array.length - 1) {
+                    result += ' vs. ';
+                }
+                return result;
+            }, '');
+        } else {
+            return this.prettyPrintTalentIdList(scheduleItem.talentIds);
+        }
+    }
+
+    private prettyPrintTalentIdList(talentIds: { id: string }[], maxItems = 4) {
+        const slicedTalentIds = talentIds.slice(0, maxItems);
+        const nameList = slicedTalentIds
+            .map(talentId => this.findTalentItemById(talentId.id)?.name)
+            .filter(talentName => talentName != null);
+        if (talentIds.length !== slicedTalentIds.length) {
+            nameList.push(talentIds.length === maxItems + 1 ? '1 other' : `${talentIds.length - maxItems} others`);
+        }
+        return prettyPrintList(nameList);
+    }
+
+    findTalentItemById(id: string): TalentItem | null {
+        return this.talent.value.find(talentItem => talentItem.id === id) ?? null;
     }
 
     private findTalentIdForScheduleTalentItem(ids: { id: string, externalId?: string | null }, talent: Talent): { id: string, externalId?: string | null } {

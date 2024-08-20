@@ -28,6 +28,14 @@ export interface Configschema {
 		clientId?: string;
 		clientSecret?: string;
 		redirectUri?: string;
+		titleTemplates?: {
+			speedrun: string;
+			race?: string;
+			other: string;
+			withoutTalent: string;
+			fallback: string;
+			[k: string]: unknown;
+		};
 		[k: string]: unknown;
 	};
 	[k: string]: unknown;

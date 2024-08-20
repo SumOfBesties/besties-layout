@@ -32,7 +32,18 @@
             "properties": {
                 "clientId": { "type": "string" },
                 "clientSecret": { "type": "string" },
-                "redirectUri": { "type": "string" }
+                "redirectUri": { "type": "string" },
+                "titleTemplates": {
+                    "type": "object",
+                    "properties": {
+                        "speedrun": { "type": "string" },
+                        "race": { "type": "string" },
+                        "other": { "type": "string" },
+                        "withoutTalent": { "type": "string" },
+                        "fallback": { "type": "string" }
+                    },
+                    "required": ["speedrun", "other", "withoutTalent", "fallback"]
+                }
             }
         }
     }

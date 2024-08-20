@@ -1,5 +1,13 @@
 import type NodeCG from '@nodecg/types';
-import type { Configschema, Schedule, ScheduleImportStatus, Speedrun, Talent } from 'types/schemas';
+import type {
+    ActiveSpeedrun,
+    Configschema,
+    OtherScheduleItem,
+    Schedule,
+    ScheduleImportStatus,
+    Speedrun,
+    Talent
+} from 'types/schemas';
 import { OengusClient } from '../clients/OengusClient';
 import { TalentService } from './TalentService';
 import { v4 as uuidV4 } from 'uuid';
@@ -9,12 +17,14 @@ import { ScheduleItem, ScheduleItemType } from 'types/ScheduleHelpers';
 import { DateTime, Duration } from 'luxon';
 import { SpeedrunService } from './SpeedrunService';
 import { TwitchClient } from '../clients/TwitchClient';
+import { findActiveScheduleItem } from '../helpers/ScheduleHelpers';
 
 export class ScheduleService {
     private readonly logger: NodeCG.Logger;
     private readonly scheduleImportStatus: NodeCG.ServerReplicantWithSchemaDefault<ScheduleImportStatus>;
     private readonly schedule: NodeCG.ServerReplicantWithSchemaDefault<Schedule>;
     private readonly talent: NodeCG.ServerReplicantWithSchemaDefault<Talent>;
+    private readonly activeSpeedrun: NodeCG.ServerReplicantWithSchemaDefault<ActiveSpeedrun>;
     private readonly oengusClient: OengusClient;
     private readonly talentService: TalentService;
     private readonly twitchClient: TwitchClient | null;
@@ -30,6 +40,7 @@ export class ScheduleService {
         this.scheduleImportStatus = nodecg.Replicant('scheduleImportStatus', { persistent: false }) as unknown as NodeCG.ServerReplicantWithSchemaDefault<ScheduleImportStatus>;
         this.schedule = nodecg.Replicant('schedule') as unknown as NodeCG.ServerReplicantWithSchemaDefault<Schedule>;
         this.talent = nodecg.Replicant('talent') as unknown as NodeCG.ServerReplicantWithSchemaDefault<Talent>;
+        this.activeSpeedrun = nodecg.Replicant('activeSpeedrun') as unknown as NodeCG.ServerReplicantWithSchemaDefault<ActiveSpeedrun>;
         this.oengusClient = oengusClient;
         this.talentService = talentService;
         this.twitchClient = twitchClient;
@@ -136,6 +147,10 @@ export class ScheduleService {
 
         this.schedule.value.items[scheduleItemIndex] = normalizedItem;
         this.speedrunService?.updateSpeedruns(normalizedItem);
+    }
+
+    findActiveScheduleItem(): ScheduleItem | null {
+        return findActiveScheduleItem(this.schedule.value.items, this.activeSpeedrun.value);
     }
 
     private validateDate(date: string | undefined | null) {

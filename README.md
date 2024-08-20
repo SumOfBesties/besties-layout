@@ -32,7 +32,14 @@ To configure this bundle, create the file `[nodecg]/cfg/nsg2-layouts.json` with 
   "twitch": {
     "clientId": "twitch_client_id",
     "clientSecret": "twitch_client_secret",
-    "redirectUri": "http://localhost:9090/nsg2-layouts/twitch-auth"
+    "redirectUri": "http://localhost:9090/nsg2-layouts/twitch-auth",
+    "titleTemplates": {
+      "speedrun": "NSG Fall 2024: {{title}} [{{category}}] by {{talent}}",
+      "race": "NSG Fall 2024: {{title}} [{{category}}] - {{talent}}",
+      "other": "NSG Fall 2024: {{title}} by {{talent}}",
+      "withoutTalent": "NSG Fall 2024: {{title}}",
+      "fallback": "NSG Fall 2024 benefiting Norges Blindeforbund"
+    }
   }
 }
 ```
