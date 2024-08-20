@@ -208,6 +208,8 @@ const slideTitle = computed(() => {
 
 .omnibar-slides {
     width: 100%;
+    padding: 0 8px;
+    position: absolute;
     display: flex;
     align-items: center;
     transform: rotate3d(1, 0, 0, 0deg) translateZ(40px) scale(0.98);
@@ -255,7 +257,6 @@ const slideTitle = computed(() => {
     position: relative;
     display: flex;
     align-items: center;
-    //margin-top: -4px;
     margin-bottom: 4px;
 }
 
