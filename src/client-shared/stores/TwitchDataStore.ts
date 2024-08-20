@@ -11,7 +11,14 @@ interface TwitchDataStore {
 export const useTwitchDataStore = defineStore('twitchData', {
     state: () => ({
         twitchData: null
-    } as unknown as TwitchDataStore)
+    } as unknown as TwitchDataStore),
+    actions: {
+        setSyncEnabled(newValue: boolean) {
+            if (twitchData.value) {
+                twitchData.value.syncEnabled = newValue;
+            }
+        }
+    }
 });
 
 export const initTwitchDataStore = createReplicantStoreInitializer([twitchData], useTwitchDataStore);

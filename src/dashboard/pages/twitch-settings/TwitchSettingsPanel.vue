@@ -27,10 +27,19 @@
             />
         </template>
     </ipl-space>
+    <ipl-space class="m-t-8">
+        <div class="title">Title & category sync</div>
+        <ipl-toggle
+            v-model="enableSync"
+            class="m-t-8"
+            true-label="enable"
+            false-label="disable"
+        />
+    </ipl-space>
 </template>
 
 <script setup lang="ts">
-import { IplButton, IplMessage, IplSpace } from '@iplsplatoon/vue-components';
+import { IplButton, IplMessage, IplSpace, IplToggle } from '@iplsplatoon/vue-components';
 import { computed } from 'vue';
 import { Configschema } from 'types/schemas';
 import { useTwitchDataStore } from 'client-shared/stores/TwitchDataStore';
@@ -57,4 +66,13 @@ const twitchAuthorizeUrl = computed(() => {
 async function logout() {
     await sendMessage('twitch:logout');
 }
+
+const enableSync = computed({
+    get() {
+        return twitchDataStore.twitchData.syncEnabled;
+    },
+    set(newValue: boolean) {
+        twitchDataStore.setSyncEnabled(newValue);
+    }
+});
 </script>
