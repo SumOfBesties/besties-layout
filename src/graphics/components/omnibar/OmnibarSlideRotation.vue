@@ -81,8 +81,10 @@ import OmnibarMilestoneDisplay from 'components/omnibar/OmnibarMilestoneDisplay.
 const props = withDefaults(defineProps<{
     withoutDonationReminder?: boolean
     slideTitleWidth: number
+    withoutScheduleItems?: boolean
 }>(), {
-    withoutDonationReminder: false
+    withoutDonationReminder: false,
+    withoutScheduleItems: false
 });
 
 const eventName = (nodecg.bundleConfig as Configschema).event?.name ?? 'the Norway Speedrunner Gathering';
@@ -94,9 +96,11 @@ const scheduleStore = useScheduleStore();
 const currentTrackerDataStore = useCurrentTrackerDataStore();
 
 // Grab the next items on the schedule. If the next two items are interstitials, also show the next speedrun.
-const interstitialsBeforeActiveRun = computed(() => scheduleStore.interstitialsBeforeActiveRun.filter(interstitial => !interstitial.completed));
+const interstitialsBeforeActiveRun = computed(() => props.withoutScheduleItems ? [] : scheduleStore.interstitialsBeforeActiveRun.filter(interstitial => !interstitial.completed));
 const nextScheduleItem = computed(() => {
-    if (interstitialsBeforeActiveRun.value.length === 1) {
+    if (props.withoutScheduleItems) {
+        return null;
+    } else if (interstitialsBeforeActiveRun.value.length === 1) {
         return scheduleStore.activeSpeedrun;
     } else if (interstitialsBeforeActiveRun.value.length > 1) {
         return interstitialsBeforeActiveRun.value[1];
@@ -104,11 +108,19 @@ const nextScheduleItem = computed(() => {
         return scheduleStore.findScheduleItemAfter(scheduleStore.activeSpeedrun?.id, undefined, false);
     }
 });
-const scheduleItemAfterNext = computed(() =>
-    interstitialsBeforeActiveRun.value.length > 2
+const scheduleItemAfterNext = computed(() => {
+    if (props.withoutScheduleItems) {
+        return null;
+    }
+
+    return interstitialsBeforeActiveRun.value.length > 2
         ? interstitialsBeforeActiveRun.value[2]
-        : scheduleStore.findScheduleItemAfter(nextScheduleItem.value?.id, undefined, false));
+        : scheduleStore.findScheduleItemAfter(nextScheduleItem.value?.id, undefined, false);
+});
 const nextSpeedrun = computed(() => {
+    if (props.withoutScheduleItems) {
+        return null;
+    }
     if (
         interstitialsBeforeActiveRun.value.length > 1
         && nextScheduleItem.value?.id !== scheduleStore.activeSpeedrun?.id
@@ -140,7 +152,7 @@ const useRotatingList = <T extends { id: number }>(list: MaybeRefOrGetter<Unwrap
     const enabled = computed(() => toValue(list).length > 0);
 
     return { visibleItem, beforeShow, enabled };
-}
+};
 
 const {
     visibleItem: visibleMilestone,

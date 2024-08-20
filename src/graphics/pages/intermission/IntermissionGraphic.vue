@@ -16,10 +16,11 @@
                     >
                 </div>
             </div>
-            <div class="bg-inset m-t-16" style="overflow: hidden">
+            <div class="bg-inset m-t-16" style="overflow: hidden; height: 80px">
                 <omnibar-slide-rotation
                     :slide-title-width="150"
                     without-donation-reminder
+                    without-schedule-items
                     style="width: 830px"
                 />
             </div>
