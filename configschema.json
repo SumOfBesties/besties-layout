@@ -26,6 +26,14 @@
                 "password": { "type": "string" },
                 "eventId": { "type": "number" }
             }
+        },
+        "twitch": {
+            "type": "object",
+            "properties": {
+                "clientId": { "type": "string" },
+                "clientSecret": { "type": "string" },
+                "redirectUri": { "type": "string" }
+            }
         }
     }
 }

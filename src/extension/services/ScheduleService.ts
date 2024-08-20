@@ -8,6 +8,7 @@ import cloneDeep from 'lodash/cloneDeep';
 import { ScheduleItem, ScheduleItemType } from 'types/ScheduleHelpers';
 import { DateTime, Duration } from 'luxon';
 import { SpeedrunService } from './SpeedrunService';
+import { TwitchClient } from '../clients/TwitchClient';
 
 export class ScheduleService {
     private readonly logger: NodeCG.Logger;
@@ -16,19 +17,22 @@ export class ScheduleService {
     private readonly talent: NodeCG.ServerReplicantWithSchemaDefault<Talent>;
     private readonly oengusClient: OengusClient;
     private readonly talentService: TalentService;
+    private readonly twitchClient: TwitchClient | null;
     private speedrunService?: SpeedrunService;
 
     constructor(
         nodecg: NodeCG.ServerAPI<Configschema>,
         oengusClient: OengusClient,
-        talentService: TalentService
+        talentService: TalentService,
+        twitchClient: TwitchClient | null
     ) {
-        this.logger = new nodecg.Logger('ScheduleService');
+        this.logger = new nodecg.Logger(`${nodecg.bundleName}:ScheduleService`);
         this.scheduleImportStatus = nodecg.Replicant('scheduleImportStatus', { persistent: false }) as unknown as NodeCG.ServerReplicantWithSchemaDefault<ScheduleImportStatus>;
         this.schedule = nodecg.Replicant('schedule') as unknown as NodeCG.ServerReplicantWithSchemaDefault<Schedule>;
         this.talent = nodecg.Replicant('talent') as unknown as NodeCG.ServerReplicantWithSchemaDefault<Talent>;
         this.oengusClient = oengusClient;
         this.talentService = talentService;
+        this.twitchClient = twitchClient;
     }
 
     init(speedrunService: SpeedrunService) {
@@ -40,8 +44,9 @@ export class ScheduleService {
 
         const newTalentList = this.talentService.mergeNewTalentList(scheduleAndTalent.talent);
         const scheduleWithTalentIds = this.talentService.getScheduleWithTalentIds(scheduleAndTalent.schedule.items, newTalentList);
+        const scheduleWithTwitchCategories = await this.getScheduleWithTwitchGames(scheduleWithTalentIds);
         if (this.schedule.value.id === slug) {
-            const mergedSchedule = this.mergeNewScheduleItems(scheduleWithTalentIds);
+            const mergedSchedule = this.mergeNewScheduleItems(scheduleWithTwitchCategories);
             this.talent.value = newTalentList;
             this.schedule.value = {
                 source: 'OENGUS',
@@ -53,7 +58,7 @@ export class ScheduleService {
             this.schedule.value = {
                 source: 'OENGUS',
                 id: slug,
-                items: this.generateScheduleItemAndTeamIds(scheduleWithTalentIds)
+                items: this.generateScheduleItemAndTeamIds(scheduleWithTwitchCategories)
             };
         }
     }
@@ -163,6 +168,57 @@ export class ScheduleService {
                 }))
             };
         });
+    }
+
+    private async getScheduleWithTwitchGames(schedule: Schedule['items']): Promise<Schedule['items']> {
+        if (this.twitchClient == null || !this.twitchClient.isLoggedIn()) {
+            this.logger.warn('Twitch integration is disabled. Schedule will be imported without Twitch category data.');
+            return schedule;
+        }
+
+        const newSchedule = cloneDeep(schedule);
+        const gameNameToScheduleItemsMap = newSchedule.reduce((result, scheduleItem) => {
+            if (scheduleItem.type !== 'SPEEDRUN') {
+                return result;
+            }
+            if (result[scheduleItem.title] != null) {
+                result[scheduleItem.title].push(scheduleItem);
+            } else {
+                result[scheduleItem.title] = [scheduleItem];
+            }
+            return result;
+        }, {} as Record<string, ScheduleItem[]>);
+
+        const gameSearchResult = await Promise.allSettled(Object.keys(gameNameToScheduleItemsMap).map(async (gameName) => {
+            let categorySearchResult = await this.twitchClient!.searchForCategory(gameName);
+            if (categorySearchResult != null && categorySearchResult.length === 0) {
+                // Finds a few additional games
+                // e.g. DmC: Devil May Cry (Vergil's Downfall) or Resident Evil 2 (2019)
+                const gameNameWithoutParentheses = gameName.replaceAll(/ \(.*\)$/g, '');
+                if (gameNameWithoutParentheses !== gameName) {
+                    categorySearchResult = await this.twitchClient!.searchForCategory(gameNameWithoutParentheses);
+                }
+            }
+
+            if (categorySearchResult != null && categorySearchResult.length > 0) {
+                const twitchCategory = categorySearchResult.length === 1
+                    ? categorySearchResult[0]
+                    : categorySearchResult.find(category => category.name.toLowerCase() === gameName.toLowerCase()) ?? categorySearchResult[0];
+                this.logger.debug(`Found Twitch Category: ${gameName} -> ${twitchCategory.name} (${twitchCategory.id})`);
+                gameNameToScheduleItemsMap[gameName].forEach(scheduleItem => {
+                    scheduleItem.twitchCategory = twitchCategory;
+                });
+            } else {
+                this.logger.warn(`Could not find Twitch category for game "${gameName}"`);
+            }
+        }));
+        const rejectedResults = gameSearchResult.filter(result => result.status === 'rejected')
+        if (rejectedResults.length > 0) {
+            this.logger.warn('Encountered one or more errors searching for Twitch categories for schedule games');
+            this.logger.debug('Encountered one or more errors searching for Twitch categories for schedule games', rejectedResults);
+        }
+
+        return Object.values(gameNameToScheduleItemsMap).flatMap(scheduleItems => scheduleItems);
     }
 
     private mergeNewScheduleItems(schedule: Schedule['items']): Schedule['items'] {

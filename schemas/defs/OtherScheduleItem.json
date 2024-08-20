@@ -9,7 +9,20 @@
             "type": "string",
             "enum": ["SETUP", "OTHER"]
         },
-        "twitchCategory": { "type": ["string", "null"] },
+        "twitchCategory": {
+            "anyOf": [
+                { "type": "null" },
+                {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                        "name": { "type": "string" },
+                        "id": { "type": "string" }
+                    },
+                    "required": ["name", "id"]
+                }
+            ]
+        },
         "estimate": { "type": "string" },
         "setupTime": { "type": ["string", "null"] },
         "scheduledStartTime": { "type": "string" },

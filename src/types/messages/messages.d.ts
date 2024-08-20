@@ -29,6 +29,8 @@ export interface MessageInputMap {
     'obs:setEnabled': { enabled: boolean }
 
     'tracker:newDonation': { amount: number, displayName: string | undefined | null }
+
+    'twitch:logout': never
 }
 
 type MessagesWithoutReturnValues = Exclude<keyof MessageInputMap, keyof InnerMessageResultMap>;

@@ -36,12 +36,6 @@
             <template v-if="selectedScheduleItem.type === 'SPEEDRUN'">
                 <div class="layout horizontal m-t-4">
                     <ipl-input
-                        v-model="selectedScheduleItem.twitchCategory"
-                        name="twitchCategory"
-                        label="Twitch category"
-                        class="max-width"
-                    />
-                    <ipl-input
                         v-model="selectedScheduleItem.releaseYear"
                         name="releaseYear"
                         label="Release year"

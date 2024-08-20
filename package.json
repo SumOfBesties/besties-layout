@@ -46,6 +46,14 @@
                 "headerColor": "#262F40"
             },
             {
+                "name": "twitch-settings",
+                "title": "Twitch Settings",
+                "width": 2,
+                "file": "twitch-settings.html",
+                "workspace": "3 - Setup",
+                "headerColor": "#262F40"
+            },
+            {
                 "name": "stream-tech",
                 "title": "1 - Stream Tech Dashboard",
                 "file": "stream-tech.html",
@@ -131,6 +139,7 @@
     },
     "dependencies": {
         "axios": "^1.6.8",
+        "axios-retry": "^4.5.0",
         "cookie": "^0.6.0",
         "livesplit-core": "^0.10.2",
         "luxon": "^3.4.4",

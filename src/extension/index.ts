@@ -15,18 +15,27 @@ import { LogController } from './controllers/LogController';
 import { NameplateAssignmentService } from './services/NameplateAssignmentService';
 import { TrackerService } from './services/TrackerService';
 import { NameplateAssignmentController } from './controllers/NameplateAssignmentController';
+import { TwitchService } from './services/TwitchService';
+import { TwitchOauthClient } from './clients/TwitchOauthClient';
+import { TwitchClient } from './clients/TwitchClient';
+import { TwitchController } from './controllers/TwitchController';
 
 export = (nodecg: NodeCG.ServerAPI<Configschema>): void => {
     const oengusClient = new OengusClient(nodecg);
 
+    const hasTwitchConfig = TwitchOauthClient.hasRequiredConfig(nodecg);
+    const twitchOauthClient = hasTwitchConfig ? new TwitchOauthClient(nodecg) : null;
+    const twitchClient = twitchOauthClient ? new TwitchClient(nodecg, twitchOauthClient) : null;
+
     const timerService = new TimerService(nodecg);
     const talentService = new TalentService(nodecg);
-    const scheduleService = new ScheduleService(nodecg, oengusClient, talentService);
+    const scheduleService = new ScheduleService(nodecg, oengusClient, talentService, twitchClient);
     const speedrunService = new SpeedrunService(nodecg, scheduleService, timerService);
     scheduleService.init(speedrunService);
     const obsConnectorService = new ObsConnectorService(nodecg);
     new NameplateAssignmentService(nodecg);
     new TrackerService(nodecg);
+    const twitchService = new TwitchService(nodecg, twitchOauthClient);
 
     new ScheduleController(nodecg, scheduleService);
     new SpeedrunController(nodecg, speedrunService);
@@ -35,4 +44,5 @@ export = (nodecg: NodeCG.ServerAPI<Configschema>): void => {
     new ObsConnectorController(nodecg, obsConnectorService);
     new LogController(nodecg);
     new NameplateAssignmentController(nodecg);
+    new TwitchController(nodecg, twitchService);
 };

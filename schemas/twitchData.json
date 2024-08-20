@@ -1,0 +1,35 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "syncEnabled": { "type": "boolean" },
+        "state": {
+            "type": "string",
+            "enum": ["NOT_LOGGED_IN", "AUTHENTICATING", "LOGGED_IN"]
+        },
+        "credentials": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "accessToken": { "type": "string" },
+                "refreshToken": { "type": "string" }
+            },
+            "required": ["accessToken", "refreshToken"]
+        },
+        "loggedInUser": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "username": { "type": "string" },
+                "id": { "type": "string" }
+            },
+            "required": ["username", "id"]
+        }
+    },
+    "required": ["syncEnabled", "state"],
+    "default": {
+        "syncEnabled": false,
+        "state": "NOT_LOGGED_IN"
+    }
+}

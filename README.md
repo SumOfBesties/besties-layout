@@ -28,6 +28,11 @@ To configure this bundle, create the file `[nodecg]/cfg/nsg2-layouts.json` with 
     "username": "example-user",
     "password": "example-pwd",
     "eventId": 2
+  },
+  "twitch": {
+    "clientId": "twitch_client_id",
+    "clientSecret": "twitch_client_secret",
+    "redirectUri": "http://localhost:9090/nsg2-layouts/twitch-auth"
   }
 }
 ```

@@ -12,7 +12,10 @@ export interface Speedrun {
 	externalId?: string | null;
 	title: string;
 	type: 'SPEEDRUN';
-	twitchCategory?: string | null;
+	twitchCategory?: null | {
+		name: string;
+		id: string;
+	};
 	system?: string | null;
 	releaseYear?: string | null;
 	category?: string | null;

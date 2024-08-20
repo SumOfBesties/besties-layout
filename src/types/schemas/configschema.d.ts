@@ -24,5 +24,11 @@ export interface Configschema {
 		eventId?: number;
 		[k: string]: unknown;
 	};
+	twitch?: {
+		clientId?: string;
+		clientSecret?: string;
+		redirectUri?: string;
+		[k: string]: unknown;
+	};
 	[k: string]: unknown;
 }

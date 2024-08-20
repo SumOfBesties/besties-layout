@@ -9,7 +9,20 @@
             "type": "string",
             "enum": ["SPEEDRUN"]
         },
-        "twitchCategory": { "type": ["string", "null"] },
+        "twitchCategory": {
+            "anyOf": [
+                { "type": "null" },
+                {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                        "name": { "type": "string" },
+                        "id": { "type": "string" }
+                    },
+                    "required": ["name", "id"]
+                }
+            ]
+        },
         "system": { "type": ["string", "null"] },
         "releaseYear": { "type": ["string", "null"] },
         "category": { "type": ["string", "null"] },

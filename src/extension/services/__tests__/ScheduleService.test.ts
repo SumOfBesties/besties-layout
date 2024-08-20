@@ -5,12 +5,13 @@ import { mock } from 'jest-mock-extended';
 import { OengusClient } from '../../clients/OengusClient';
 import { TalentService } from '../TalentService';
 import { Schedule } from 'types/schemas';
+import { TwitchClient } from '../../clients/TwitchClient';
 
 describe('ScheduleService', () => {
     let scheduleService: ScheduleService;
 
     beforeEach(() => {
-        scheduleService = new ScheduleService(mockNodecg, mock<OengusClient>(), mock<TalentService>());
+        scheduleService = new ScheduleService(mockNodecg, mock<OengusClient>(), mock<TalentService>(), mock<TwitchClient>());
     });
 
     describe('mergeNewScheduleItems', () => {
