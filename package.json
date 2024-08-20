@@ -38,10 +38,10 @@
                 "headerColor": "#262F40"
             },
             {
-                "name": "settings",
-                "title": "Settings",
+                "name": "obs-settings",
+                "title": "OBS Settings",
                 "width": 2,
-                "file": "settings.html",
+                "file": "obs-settings.html",
                 "workspace": "3 - Setup",
                 "headerColor": "#262F40"
             },
