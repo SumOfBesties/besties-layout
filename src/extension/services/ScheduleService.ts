@@ -177,25 +177,23 @@ export class ScheduleService {
         }
 
         const newSchedule = cloneDeep(schedule);
-        const gameNameToScheduleItemsMap = newSchedule.reduce((result, scheduleItem) => {
+        const gameNameToTwitchCategoryMap = newSchedule.reduce((result, scheduleItem) => {
             if (scheduleItem.type !== 'SPEEDRUN') {
                 return result;
             }
-            if (result[scheduleItem.title] != null) {
-                result[scheduleItem.title].push(scheduleItem);
-            } else {
-                result[scheduleItem.title] = [scheduleItem];
-            }
+            result[scheduleItem.title] = undefined;
             return result;
-        }, {} as Record<string, ScheduleItem[]>);
+        }, {} as Record<string, ScheduleItem['twitchCategory']>);
 
-        const gameSearchResult = await Promise.allSettled(Object.keys(gameNameToScheduleItemsMap).map(async (gameName) => {
+        const gameSearchResult = await Promise.allSettled(Object.keys(gameNameToTwitchCategoryMap).map(async (gameName) => {
             let categorySearchResult = await this.twitchClient!.searchForCategory(gameName);
+            let normalizedGameName = gameName;
             if (categorySearchResult != null && categorySearchResult.length === 0) {
                 // Finds a few additional games
                 // e.g. DmC: Devil May Cry (Vergil's Downfall) or Resident Evil 2 (2019)
                 const gameNameWithoutParentheses = gameName.replaceAll(/ \(.*\)$/g, '');
                 if (gameNameWithoutParentheses !== gameName) {
+                    normalizedGameName = gameNameWithoutParentheses;
                     categorySearchResult = await this.twitchClient!.searchForCategory(gameNameWithoutParentheses);
                 }
             }
@@ -203,11 +201,9 @@ export class ScheduleService {
             if (categorySearchResult != null && categorySearchResult.length > 0) {
                 const twitchCategory = categorySearchResult.length === 1
                     ? categorySearchResult[0]
-                    : categorySearchResult.find(category => category.name.toLowerCase() === gameName.toLowerCase()) ?? categorySearchResult[0];
+                    : categorySearchResult.find(category => category.name.toLowerCase() === normalizedGameName.toLowerCase()) ?? categorySearchResult[0];
                 this.logger.debug(`Found Twitch Category: ${gameName} -> ${twitchCategory.name} (${twitchCategory.id})`);
-                gameNameToScheduleItemsMap[gameName].forEach(scheduleItem => {
-                    scheduleItem.twitchCategory = twitchCategory;
-                });
+                gameNameToTwitchCategoryMap[gameName] = { id: twitchCategory.id, name: twitchCategory.name };
             } else {
                 this.logger.warn(`Could not find Twitch category for game "${gameName}"`);
             }
@@ -218,7 +214,18 @@ export class ScheduleService {
             this.logger.debug('Encountered one or more errors searching for Twitch categories for schedule games', rejectedResults);
         }
 
-        return Object.values(gameNameToScheduleItemsMap).flatMap(scheduleItems => scheduleItems);
+        return newSchedule.map(scheduleItem => {
+            if (scheduleItem.type !== 'SPEEDRUN') return scheduleItem;
+            const foundTwitchCategory = gameNameToTwitchCategoryMap[scheduleItem.title];
+            if (foundTwitchCategory != null) {
+                return {
+                    ...scheduleItem,
+                    twitchCategory: foundTwitchCategory
+                }
+            } else {
+                return scheduleItem;
+            }
+        });
     }
 
     private mergeNewScheduleItems(schedule: Schedule['items']): Schedule['items'] {
