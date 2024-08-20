@@ -4,12 +4,12 @@
             <fitted-content class="incentive-name m-r-8">
                 {{ props.incentive.name }}
             </fitted-content>
-            <div>{{ formatNumber(props.incentive.total) }}/<span class="incentive-total">{{ formatNumber(props.incentive.goal) }}kr</span></div>
+            <div>{{ formatNumber(props.incentive.total) }}/<span class="incentive-total">{{ props.incentive.goal == null ? '-' : formatNumber(props.incentive.goal) }}kr</span></div>
         </div>
         <vfd-pixel-text
             :font-size="24"
             text-align="left"
-            :progress-bar="{ current: props.incentive.total, start: 0, end: props.incentive.goal, showStartEnd: false }"
+            :progress-bar="{ current: props.incentive.total, start: 0, end: props.incentive.goal ?? 0, showStartEnd: false }"
         />
     </div>
 </template>
