@@ -9,6 +9,7 @@ import { initScheduleStore } from 'client-shared/stores/ScheduleStore';
 import { initTalentStore } from 'client-shared/stores/TalentStore';
 import { initTimerStore } from 'client-shared/stores/TimerStore';
 import { initObsStore } from 'client-shared/stores/ObsStore';
+import { initTwitchDataStore } from 'client-shared/stores/TwitchDataStore';
 
 (async () => {
     const app = createApp(StreamTechPanel);
@@ -20,5 +21,6 @@ import { initObsStore } from 'client-shared/stores/ObsStore';
     await initTalentStore();
     await initTimerStore();
     await initObsStore();
+    await initTwitchDataStore();
     app.mount('#app');
 })();

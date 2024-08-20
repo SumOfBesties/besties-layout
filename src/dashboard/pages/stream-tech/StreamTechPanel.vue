@@ -8,6 +8,7 @@
     <schedule-item-editor ref="scheduleItemEditor" />
     <country-select-dialog ref="countrySelectDialog" />
     <talent-item-edit-dialog ref="talentItemEditDialog" />
+    <twitch-category-search-dialog ref="twitchCategorySearchDialog" />
 </template>
 
 <script setup lang="ts">
@@ -18,12 +19,13 @@ import { provide, ref } from 'vue';
 import {
     CountrySelectDialogInjectionKey,
     ScheduleItemEditorInjectionKey,
-    TalentItemEditDialogInjectionKey
+    TalentItemEditDialogInjectionKey, TwitchCategorySearchDialogInjectionKey
 } from '../../helpers/Injections';
 import CountrySelectDialog from '../../components/CountrySelectDialog.vue';
 import NextRunManager from './NextRunManager.vue';
 import LayoutManager from './LayoutManager.vue';
 import TalentItemEditDialog from '../../components/TalentItemEditDialog.vue';
+import TwitchCategorySearchDialog from '../../components/TwitchCategorySearchDialog.vue';
 
 const scheduleItemEditor = ref<InstanceType<typeof ScheduleItemEditor>>();
 provide(ScheduleItemEditorInjectionKey, scheduleItemEditor);
@@ -31,6 +33,8 @@ const countrySelectDialog = ref<InstanceType<typeof CountrySelectDialog>>();
 provide(CountrySelectDialogInjectionKey, countrySelectDialog);
 const talentItemEditDialog = ref<InstanceType<typeof TalentItemEditDialog>>();
 provide(TalentItemEditDialogInjectionKey, talentItemEditDialog);
+const twitchCategorySearchDialog = ref<InstanceType<typeof TwitchCategorySearchDialog>>();
+provide(TwitchCategorySearchDialogInjectionKey, twitchCategorySearchDialog);
 </script>
 
 <style lang="scss">

@@ -45,7 +45,7 @@ export class TwitchClient {
         });
     }
 
-    async searchForCategory(name: string): Promise<{ id: string, name: string }[] | undefined> {
+    async searchForCategory(name: string): Promise<{ id: string, name: string, boxArtUrl: string }[] | undefined> {
         if (!this.isLoggedIn()) return undefined;
         const response = await this.axios.get<TwitchCategorySearchResponse>('/search/categories', {
             params: {
@@ -54,7 +54,7 @@ export class TwitchClient {
             }
         });
 
-        return response.data.data.map(category => ({ id: category.id, name: category.name }));
+        return response.data.data.map(category => ({ id: category.id, name: category.name, boxArtUrl: category.box_art_url }));
     }
 
     isLoggedIn(): boolean {

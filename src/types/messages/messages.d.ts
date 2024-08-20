@@ -31,12 +31,13 @@ export interface MessageInputMap {
     'tracker:newDonation': { amount: number, displayName: string | undefined | null }
 
     'twitch:logout': never
+    'twitch:findCategory': { name: string }
 }
 
 type MessagesWithoutReturnValues = Exclude<keyof MessageInputMap, keyof InnerMessageResultMap>;
 
 interface InnerMessageResultMap {
-
+    'twitch:findCategory': { id: string, name: string, boxArtUrl: string }[] | undefined
 }
 
 export type MessageResultMap = InnerMessageResultMap & {

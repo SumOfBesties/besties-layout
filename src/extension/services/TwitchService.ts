@@ -1,17 +1,21 @@
 import type NodeCG from '@nodecg/types';
 import type { Configschema, TwitchData } from 'types/schemas';
 import { TwitchOauthClient } from '../clients/TwitchOauthClient';
+import { TwitchClient } from '../clients/TwitchClient';
 
 export class TwitchService {
     private readonly twitchData: NodeCG.ServerReplicantWithSchemaDefault<TwitchData>;
+    private readonly twitchClient: TwitchClient | null;
 
     constructor(
         nodecg: NodeCG.ServerAPI<Configschema>,
-        twitchOauthClient: TwitchOauthClient | null
+        twitchOauthClient: TwitchOauthClient | null,
+        twitchClient: TwitchClient | null
     ) {
         const router = nodecg.Router();
         const logger = new nodecg.Logger(`${nodecg.bundleName}:TwitchService`);
         this.twitchData = nodecg.Replicant('twitchData') as unknown as NodeCG.ServerReplicantWithSchemaDefault<TwitchData>;
+        this.twitchClient = twitchClient;
 
         if (twitchOauthClient == null) {
             logger.warn('Twitch API configuration is missing. Logging in to Twitch will not be possible.');
@@ -52,5 +56,9 @@ export class TwitchService {
             credentials: undefined,
             loggedInUser: undefined
         };
+    }
+
+    async findCategory(name: string): Promise<{ id: string, name: string, boxArtUrl: string }[] | undefined> {
+        return this.twitchClient?.searchForCategory(name);
     }
 }

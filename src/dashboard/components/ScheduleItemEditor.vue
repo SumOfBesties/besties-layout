@@ -34,12 +34,21 @@
                 label="Title"
             />
             <template v-if="selectedScheduleItem.type === 'SPEEDRUN'">
-                <div class="layout horizontal m-t-4">
+                <div
+                    class="layout horizontal m-t-4"
+                    style="align-items: flex-end"
+                >
+                    <twitch-category-select
+                        v-model="selectedScheduleItem.twitchCategory"
+                        color="primary"
+                        class="max-width"
+                    />
                     <ipl-input
                         v-model="selectedScheduleItem.releaseYear"
                         name="releaseYear"
                         label="Release year"
-                        class="m-l-8 max-width"
+                        class="m-l-8"
+                        style="width: 50%"
                     />
                 </div>
                 <div class="layout horizontal m-t-4">
@@ -56,6 +65,13 @@
                         class="m-l-8 max-width"
                     />
                 </div>
+            </template>
+            <template v-else>
+                <twitch-category-select
+                    v-model="selectedScheduleItem.twitchCategory"
+                    color="primary"
+                    class="max-width m-t-4"
+                />
             </template>
             <div
                 class="layout horizontal"
@@ -207,6 +223,7 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 import { faUserPlus } from '@fortawesome/free-solid-svg-icons/faUserPlus';
 import { faPlus } from '@fortawesome/free-solid-svg-icons/faPlus';
 import { faXmark } from '@fortawesome/free-solid-svg-icons/faXmark';
+import TwitchCategorySelect from './TwitchCategorySelect.vue';
 
 library.add(faUserPlus, faPlus, faXmark);
 
