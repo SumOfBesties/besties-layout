@@ -193,8 +193,8 @@ export class TwitchService {
 
             const newTitle = newTitleTemplate
                 .replace('{{talent}}', this.talentService.formatScheduleItemTalentList(scheduleItem))
-                .replace('{{category}}', scheduleItem.category ?? '???')
-                .replace('{{title}}', scheduleItem.title);
+                .replace('{{category}}', scheduleItem.category?.trim() ?? '???')
+                .replace('{{title}}', scheduleItem.title.trim());
 
             if (newTitle.length > TWITCH_STREAM_TITLE_LENGTH_CAP) {
                 let firstTalentItem: TalentItem | null = null;
@@ -222,16 +222,16 @@ export class TwitchService {
                         firstTalentItem == null
                             ? `${talentCount} player${talentCount === 1 ? '' : 's'}`
                             : `${firstTalentItem.name} & ${talentCount} other${talentCount === 1 ? '' : 's'}`)
-                    .replace('{{category}}', scheduleItem.category ?? '???')
-                    .replace('{{title}}', scheduleItem.title);
+                    .replace('{{category}}', scheduleItem.category?.trim() ?? '???')
+                    .replace('{{title}}', scheduleItem.title.trim());
             }
             return newTitle;
         } else if (scheduleItem.talentIds.length === 0) {
             return titleTemplates.withoutTalent
-                .replace('{{title}}', scheduleItem.title);
+                .replace('{{title}}', scheduleItem.title.trim());
         } else {
             return titleTemplates.other
-                .replace('{{title}}', scheduleItem.title)
+                .replace('{{title}}', scheduleItem.title.trim())
                 .replace('{{talent}}', this.talentService.formatScheduleItemTalentList(scheduleItem));
         }
     }
