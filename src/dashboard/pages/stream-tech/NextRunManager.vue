@@ -22,7 +22,7 @@
                 </div>
                 <div v-if="scheduleStore.nextSpeedrun.commentatorIds.length > 0">
                     <font-awesome-icon icon="headset" size="sm" fixed-width />
-                    {{ talentStore.formatTalentIdList(scheduleStore.nextSpeedrun.commentatorIds) }}
+                    {{ talentStore.formatTalentIdList(scheduleStore.nextSpeedrun.commentatorIds, 4) }}
                 </div>
             </div>
             <div class="speedrun-details m-b-8">

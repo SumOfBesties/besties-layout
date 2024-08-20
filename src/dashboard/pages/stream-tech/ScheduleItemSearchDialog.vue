@@ -63,7 +63,7 @@
                         class="title-additional-details"
                     >
                         <font-awesome-icon icon="headset" size="sm" fixed-width />
-                        {{ talentStore.formatTalentIdList(result.talentIds) }}
+                        {{ talentStore.formatTalentIdList(result.talentIds, 4) }}
                     </div>
                 </template>
                 <div class="layout horizontal">

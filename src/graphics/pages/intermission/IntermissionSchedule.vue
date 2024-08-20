@@ -51,7 +51,7 @@
                             <vfd-pixel-text
                                 v-else
                                 :font-size="22"
-                                :text-content="talentStore.formatTalentIdList(item.talentIds)"
+                                :text-content="talentStore.formatTalentIdList(item.talentIds, 4)"
                                 class="max-width m-t-4"
                             />
                         </div>

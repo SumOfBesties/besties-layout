@@ -11,7 +11,7 @@
             />
             <div class="interstitial-title">{{ props.interstitial.title }}</div>
             <div v-if="props.interstitial.talentIds.length > 0">
-                {{ talentStore.formatTalentIdList(props.interstitial.talentIds) }}
+                {{ talentStore.formatTalentIdList(props.interstitial.talentIds, 4) }}
             </div>
         </div>
         <div>

@@ -34,7 +34,7 @@ const secondLine = computed(() => {
             return talentStore.formatSpeedrunTeamList(props.scheduleItem.teams);
         }
     } else {
-        return talentStore.formatTalentIdList(props.scheduleItem.talentIds);
+        return talentStore.formatTalentIdList(props.scheduleItem.talentIds, 4);
     }
 });
 </script>

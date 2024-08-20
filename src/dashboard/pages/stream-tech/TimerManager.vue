@@ -45,7 +45,7 @@
                 :key="team.id"
             >
                 <div class="team-details">
-                    <div class="team-name">{{ team.name || talentStore.formatTalentIdList(team.playerIds) }}</div>
+                    <div class="team-name">{{ team.name || talentStore.formatTalentIdList(team.playerIds, 4) }}</div>
                     <div v-if="timerStore.timer.teamResults[team.id]">
                         {{ timerStore.timer.teamResults[team.id].state === 'FORFEIT' ? 'Forfeited' : 'Finished' }}
                         <timer-display :time="timerStore.timer.teamResults[team.id].time" />

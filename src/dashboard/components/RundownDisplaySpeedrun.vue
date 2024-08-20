@@ -18,22 +18,21 @@
             v-if="props.speedrun.commentatorIds.length > 0"
             class="m-t-4"
         >
-            <font-awesome-icon icon="headset" size="sm" fixed-width /> {{ talentStore.formatTalentIdList(props.speedrun.commentatorIds) }}
+            <font-awesome-icon icon="headset" size="sm" fixed-width /> {{ talentStore.formatTalentIdList(props.speedrun.commentatorIds, 4) }}
         </div>
     </ipl-space>
 </template>
 
 <script setup lang="ts">
 import { Speedrun } from 'types/schemas';
-import { formatDuration, formatScheduleItemEstimate, prettyPrintList } from 'client-shared/helpers/StringHelper';
+import { formatScheduleItemEstimate } from 'client-shared/helpers/StringHelper';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { IplBadge, IplSpace } from '@iplsplatoon/vue-components';
+import { IplSpace } from '@iplsplatoon/vue-components';
 import { useTalentStore } from 'client-shared/stores/TalentStore';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faCircle } from '@fortawesome/free-solid-svg-icons/faCircle';
 import { faGamepad } from '@fortawesome/free-solid-svg-icons/faGamepad';
 import { faHeadset } from '@fortawesome/free-solid-svg-icons/faHeadset';
-import { colors } from '../styles/colors';
 import ScheduleItemTypeBadge from './ScheduleItemTypeBadge.vue';
 
 library.add(faCircle, faGamepad, faHeadset);
