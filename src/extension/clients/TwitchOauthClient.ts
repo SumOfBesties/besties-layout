@@ -2,6 +2,7 @@ import { AxiosInstance, isAxiosError } from 'axios';
 import type NodeCG from '@nodecg/types';
 import type { Configschema, TwitchData } from 'types/schemas';
 import axios from 'axios';
+import { REQUIRED_TWITCH_TOKEN_SCOPES } from '../../shared/TwitchHelpers';
 
 interface TwitchOauthTokenResponse {
     access_token: string
@@ -18,10 +19,6 @@ interface TwitchOauthValidateResponse {
     user_id: string
     expires_in: number
 }
-
-const REQUIRED_TWITCH_TOKEN_SCOPES = [
-    'channel:manage:broadcast'
-];
 
 export class TwitchOauthClient {
     private readonly logger: NodeCG.Logger;

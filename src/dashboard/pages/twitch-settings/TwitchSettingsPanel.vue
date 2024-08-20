@@ -44,6 +44,7 @@ import { computed } from 'vue';
 import { Configschema } from 'types/schemas';
 import { useTwitchDataStore } from 'client-shared/stores/TwitchDataStore';
 import { sendMessage } from 'client-shared/helpers/NodecgHelper';
+import { REQUIRED_TWITCH_TOKEN_SCOPES } from '../../../shared/TwitchHelpers';
 
 const hasTwitchConfig = computed(() => {
     const twitchConfig = (nodecg.bundleConfig as Configschema).twitch;
@@ -59,7 +60,7 @@ const twitchAuthorizeUrl = computed(() => {
     result.searchParams.append('client_id', twitchConfig!.clientId!);
     result.searchParams.append('redirect_uri', twitchConfig!.redirectUri!);
     result.searchParams.append('response_type', 'code');
-    result.searchParams.append('scope', 'channel:manage:broadcast');
+    result.searchParams.append('scope', REQUIRED_TWITCH_TOKEN_SCOPES.join(' '));
     return result.toString();
 });
 
