@@ -43,7 +43,7 @@
             />
             <ipl-data-row
                 label="Twitch category"
-                :value="scheduleStore.activeSpeedrun?.twitchCategory?.name ?? 'N/A'"
+                :value="scheduleStore.nextSpeedrun?.twitchCategory?.name ?? 'N/A'"
                 style="grid-column: span 2"
             />
         </div>
