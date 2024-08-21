@@ -40,11 +40,22 @@ To configure this bundle, create the file `[nodecg]/cfg/nsg2-layouts.json` with 
       "withoutTalent": "NSG Fall 2024: {{title}}",
       "fallback": "NSG Fall 2024 benefiting Norges Blindeforbund"
     }
+  },
+  "foobar2000": {
+    "address": "http://localhost:8880",
+    "username": "fb2k-user",
+    "password": "fb2k-pwd"
   }
 }
 ```
 
+#### Time zones
+
 Find a list of time zones [here](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones#List).
+
+#### Music
+
+Music information is gathered through foobar2000 with the [beefweb](https://github.com/hyperblast/beefweb) plugin installed.
 
 ## Usage
 

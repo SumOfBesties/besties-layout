@@ -61,13 +61,13 @@
                 <div class="grow" style="margin-top: -4px">
                     <vfd-pixel-text
                         :font-size="24"
-                        text-content="artist artist"
+                        :text-content="musicStore.musicState.track?.artist ?? '?'"
                         align="left"
                         text-align="left"
                     />
                     <vfd-pixel-text
                         :font-size="24"
-                        text-content="song song"
+                        :text-content="musicStore.musicState.track?.song ?? '?'"
                         align="left"
                         text-align="left"
                     />
@@ -100,11 +100,13 @@ import { useTalentStore } from 'client-shared/stores/TalentStore';
 import { isBlank } from 'client-shared/helpers/StringHelper';
 import Badge from 'components/Badge.vue';
 import CountryFlag from 'components/CountryFlag.vue';
+import { useMusicStore } from 'client-shared/stores/MusicStore';
 
 provide(MaxOmnibarBidWarItemsInjectionKey, 3);
 provide(MaxOmnibarBidWarTitleWidthInjectionKey, 200);
 
 const talentStore = useTalentStore();
+const musicStore = useMusicStore();
 const currentHost = computed(() => talentStore.findTalentItemById(talentStore.currentHostId));
 </script>
 

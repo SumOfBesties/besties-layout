@@ -20,6 +20,8 @@ export * from './donationTotal';
 // @ts-ignore
 export * from './milestones';
 // @ts-ignore
+export * from './musicState';
+// @ts-ignore
 export * from './nextSpeedrun';
 // @ts-ignore
 export * from './obsConfig';

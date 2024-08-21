@@ -1,4 +1,4 @@
-import { ObsConfig, ObsConnectionInfo, Talent } from '../schemas';
+import { MusicConfig, ObsConfig, ObsConnectionInfo, Talent } from '../schemas';
 import { ScheduleItem } from '../ScheduleHelpers';
 
 export interface MessageInputMap {

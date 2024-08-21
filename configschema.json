@@ -45,6 +45,14 @@
                     "required": ["speedrun", "other", "withoutTalent", "fallback"]
                 }
             }
+        },
+        "foobar2000": {
+            "type": "object",
+            "properties": {
+                "address": { "type": "string" },
+                "username": { "type": "string" },
+                "password": { "type": "string" }
+            }
         }
     }
 }

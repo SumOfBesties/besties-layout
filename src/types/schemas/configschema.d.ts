@@ -38,5 +38,11 @@ export interface Configschema {
 		};
 		[k: string]: unknown;
 	};
+	foobar2000?: {
+		address?: string;
+		username?: string;
+		password?: string;
+		[k: string]: unknown;
+	};
 	[k: string]: unknown;
 }

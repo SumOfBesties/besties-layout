@@ -10,6 +10,7 @@ import { initCurrentTrackerDataStore } from 'client-shared/stores/CurrentTracker
 import { initTimerStore } from 'client-shared/stores/TimerStore';
 import IntermissionGraphic from './pages/intermission/IntermissionGraphic.vue';
 import { initAssetStore } from 'client-shared/stores/AssetStore';
+import { initMusicStore } from 'client-shared/stores/MusicStore';
 
 (async () => {
     const app = createApp(IntermissionGraphic);
@@ -21,5 +22,6 @@ import { initAssetStore } from 'client-shared/stores/AssetStore';
     await initCurrentTrackerDataStore();
     await initTimerStore();
     await initAssetStore();
+    await initMusicStore();
     app.mount('#app');
 })();
