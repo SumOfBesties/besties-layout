@@ -84,7 +84,9 @@ export class TwitchService {
                 isLaunch = false;
             } else if (newValue.state === 'LOGGED_IN' && isLaunch) {
                 isLaunch = false;
-                await this.setStreamInfo(this.scheduleService.findActiveScheduleItem());
+                if (this.shouldUpdateTitle()) {
+                    await this.setStreamInfo(this.scheduleService.findActiveScheduleItem());
+                }
             }
             if (!oldValue || !this.shouldUpdateTitle()) return;
             if (!oldValue.syncEnabled && newValue.syncEnabled) {
