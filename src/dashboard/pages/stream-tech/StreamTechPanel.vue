@@ -16,7 +16,7 @@
                 </ipl-message>
                 <ipl-message
                     v-if="showRemainingInterstitialsMessage"
-                    type="info"
+                    :type="timerStore.timer.state === 'RUNNING' ? 'warning' : 'info'"
                     class="m-t-8"
                 >
                     Remember to complete all interstitials before starting the next run.
@@ -53,6 +53,7 @@ import TwitchCategorySearchDialog from '../../components/TwitchCategorySearchDia
 import { IplMessage } from '@iplsplatoon/vue-components';
 import { useScheduleStore } from 'client-shared/stores/ScheduleStore';
 import SystemStatusDisplay from './SystemStatusDisplay.vue';
+import { useTimerStore } from 'client-shared/stores/TimerStore';
 
 const scheduleItemEditor = ref<InstanceType<typeof ScheduleItemEditor>>();
 provide(ScheduleItemEditorInjectionKey, scheduleItemEditor);
@@ -64,6 +65,7 @@ const twitchCategorySearchDialog = ref<InstanceType<typeof TwitchCategorySearchD
 provide(TwitchCategorySearchDialogInjectionKey, twitchCategorySearchDialog);
 
 const scheduleStore = useScheduleStore();
+const timerStore = useTimerStore();
 
 const showLongTwitchTitleWarning = ref(false);
 nodecg.listenFor('twitch:generatedTitleTooLong', () => {
