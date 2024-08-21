@@ -11,8 +11,12 @@
                 class="m-b-2"
             />
             <div class="interstitial-title">{{ props.interstitial.title }}</div>
-            <div v-if="props.interstitial.talentIds.length > 0">
-                {{ talentStore.formatTalentIdList(props.interstitial.talentIds, 4) }}
+            <div
+                v-if="props.interstitial.talentIds.length > 0 || props.interstitial.type === 'OTHER'"
+                class="m-t-2"
+            >
+                <font-awesome-icon icon="headset" size="sm" fixed-width />
+                {{ props.interstitial.talentIds.length === 0 ? 'No talent!' : talentStore.formatTalentIdList(props.interstitial.talentIds, 4) }}
             </div>
         </div>
         <div class="controls edit-button-wrapper layout horizontal center-vertical">
@@ -61,8 +65,9 @@ import ScheduleItemTypeBadge from './ScheduleItemTypeBadge.vue';
 import { faPenToSquare } from '@fortawesome/free-solid-svg-icons';
 import { inject } from 'vue';
 import { ScheduleItemEditorInjectionKey } from '../helpers/Injections';
+import { faHeadset } from '@fortawesome/free-solid-svg-icons/faHeadset';
 
-library.add(faCheck, faRotateLeft, faPenToSquare);
+library.add(faCheck, faRotateLeft, faPenToSquare, faHeadset);
 
 const talentStore = useTalentStore();
 
