@@ -3,7 +3,7 @@
         <current-host-manager />
         <div />
         <div />
-        <rundown-display />
+        <rundown-display readonly />
     </div>
     <country-select-dialog ref="countrySelectDialog" />
     <talent-item-edit-dialog

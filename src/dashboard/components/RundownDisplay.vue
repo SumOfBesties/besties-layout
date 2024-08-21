@@ -20,6 +20,7 @@
                 allow-completion-change
                 :key="`interstitial_${interstitial.id}`"
                 :interstitial="interstitial"
+                :readonly="props.readonly"
                 class="m-b-8"
             />
         </template>
@@ -33,6 +34,7 @@
         <rundown-display-speedrun
             v-else
             :speedrun="scheduleStore.activeSpeedrun"
+            :readonly="props.readonly"
             is-active
         />
         <hr>
@@ -48,12 +50,14 @@
                     v-if="scheduleItem.type === 'SPEEDRUN'"
                     :key="`speedrun_${scheduleItem.id}`"
                     :speedrun="scheduleItem"
+                    :readonly="props.readonly"
                     class="m-t-8"
                 />
                 <rundown-display-interstitial
                     v-else
                     :key="`interstitial_${scheduleItem.id}`"
                     :interstitial="scheduleItem"
+                    :readonly="props.readonly"
                     class="m-t-8"
                 />
             </template>
@@ -70,6 +74,12 @@ import RundownDisplayInterstitial from './RundownDisplayInterstitial.vue';
 import { ScheduleItem } from 'types/ScheduleHelpers';
 
 const scheduleStore = useScheduleStore();
+
+const props = withDefaults(defineProps<{
+    readonly?: boolean
+}>(), {
+    readonly: false
+});
 
 const scheduleItemsAfterActiveRun = computed<ScheduleItem[]>(() => {
     if (scheduleStore.activeSpeedrunIndex === -1 || scheduleStore.activeSpeedrunIndex === scheduleStore.schedule.items.length - 1) return [];

@@ -43,7 +43,8 @@ import { computed, provide, ref } from 'vue';
 import {
     CountrySelectDialogInjectionKey,
     ScheduleItemEditorInjectionKey,
-    TalentItemEditDialogInjectionKey, TwitchCategorySearchDialogInjectionKey
+    TalentItemEditDialogInjectionKey,
+    TwitchCategorySearchDialogInjectionKey
 } from '../../helpers/Injections';
 import CountrySelectDialog from '../../components/CountrySelectDialog.vue';
 import NextRunManager from './NextRunManager.vue';
