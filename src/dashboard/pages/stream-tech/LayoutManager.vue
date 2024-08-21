@@ -224,11 +224,11 @@ function setVideoFeedAssignment(sourceName: string) {
     opacity: 1;
 }
 .capture-select-reveal-leave-to {
-    transform: translateY(16px);
+    transform: translateY(-16px);
     opacity: 0;
 }
 .capture-select-reveal-enter-from {
-    transform: translateY(-16px);
+    transform: translateY(16px);
     opacity: 0;
 }
 </style>
