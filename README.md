@@ -1,6 +1,6 @@
 # nsg2-layouts
 
-Broadcast graphics for speedrun marathon events from the [Norway Speedrunner Gathering](https://nsgmarathon.com/)
+Broadcast graphics for speedrun marathon events from the [Norway Speedrunner Gathering](https://nsgmarathon.com/), informally known as "Norskontrol".
 
 ## Setup
 
