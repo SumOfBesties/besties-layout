@@ -61,8 +61,6 @@ export class TrackerService {
 
     private async pollTrackerData() {
         if (this.trackerClient == null) return;
-        // todo: temporary
-        // this.logger.debug('Updating GDQ tracker data');
 
         const results = await Promise.allSettled([
             this.trackerClient.getMilestones().then(milestones => { this.milestones.value = milestones; }),
@@ -80,7 +78,6 @@ export class TrackerService {
                 }
             });
         }
-        // this.logger.debug('Updated GDQ tracker data');
         setTimeout(this.pollTrackerData.bind(this), 60 * 1000);
     }
 
