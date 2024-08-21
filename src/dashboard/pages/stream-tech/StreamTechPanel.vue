@@ -94,4 +94,8 @@ body {
     min-width: 1500px;
     overflow-x: auto;
 }
+
+.alerts {
+    min-height: 77px;
+}
 </style>
