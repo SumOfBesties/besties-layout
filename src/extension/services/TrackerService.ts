@@ -6,7 +6,7 @@ import type {
     CurrentBids,
     CurrentPrizes,
     DonationTotal,
-    Milestones
+    Milestones, TrackerState
 } from 'types/schemas';
 import { TrackerClient } from '../clients/TrackerClient';
 import { TrackerSocketClient } from '../clients/TrackerSocketClient';
@@ -22,6 +22,7 @@ export class TrackerService {
     private readonly allPrizes: NodeCG.ServerReplicantWithSchemaDefault<AllPrizes>;
     private readonly currentPrizes: NodeCG.ServerReplicantWithSchemaDefault<CurrentPrizes>;
     private readonly milestones: NodeCG.ServerReplicantWithSchemaDefault<Milestones>;
+    private readonly trackerState: NodeCG.ServerReplicantWithSchemaDefault<TrackerState>;
     private donationTotalApiUpdateTimeout: NodeJS.Timeout | undefined = undefined;
     private isFirstLogin = true;
 
@@ -33,6 +34,7 @@ export class TrackerService {
         this.allPrizes = nodecg.Replicant('allPrizes') as unknown as NodeCG.ServerReplicantWithSchemaDefault<AllPrizes>;
         this.currentPrizes = nodecg.Replicant('currentPrizes') as unknown as NodeCG.ServerReplicantWithSchemaDefault<CurrentPrizes>;
         this.milestones = nodecg.Replicant('milestones') as unknown as NodeCG.ServerReplicantWithSchemaDefault<Milestones>;
+        this.trackerState = nodecg.Replicant('trackerState', { persistent: false }) as unknown as NodeCG.ServerReplicantWithSchemaDefault<TrackerState>;
         this.nodecg = nodecg;
 
         if (!TrackerClient.hasRequiredTrackerConfig(nodecg)) {
@@ -96,8 +98,10 @@ export class TrackerService {
     }
 
     private async doLoginLoop() {
+        this.trackerState.value.login = 'LOGGING_IN';
         await this.trackerClient?.login()
             .then(() => {
+                this.trackerState.value.login = 'LOGGED_IN';
                 if (this.isFirstLogin) {
                     this.isFirstLogin = false;
                     this.logger.info('Successfully logged in to GDQ tracker');
@@ -107,6 +111,7 @@ export class TrackerService {
                 setTimeout(this.doLoginLoop.bind(this), 90 * 60 * 1000);
             })
             .catch(e => {
+                this.trackerState.value.login = 'NOT_LOGGED_IN';
                 this.logger.error('Failed to log in to GDQ tracker:', e instanceof Error ? e.message : String(e));
                 this.logger.debug('Failed to log in to GDQ tracker:', e);
                 if (!this.isFirstLogin) {

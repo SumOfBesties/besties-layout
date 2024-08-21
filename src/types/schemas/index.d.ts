@@ -44,4 +44,6 @@ export * from './talent';
 // @ts-ignore
 export * from './timer';
 // @ts-ignore
+export * from './trackerState';
+// @ts-ignore
 export * from './twitchData';

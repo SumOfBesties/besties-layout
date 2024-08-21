@@ -22,6 +22,10 @@
                     Remember to complete all interstitials before starting the next run.
                 </ipl-message>
             </div>
+            <system-status-display
+                class="m-t-8"
+                style="max-width: 275px; margin: 8px auto 0;"
+            />
         </div>
         <rundown-display class="rundown-display" />
     </div>
@@ -48,6 +52,7 @@ import TalentItemEditDialog from '../../components/TalentItemEditDialog.vue';
 import TwitchCategorySearchDialog from '../../components/TwitchCategorySearchDialog.vue';
 import { IplMessage } from '@iplsplatoon/vue-components';
 import { useScheduleStore } from 'client-shared/stores/ScheduleStore';
+import SystemStatusDisplay from './SystemStatusDisplay.vue';
 
 const scheduleItemEditor = ref<InstanceType<typeof ScheduleItemEditor>>();
 provide(ScheduleItemEditorInjectionKey, scheduleItemEditor);

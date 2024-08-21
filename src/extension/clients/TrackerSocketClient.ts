@@ -1,7 +1,7 @@
 import EventEmitter from 'events';
 import TypedEmitter from 'typed-emitter';
 import type NodeCG from '@nodecg/types';
-import type { Configschema } from 'types/schemas';
+import type { Configschema, TrackerState } from 'types/schemas';
 import WebSocket from 'ws';
 
 type TrackerSocketClientEvent = {
@@ -12,9 +12,10 @@ const pingMessageInterval = 20000;
 const expectedSocketClosureCode = 4001;
 
 export class TrackerSocketClient extends (EventEmitter as new () => TypedEmitter<TrackerSocketClientEvent>) {
+    private readonly address: string;
+    private readonly trackerState: NodeCG.ServerReplicantWithSchemaDefault<TrackerState>;
     private logger: NodeCG.Logger;
     private socket?: WebSocket;
-    private readonly address: string;
     private socketReconnectionTimeout?: NodeJS.Timeout;
     private socketPingTimeout?: NodeJS.Timeout;
     private isFirstReconnection = true;
@@ -26,6 +27,7 @@ export class TrackerSocketClient extends (EventEmitter as new () => TypedEmitter
         }
         this.address = nodecg.bundleConfig.tracker!.socketAddress!;
         this.logger = new nodecg.Logger(`${nodecg.bundleName}:TrackerSocketClient`);
+        this.trackerState = nodecg.Replicant('trackerState', { persistent: false }) as unknown as NodeCG.ServerReplicantWithSchemaDefault<TrackerState>;
     }
 
     start() {
@@ -34,6 +36,7 @@ export class TrackerSocketClient extends (EventEmitter as new () => TypedEmitter
     }
 
     private connect() {
+        this.trackerState.value.donationSocket = 'CONNECTING';
         if (this.socketReconnectionTimeout) {
             clearTimeout(this.socketReconnectionTimeout);
         }
@@ -47,6 +50,7 @@ export class TrackerSocketClient extends (EventEmitter as new () => TypedEmitter
 
         this.socket.on('open', () => {
             this.logger.info('GDQ tracker socket is open');
+            this.trackerState.value.donationSocket = 'CONNECTED';
             if (this.socketReconnectionTimeout) {
                 clearTimeout(this.socketReconnectionTimeout);
             }
@@ -67,6 +71,7 @@ export class TrackerSocketClient extends (EventEmitter as new () => TypedEmitter
             if (this.socketPingTimeout) {
                 clearTimeout(this.socketPingTimeout);
             }
+            this.trackerState.value.donationSocket = 'NOT_CONNECTED';
             if (code !== expectedSocketClosureCode) {
                 this.attemptReconnection();
             }

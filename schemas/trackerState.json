@@ -1,0 +1,20 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "donationSocket": {
+            "type": "string",
+            "enum": ["NOT_CONNECTED", "CONNECTING", "CONNECTED"]
+        },
+        "login": {
+            "type": "string",
+            "enum": ["NOT_LOGGED_IN", "LOGGING_IN", "LOGGED_IN"]
+        }
+    },
+    "required": ["donationSocket", "login"],
+    "default": {
+        "donationSocket": "NOT_CONNECTED",
+        "login": "NOT_LOGGED_IN"
+    }
+}
