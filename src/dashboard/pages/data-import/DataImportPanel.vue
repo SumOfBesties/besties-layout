@@ -21,15 +21,39 @@
             @click="onImport"
         />
     </ipl-space>
+    <ipl-space class="m-t-8">
+        <div class="title">Loaded data</div>
+        <ipl-data-row
+            label="Source"
+            :value="scheduleStore.schedule.source"
+        />
+        <ipl-data-row
+            label="ID"
+            :value="scheduleStore.schedule.id"
+            copiable
+        />
+        <template v-if="scheduleStore.schedule.sourceSpecificData?.oengus">
+            <ipl-data-row
+                label="Schedule Slug"
+                :value="scheduleStore.schedule.sourceSpecificData.oengus.scheduleSlug"
+            />
+            <ipl-data-row
+                label="Schedule ID"
+                :value="scheduleStore.schedule.sourceSpecificData.oengus.scheduleId"
+            />
+        </template>
+    </ipl-space>
 </template>
 
 <script setup lang="ts">
-import { IplButton, IplInput, IplMessage, IplSpace } from '@iplsplatoon/vue-components';
+import { IplButton, IplDataRow, IplInput, IplMessage, IplSpace } from '@iplsplatoon/vue-components';
 import { ref } from 'vue';
 import { useInternalStatusStore } from 'client-shared/stores/InternalStatusStore';
 import { sendMessage } from 'client-shared/helpers/NodecgHelper';
 import ErrorDisplay from '../../components/ErrorDisplay.vue';
+import { useScheduleStore } from 'client-shared/stores/ScheduleStore';
 
+const scheduleStore = useScheduleStore();
 const internalStatusStore = useInternalStatusStore();
 
 const marathonSlug = ref('');
