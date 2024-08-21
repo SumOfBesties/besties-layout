@@ -83,14 +83,14 @@ type ObsSceneItem = {
 
 export class ObsConnectorService {
     private readonly nodecg: NodeCG.ServerAPI;
-    private obsState: NodeCG.ServerReplicantWithSchemaDefault<ObsState>;
+    private readonly socket: OBSWebSocket;
     private obsConnectionInfo: NodeCG.ServerReplicantWithSchemaDefault<ObsConnectionInfo>;
     private obsConfig: NodeCG.ServerReplicantWithSchemaDefault<ObsConfig>;
     private obsVideoInputAssignments: NodeCG.ServerReplicantWithSchemaDefault<ObsVideoInputAssignments>;
     private obsVideoInputPositions: NodeCG.ServerReplicantWithSchemaDefault<ObsVideoInputPositions>;
-    private socket: OBSWebSocket;
     private reconnectionInterval: NodeJS.Timeout | null = null;
     private reconnectionCount: number;
+    readonly obsState: NodeCG.ServerReplicantWithSchemaDefault<ObsState>;
 
     constructor(nodecg: NodeCG.ServerAPI) {
         this.nodecg = nodecg;

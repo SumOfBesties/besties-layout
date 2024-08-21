@@ -55,7 +55,8 @@ Find a list of time zones [here](https://en.wikipedia.org/wiki/List_of_tz_databa
 
 #### Music
 
-Music information is gathered through foobar2000 with the [beefweb](https://github.com/hyperblast/beefweb) plugin installed.
+Music information is gathered through foobar2000 with the [beefweb](https://github.com/hyperblast/beefweb) plugin installed.  
+Include `[M]` in a scene's name to play music while it is in the program feed.
 
 ## Usage
 

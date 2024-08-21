@@ -2,6 +2,7 @@ import type NodeCG from '@nodecg/types';
 import type { Configschema, MusicState } from 'types/schemas';
 import axios from 'axios';
 import { Readable } from 'stream';
+import { ObsConnectorService } from './ObsConnectorService';
 
 type FoobarUpdate = { } | {
     player: {
@@ -18,18 +19,30 @@ export class MusicService {
     private readonly musicState: NodeCG.ServerReplicantWithSchemaDefault<MusicState>;
     private readonly config: Configschema['foobar2000'];
     private readonly authorization: string | undefined = undefined;
+    private readonly obsConnectorService: ObsConnectorService;
     private reconnectionTimeout: NodeJS.Timeout | null = null;
 
-    constructor(nodecg: NodeCG.ServerAPI<Configschema>) {
+    constructor(nodecg: NodeCG.ServerAPI<Configschema>, obsConnectorService: ObsConnectorService) {
         this.logger = new nodecg.Logger(`${nodecg.bundleName}:MusicService`);
         this.musicState = nodecg.Replicant('musicState') as unknown as NodeCG.ServerReplicantWithSchemaDefault<MusicState>;
         this.config = nodecg.bundleConfig.foobar2000;
+        this.obsConnectorService = obsConnectorService;
 
         if (this.config?.username != null && this.config?.password != null) {
             this.authorization = `Basic ${Buffer.from(`${this.config.username}:${this.config.password}`).toString('base64')}`;
         }
 
         this.attemptConnection();
+
+        this.obsConnectorService.obsState.on('change', (newValue, oldValue) => {
+            if (!oldValue || newValue.currentScene == null) return;
+            if (
+                newValue.currentScene !== oldValue.currentScene
+                || newValue.status === 'CONNECTED' && oldValue.status !== 'CONNECTED'
+            ) {
+                this.onSceneChange(newValue.currentScene);
+            }
+        });
     }
 
     async attemptConnection() {
@@ -44,6 +57,36 @@ export class MusicService {
             this.reconnectionTimeout = setTimeout(() => {
                 this.attemptConnection();
             }, FOOBAR_RECONNECTION_TIMEOUT);
+        });
+    }
+
+    private async onSceneChange(sceneName: string) {
+        if (sceneName.includes('[M]')) {
+            this.play().catch(e => {
+                this.logger.error('Error playing music:', e instanceof Error ? e.message : String(e));
+            });
+        } else {
+            this.pause().catch(e => {
+                this.logger.error('Error pausing music:', e instanceof Error ? e.message : String(e));
+            });
+        }
+    }
+
+    private async play() {
+        if (this.config?.address == null || this.musicState.value.connectionState !== 'CONNECTED') return;
+        await axios.post(`${this.config?.address}/api/player/play`, null, {
+            headers: {
+                Authorization: this.authorization
+            }
+        });
+    }
+
+    private async pause() {
+        if (this.config?.address == null || this.musicState.value.connectionState !== 'CONNECTED') return;
+        await axios.post(`${this.config?.address}/api/player/pause`, null, {
+            headers: {
+                Authorization: this.authorization
+            }
         });
     }
 
@@ -79,6 +122,10 @@ export class MusicService {
         });
         this.logger.debug('Connected to foobar2000');
         this.musicState.value.connectionState = 'CONNECTED';
+        const currentScene = this.obsConnectorService.obsState.value.currentScene;
+        if (currentScene?.includes('[M]')) {
+            this.onSceneChange(currentScene);
+        }
         response.data.on('data', (chunk: Buffer) => {
             try {
                 const parsedData = JSON.parse(chunk.toString().slice(6).replace(/(\r\n|\n|\r)/gm, '')) as FoobarUpdate;

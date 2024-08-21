@@ -37,7 +37,7 @@ export = (nodecg: NodeCG.ServerAPI<Configschema>): void => {
     new NameplateAssignmentService(nodecg);
     new TrackerService(nodecg);
     const twitchService = new TwitchService(nodecg, twitchOauthClient, twitchClient, talentService, scheduleService);
-    new MusicService(nodecg);
+    new MusicService(nodecg, obsConnectorService);
 
     new ScheduleController(nodecg, scheduleService);
     new SpeedrunController(nodecg, speedrunService);
