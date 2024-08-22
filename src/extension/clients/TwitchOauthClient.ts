@@ -91,7 +91,7 @@ export class TwitchOauthClient {
                 }
             };
         } catch (e) {
-            if (isAxiosError(e) && e.status === 401) {
+            if (isAxiosError(e) && e.response?.status === 401) {
                 this.logger.debug('Twitch token validation returned HTTP 401, refreshing token');
                 await this.refreshToken();
             } else {
