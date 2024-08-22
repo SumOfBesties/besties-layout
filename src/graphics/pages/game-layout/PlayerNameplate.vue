@@ -2,28 +2,35 @@
     <div
         class="player-nameplate"
         :data-nameplate-index="props.index"
+        :style="{
+            minHeight: props.fixedHeight ? '80px' : `${Math.max(80, Math.min(props.maxConcurrentPlayers, talentList.length) * 39.5 + 16)}px`
+        }"
     >
-        <div
-            v-for="(talent, i) in talentList"
-            class="talent-item"
-            :key="talent.id"
-        >
-            <badge class="talent-index">{{ baseIndex + i + 1 }}</badge>
-            <fitted-content align="center">
-                {{ talent.name }}
-            </fitted-content>
-            <badge
-                v-if="talent.pronouns"
-                class="talent-pronouns"
-            >
-                {{ talent.pronouns }}
-            </badge>
-            <country-flag
-                v-if="talent.countryCode != null"
-                :country-code="talent.countryCode"
-                class="talent-country"
-            />
-        </div>
+        <opacity-swap-transition mode="default">
+            <div :key="talentListSlides.activeComponent.value ?? '-1'">
+                <div
+                    v-for="(talent, i) in chunkedTalentList[Number(talentListSlides.activeComponent.value)]"
+                    class="talent-item"
+                    :key="talent.id"
+                >
+                    <badge class="talent-index">{{ baseIndex + i + 1 + Number(talentListSlides.activeComponent.value) * props.maxConcurrentPlayers }}</badge>
+                    <fitted-content align="center">
+                        {{ talent.name }}
+                    </fitted-content>
+                    <badge
+                        v-if="talent.pronouns"
+                        class="talent-pronouns"
+                    >
+                        {{ talent.pronouns }}
+                    </badge>
+                    <country-flag
+                        v-if="talent.countryCode != null"
+                        :country-code="talent.countryCode"
+                        class="talent-country"
+                    />
+                </div>
+            </div>
+        </opacity-swap-transition>
     </div>
 </template>
 
@@ -35,10 +42,18 @@ import { Talent } from 'types/schemas';
 import FittedContent from 'components/FittedContent.vue';
 import CountryFlag from 'components/CountryFlag.vue';
 import Badge from 'components/Badge.vue';
+import chunk from 'lodash/chunk';
+import { useSlides } from '../../helpers/useSlides';
+import OpacitySwapTransition from 'components/OpacitySwapTransition.vue';
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
     index: number
-}>();
+    maxConcurrentPlayers?: number
+    fixedHeight?: boolean
+}>(), {
+    maxConcurrentPlayers: 2,
+    fixedHeight: false
+});
 
 const scheduleStore = useScheduleStore();
 const talentStore = useTalentStore();
@@ -48,6 +63,9 @@ const talentList = computed<Talent>(() => {
     if (assignments == null) return [];
     return assignments.playerIds.map(playerId => talentStore.findTalentItemById(playerId)).filter(talent => talent != null);
 });
+
+const chunkedTalentList = computed<Talent[]>(() => chunk(talentList.value, props.maxConcurrentPlayers));
+const talentListSlides = useSlides(() => chunkedTalentList.value.map((_, i) => ({ component: String(i), duration: 30 })));
 
 const baseIndex = computed(() => scheduleStore.playerNameplateAssignments
     .slice(0, props.index)
@@ -64,16 +82,22 @@ const baseIndex = computed(() => scheduleStore.playerNameplateAssignments
     color: colors.$vfd-teal;
     background-color: colors.$vfd-background;
     text-align: center;
-    min-height: 80px;
     font-size: 30px;
     font-weight: 700;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 8px 0;
     box-sizing: border-box;
     overflow: hidden;
+    position: relative;
+
+    > div {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        min-height: 64px;
+        height: 100%;
+        width: 100%;
+        padding: 8px 0;
+    }
 }
 
 .talent-item {

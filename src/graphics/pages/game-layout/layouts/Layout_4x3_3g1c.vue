@@ -15,11 +15,11 @@
                 class="game-capture"
                 data-capture-index="2"
             />
-            <player-nameplate :index="0" />
+            <player-nameplate :index="0" fixed-height />
             <div class="layout-gap" />
-            <player-nameplate :index="1" class="layout-gap-right layout-gap-left" />
+            <player-nameplate :index="1" class="layout-gap-right layout-gap-left" fixed-height />
             <div class="layout-gap" />
-            <player-nameplate :index="2" />
+            <player-nameplate :index="2" fixed-height />
         </div>
         <div class="other-content-row">
             <div class="column">
@@ -67,7 +67,7 @@ import MediaBox from 'components/MediaBox.vue';
 .game-captures-row {
     display: grid;
     grid-template-columns: 1fr 3px 1fr 3px 1fr;
-    grid-template-rows: repeat(2, auto);
+    grid-template-rows: auto 80px;
     width: 100%;
 }
 

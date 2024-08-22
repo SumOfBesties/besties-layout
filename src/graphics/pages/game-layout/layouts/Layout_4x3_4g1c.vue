@@ -18,7 +18,7 @@
                         <speedrun-details class="bg-inset" />
                         <speedrun-timer class="bg-inset m-t-8" />
                     </div>
-                    <div class="layout horizontal max-width">
+                    <div class="nameplate-layout">
                         <player-nameplate :index="0" class="max-width" />
                         <player-nameplate :index="1" class="max-width" />
                     </div>
@@ -28,7 +28,7 @@
                     data-capture-index="0"
                 />
                 <div class="bg-panel layout vertical">
-                    <div class="layout horizontal max-width">
+                    <div class="nameplate-layout">
                         <player-nameplate :index="2" class="max-width" />
                         <player-nameplate :index="3" class="max-width" />
                     </div>
@@ -85,5 +85,10 @@ import MediaBox from 'components/MediaBox.vue';
     border-style: solid;
     border-width: 0 3px 3px 3px;
     border-color: colors.$layout-gap;
+}
+
+.nameplate-layout {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 </style>

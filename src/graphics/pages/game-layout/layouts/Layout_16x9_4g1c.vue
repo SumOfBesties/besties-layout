@@ -6,13 +6,13 @@
                     class="game-capture"
                     data-capture-index="0"
                 />
-                <player-nameplate :index="0" class="max-width"  />
+                <player-nameplate :index="0" class="max-width" fixed-height />
                 <large-separator direction="horizontal" class="max-width" />
                 <div
                     class="game-capture"
                     data-capture-index="2"
                 />
-                <player-nameplate :index="2" class="max-width" />
+                <player-nameplate :index="2" class="max-width" fixed-height />
             </div>
             <div class="layout-gap-right layout-gap-left middle-panel">
                 <div
@@ -37,13 +37,13 @@
                     class="game-capture"
                     data-capture-index="1"
                 />
-                <player-nameplate :index="1" class="max-width" />
+                <player-nameplate :index="1" class="max-width" fixed-height />
                 <large-separator direction="horizontal" class="max-width" />
                 <div
                     class="game-capture"
                     data-capture-index="3"
                 />
-                <player-nameplate :index="3" class="max-width" />
+                <player-nameplate :index="3" class="max-width" fixed-height />
             </div>
         </div>
         <large-separator direction="horizontal" class="max-width" />
