@@ -10,7 +10,7 @@ export default defineConfig({
     build: {
         outDir: 'extension',
         lib: {
-            entry: resolve(process.env.PWD, 'src/extension/index.ts'),
+            entry: resolve(__dirname, 'src/extension/index.ts'),
             name: 'extension',
             fileName: 'index',
             formats: ['cjs']
