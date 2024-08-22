@@ -35,7 +35,7 @@
             />
             <ipl-data-row
                 label="Layout"
-                :value="scheduleStore.nextSpeedrun.layout"
+                :value="scheduleStore.nextSpeedrun.layout == null ? null : layouts[scheduleStore.nextSpeedrun.layout]?.name ?? `Unknown Layout '${scheduleStore.nextSpeedrun.layout}'`"
             />
             <ipl-data-row
                 label="Relay?"
@@ -72,6 +72,7 @@ import { faGamepad } from '@fortawesome/free-solid-svg-icons/faGamepad';
 import { faHeadset } from '@fortawesome/free-solid-svg-icons/faHeadset';
 import { ScheduleItemEditorInjectionKey } from '../../helpers/Injections';
 import { formatDuration } from 'client-shared/helpers/StringHelper';
+import { layouts } from 'types/Layouts';
 
 library.add(faPenToSquare, faGamepad, faHeadset);
 

@@ -90,12 +90,10 @@ import { computed, ref } from 'vue';
 import { useObsStore } from 'client-shared/stores/ObsStore';
 import cloneDeep from 'lodash/cloneDeep';
 import { updateRefOnValueChange } from 'client-shared/helpers/StoreHelper';
-import { useScheduleStore } from 'client-shared/stores/ScheduleStore';
 
 library.add(faVideo, faGamepad);
 
 const obsStore = useObsStore();
-const scheduleStore = useScheduleStore();
 
 const activeGameLayout = ref<keyof typeof layouts | ''>('');
 const selectedLayoutData = computed(() => activeGameLayout.value === '' ? null : layouts[activeGameLayout.value]);

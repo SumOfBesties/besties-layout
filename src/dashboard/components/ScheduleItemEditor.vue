@@ -73,18 +73,24 @@
                     class="max-width m-t-4"
                 />
             </template>
-            <div
-                class="layout horizontal"
-                style="max-width: 300px; margin: 4px auto 0 auto"
-            >
+            <div class="layout horizontal m-t-4 center-horizontal">
                 <duration-input
                     v-model="selectedScheduleItem.estimate"
                     label="Estimate"
+                    style="width: 35%"
                 />
                 <duration-input
                     v-model="selectedScheduleItem.setupTime"
                     label="Setup time"
                     class="m-l-8"
+                    style="width: 35%"
+                />
+                <ipl-select
+                    v-if="selectedScheduleItem.type === 'SPEEDRUN'"
+                    v-model="selectedScheduleItem.layout"
+                    :options="layoutOptions"
+                    class="m-l-8 max-width"
+                    label="Layout"
                 />
             </div>
             <template v-if="selectedScheduleItem.type === 'SPEEDRUN'">
@@ -206,7 +212,7 @@ import {
     IplDialog,
     IplDialogTitle,
     IplInput,
-    IplMessage,
+    IplMessage, IplSelect,
     IplSpace
 } from '@iplsplatoon/vue-components';
 import { computed, ref } from 'vue';
@@ -224,6 +230,7 @@ import { faUserPlus } from '@fortawesome/free-solid-svg-icons/faUserPlus';
 import { faPlus } from '@fortawesome/free-solid-svg-icons/faPlus';
 import { faXmark } from '@fortawesome/free-solid-svg-icons/faXmark';
 import TwitchCategorySelect from './TwitchCategorySelect.vue';
+import { layouts } from 'types/Layouts';
 
 library.add(faUserPlus, faPlus, faXmark);
 
@@ -327,6 +334,11 @@ function removeTeam(index: number) {
 
     selectedScheduleItem.value.teams = selectedScheduleItem.value.teams.toSpliced(index, 1);
 }
+
+const layoutOptions = computed(() => [
+    { name: 'None', value: null },
+    ...Object.entries(layouts).map(([key, layout]) => ({ name: layout.name, value: key }))
+]);
 
 function open(scheduleItemId: string) {
     const scheduleItem = scheduleStore.schedule.items.find(scheduleItem => scheduleItem.id === scheduleItemId);
