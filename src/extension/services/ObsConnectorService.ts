@@ -213,6 +213,10 @@ export class ObsConnectorService {
         if (this.obsState.value.videoInputs != null) {
             this.obsState.value.videoInputs = this.obsState.value.videoInputs.map(input => ({ ...input, sourceName: event.oldInputName === input.sourceName ? event.inputName : input.sourceName }));
         }
+        this.obsVideoInputAssignments.value = {
+            gameCaptures: this.obsVideoInputAssignments.value.gameCaptures.map(assignment => assignment === event.oldInputName ? event.inputName : assignment),
+            cameraCaptures: this.obsVideoInputAssignments.value.cameraCaptures.map(assignment => assignment === event.oldInputName ? event.inputName : assignment)
+        };
     }
 
     private async getVideoInputs(): Promise<ObsState['videoInputs']> {
