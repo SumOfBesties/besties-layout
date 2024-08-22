@@ -20,11 +20,12 @@
                     "type": "object",
                     "additionalProperties": false,
                     "properties": {
+                        "id": { "type": "number" },
                         "name": { "type": "string" },
                         "description": { "type": "string" },
                         "total": { "type": "number" }
                     },
-                    "required": ["name", "total"]
+                    "required": ["id", "name", "total"]
                 }
             }
         },

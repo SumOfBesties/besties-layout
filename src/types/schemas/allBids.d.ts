@@ -16,6 +16,7 @@ export type AllBids = {
 	speedrunName?: string | null;
 	userOptionsAllowed?: boolean;
 	options?: {
+		id: number;
 		name: string;
 		description?: string;
 		total: number;

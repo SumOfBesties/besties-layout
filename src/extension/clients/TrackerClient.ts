@@ -226,6 +226,7 @@ export class TrackerClient {
                 this.logger.warn(`Child bid (ID ${bidItem.pk}) parent (ID ${bidItem.fields.parent}) could not be found`);
             } else {
                 parent.options?.push({
+                    id: bidItem.pk,
                     name: bidItem.fields.name,
                     description: bidItem.fields.shortdescription || bidItem.fields.description,
                     total: typeof bidItem.fields.total === 'string' ? parseFloat(bidItem.fields.total) : bidItem.fields.total ?? 0
