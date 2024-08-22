@@ -1,5 +1,6 @@
 import type NodeCG from '@nodecg/types';
 import type {
+    ActiveGameLayout,
     ActiveSpeedrun,
     Configschema,
     NextSpeedrun,
@@ -9,11 +10,13 @@ import cloneDeep from 'lodash/cloneDeep';
 import { ScheduleService } from './ScheduleService';
 import { ScheduleItem } from 'types/ScheduleHelpers';
 import { TimerService } from './TimerService';
+import { Layout, layouts } from 'types/Layouts';
 
 export class SpeedrunService {
     private readonly schedule: NodeCG.ServerReplicantWithSchemaDefault<Schedule>;
     private readonly activeSpeedrun: NodeCG.ServerReplicantWithSchemaDefault<ActiveSpeedrun>;
     private readonly nextSpeedrun: NodeCG.ServerReplicantWithSchemaDefault<NextSpeedrun>;
+    private readonly activeGameLayout: NodeCG.ServerReplicantWithSchemaDefault<ActiveGameLayout>;
     private readonly scheduleService: ScheduleService;
     private readonly timerService: TimerService;
 
@@ -21,6 +24,7 @@ export class SpeedrunService {
         this.schedule = nodecg.Replicant('schedule') as unknown as NodeCG.ServerReplicantWithSchemaDefault<Schedule>;
         this.activeSpeedrun = nodecg.Replicant('activeSpeedrun') as unknown as NodeCG.ServerReplicantWithSchemaDefault<ActiveSpeedrun>;
         this.nextSpeedrun = nodecg.Replicant('nextSpeedrun') as unknown as NodeCG.ServerReplicantWithSchemaDefault<NextSpeedrun>;
+        this.activeGameLayout = nodecg.Replicant('activeGameLayout') as unknown as NodeCG.ServerReplicantWithSchemaDefault<ActiveGameLayout>;
         this.scheduleService = scheduleService;
         this.timerService = timerService;
 
@@ -90,8 +94,15 @@ export class SpeedrunService {
             throw new Error(`Schedule item is type "${scheduleItem.type}"; Expected "SPEEDRUN"`);
         }
         const activeRunChanging = scheduleItem.id !== this.activeSpeedrun.value?.id;
-        if (this.timerService.isActive() && activeRunChanging) {
-            throw new Error('Cannot change active speedrun while timer is running');
+        if (activeRunChanging) {
+            if (this.timerService.isActive()) {
+                throw new Error('Cannot change active speedrun while timer is running');
+            }
+
+            // Ignore changes to layouts mid-run
+            if (scheduleItem.layout != null && (layouts as Record<string, Layout>)[scheduleItem.layout] != null) {
+                this.activeGameLayout.value = scheduleItem.layout;
+            }
         }
         this.activeSpeedrun.value = cloneDeep(scheduleItem);
         if (activeRunChanging) {
