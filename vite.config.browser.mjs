@@ -1,8 +1,8 @@
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import NodeCGPlugin from 'vite-plugin-nodecg';
-import tsconfigPaths from 'vite-tsconfig-paths';
 import checker from 'vite-plugin-checker';
+import { resolve } from 'path';
 
 export default defineConfig({
     plugins: [
@@ -11,8 +11,14 @@ export default defineConfig({
                 tsconfigPath: 'tsconfig.browser.json'
             }
         }),
-        tsconfigPaths({ projects: ['tsconfig.browser.json'] }),
         vue(),
         NodeCGPlugin()
-    ]
+    ],
+    resolve: {
+        alias: {
+            types: resolve(__dirname, 'src/types'),
+            'client-shared': resolve(__dirname, 'src/client-shared'),
+            components: resolve(__dirname, 'src/graphics/components')
+        }
+    }
 });
