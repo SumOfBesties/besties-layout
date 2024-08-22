@@ -1,39 +1,37 @@
 <template>
-    <div>
-        <ipl-space>
-            <ipl-message
-                v-if="currentHost == null"
-                type="info"
-            >
-                No host is currently assigned.
-            </ipl-message>
-            <div v-else>
-                <div class="text-low-emphasis">Current host</div>
-                <span class="host-name">{{ currentHost.name }}</span><ipl-badge v-if="currentHost.pronouns" class="m-l-4">{{ currentHost.pronouns }}</ipl-badge>
-            </div>
-            <div class="layout horizontal center-horizontal m-t-8">
-                <ipl-button
-                    v-if="currentHost != null"
-                    class="m-r-8"
-                    label="Edit current"
-                    @click="editCurrentHost"
-                />
-                <ipl-button
-                    label="Set new host"
-                    color="green"
-                    @click="talentSelectOpen = true"
-                />
-            </div>
-            <div class="text-center m-t-8">
-                <ipl-button
-                    inline
-                    label="Remove host"
-                    color="red"
-                    @click="removeCurrentHost"
-                />
-            </div>
-        </ipl-space>
-    </div>
+    <ipl-space>
+        <ipl-message
+            v-if="currentHost == null"
+            type="info"
+        >
+            No host is currently assigned.
+        </ipl-message>
+        <div v-else>
+            <div class="text-low-emphasis">Current host</div>
+            <span class="host-name">{{ currentHost.name }}</span><ipl-badge v-if="currentHost.pronouns" class="m-l-4">{{ currentHost.pronouns }}</ipl-badge>
+        </div>
+        <div class="layout horizontal center-horizontal m-t-8">
+            <ipl-button
+                v-if="currentHost != null"
+                class="m-r-8"
+                label="Edit current"
+                @click="editCurrentHost"
+            />
+            <ipl-button
+                label="Set new host"
+                color="green"
+                @click="talentSelectOpen = true"
+            />
+        </div>
+        <div class="text-center m-t-8">
+            <ipl-button
+                inline
+                label="Remove host"
+                color="red"
+                @click="removeCurrentHost"
+            />
+        </div>
+    </ipl-space>
     <talent-select-dialog
         v-model:is-open="talentSelectOpen"
         @select="onTalentSelect"

@@ -356,7 +356,7 @@ export class ObsConnectorService {
         }
 
         const configUpdates: Partial<ObsConfig> = {};
-        (['videoInputsScene', 'gameLayoutVideoFeedsScene'] as (keyof ObsConfig)[]).forEach(configKey => {
+        (['videoInputsScene', 'gameLayoutVideoFeedsScene', 'gameplayScene', 'intermissionScene'] as (keyof ObsConfig)[]).forEach(configKey => {
             if (this.obsConfig.value[configKey] === event.oldSceneName) {
                 configUpdates[configKey] = event.sceneName;
             }

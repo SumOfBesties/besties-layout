@@ -76,6 +76,7 @@
                 </div>
             </div>
         </ipl-space>
+        <scene-switcher />
     </div>
 </template>
 
@@ -90,6 +91,7 @@ import { computed, ref } from 'vue';
 import { useObsStore } from 'client-shared/stores/ObsStore';
 import cloneDeep from 'lodash/cloneDeep';
 import { updateRefOnValueChange } from 'client-shared/helpers/StoreHelper';
+import SceneSwitcher from '../../components/SceneSwitcher.vue';
 
 library.add(faVideo, faGamepad);
 

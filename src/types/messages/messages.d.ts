@@ -27,6 +27,7 @@ export interface MessageInputMap {
     'obs:connect': ObsConnectionInfo
     'obs:setConfig': ObsConfig
     'obs:setEnabled': { enabled: boolean }
+    'obs:setCurrentScene': { sceneName: string }
 
     'tracker:newDonation': { amount: number, displayName: string | undefined | null }
 

@@ -11,6 +11,18 @@
             :options="sceneOptions"
             class="m-t-4"
         />
+        <ipl-select
+            v-model="gameplayScene"
+            label="Gameplay scene"
+            :options="sceneOptions"
+            class="m-t-4"
+        />
+        <ipl-select
+            v-model="intermissionScene"
+            label="Intermission scene"
+            :options="sceneOptions"
+            class="m-t-4"
+        />
         <ipl-button
             label="Update"
             class="m-t-8"
@@ -36,17 +48,25 @@ const sceneOptions = computed(() => obsStore.obsState.scenes?.map(scene => ({
 
 const videoInputsScene = ref('');
 const gameLayoutVideoFeedsScene = ref('');
+const gameplayScene = ref('');
+const intermissionScene = ref('');
+updateRefOnValueChange(() => obsStore.obsConfig.gameplayScene, gameplayScene);
+updateRefOnValueChange(() => obsStore.obsConfig.intermissionScene, intermissionScene);
 updateRefOnValueChange(() => obsStore.obsConfig.videoInputsScene, videoInputsScene);
 updateRefOnValueChange(() => obsStore.obsConfig.gameLayoutVideoFeedsScene, gameLayoutVideoFeedsScene);
 
 const isChanged = computed(() =>
     videoInputsScene.value !== obsStore.obsConfig.videoInputsScene
-    || gameLayoutVideoFeedsScene.value !== obsStore.obsConfig.gameLayoutVideoFeedsScene);
+    || gameLayoutVideoFeedsScene.value !== obsStore.obsConfig.gameLayoutVideoFeedsScene
+    || intermissionScene.value !== obsStore.obsConfig.intermissionScene
+    || gameplayScene.value !== obsStore.obsConfig.gameplayScene);
 
 async function update() {
     await sendMessage('obs:setConfig', {
         videoInputsScene: videoInputsScene.value,
-        gameLayoutVideoFeedsScene: gameLayoutVideoFeedsScene.value
+        gameLayoutVideoFeedsScene: gameLayoutVideoFeedsScene.value,
+        intermissionScene: intermissionScene.value,
+        gameplayScene: gameplayScene.value
     });
 }
 </script>

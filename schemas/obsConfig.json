@@ -4,7 +4,9 @@
     "additionalProperties": false,
     "properties": {
         "videoInputsScene": { "type": "string" },
-        "gameLayoutVideoFeedsScene": { "type": "string" }
+        "gameLayoutVideoFeedsScene": { "type": "string" },
+        "gameplayScene": { "type": "string" },
+        "intermissionScene": { "type": "string" }
     },
     "default": {}
 }

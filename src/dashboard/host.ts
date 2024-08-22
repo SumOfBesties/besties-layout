@@ -8,6 +8,7 @@ import { initTalentStore } from 'client-shared/stores/TalentStore';
 import { initTimerStore } from 'client-shared/stores/TimerStore';
 import { initDonationStore } from 'client-shared/stores/DonationStore';
 import HostPanel from './pages/host/HostPanel.vue';
+import { initObsStore } from 'client-shared/stores/ObsStore';
 
 (async () => {
     const app = createApp(HostPanel);
@@ -18,5 +19,6 @@ import HostPanel from './pages/host/HostPanel.vue';
     await initTalentStore();
     await initTimerStore();
     await initDonationStore();
+    await initObsStore();
     app.mount('#app');
 })();

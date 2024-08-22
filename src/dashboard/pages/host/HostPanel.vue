@@ -1,6 +1,9 @@
 <template>
     <div class="host-layout">
-        <current-host-manager />
+        <div>
+            <current-host-manager />
+            <scene-switcher class="m-t-8" />
+        </div>
         <div />
         <div />
         <rundown-display readonly />
@@ -18,6 +21,7 @@ import CountrySelectDialog from '../../components/CountrySelectDialog.vue';
 import { provide, ref } from 'vue';
 import { CountrySelectDialogInjectionKey, TalentItemEditDialogInjectionKey } from '../../helpers/Injections';
 import TalentItemEditDialog from '../../components/TalentItemEditDialog.vue';
+import SceneSwitcher from '../../components/SceneSwitcher.vue';
 
 const countrySelectDialog = ref<InstanceType<typeof CountrySelectDialog>>();
 provide(CountrySelectDialogInjectionKey, countrySelectDialog);
