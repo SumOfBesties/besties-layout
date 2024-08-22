@@ -35,7 +35,7 @@ import OmnibarSlideRotation from 'components/omnibar/OmnibarSlideRotation.vue';
 @use '../../styles/constants';
 
 body {
-    height: constants.$omnibarHeight;
+    height: constants.$omnibarHeight !important;
 }
 </style>
 
