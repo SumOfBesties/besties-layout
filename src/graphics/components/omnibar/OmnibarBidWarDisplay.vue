@@ -168,6 +168,7 @@ const maxTitleWidth = inject(MaxOmnibarBidWarTitleWidthInjectionKey, 275);
 
 .bid-war-options {
     display: grid;
+    margin-right: 8px;
 }
 
 .bid-war-option {
