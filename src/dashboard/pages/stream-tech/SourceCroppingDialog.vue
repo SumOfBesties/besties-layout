@@ -49,10 +49,37 @@
                     />
                 </div>
             </div>
-            <div class="m-t-8 cropping-controls">
+            <div class="m-t-8 cropping-controls layout vertical center-horizontal">
                 <div
-                    class="layout horizontal "
-                    style="max-width: 600px; margin: 0 auto;"
+                    class="layout horizontal max-width center-vertical center-horizontal"
+                >
+                    <ipl-radio
+                        v-model="selectedAspectRatio"
+                        :options="aspectRatioOptions"
+                        name="aspect-ratio"
+                        label="Lock aspect ratio"
+                        style="min-width: 200px; margin-top: -8px;"
+                    />
+                    <ipl-button
+                        class="m-l-8"
+                        style="max-width: 200px;"
+                        @click="centerHorizontal"
+                    >
+                        <font-awesome-icon icon="left-right" fixed-width />
+                        Center horizontal
+                    </ipl-button>
+                    <ipl-button
+                        class="m-l-8"
+                        style="max-width: 200px;"
+                        @click="centerVertical"
+                    >
+                        <font-awesome-icon icon="up-down" fixed-width />
+                        Center vertical
+                    </ipl-button>
+                </div>
+                <div
+                    class="layout horizontal max-width center-horizontal"
+                    style="max-width: 850px; margin: 8px 0 auto;"
                 >
                     <ipl-button
                         icon="magnifying-glass-plus"
@@ -68,18 +95,21 @@
                         label="Apply"
                         color="green"
                         class="m-l-8"
+                        style="max-width: 100px"
                         @click="apply"
                     />
                     <ipl-button
                         label="Reset"
                         color="red"
                         class="m-l-8"
+                        style="max-width: 100px"
                         @click="resetCrop"
                     />
                     <ipl-button
                         label="Cancel"
                         color="red"
                         class="m-l-8"
+                        style="max-width: 100px"
                         @click="isOpen = false"
                     />
                 </div>
@@ -89,7 +119,7 @@
 </template>
 
 <script setup lang="ts">
-import { IplButton, IplDialog, IplMessage, IplSpinner } from '@iplsplatoon/vue-components';
+import { IplButton, IplDialog, IplMessage, IplRadio, IplSpinner } from '@iplsplatoon/vue-components';
 import { nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
 import { sendMessage } from 'client-shared/helpers/NodecgHelper';
 import { ObsSceneItem } from '../../../extension/services/ObsConnectorService';
@@ -98,12 +128,59 @@ import cloneDeep from 'lodash/cloneDeep';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faMagnifyingGlassPlus } from '@fortawesome/free-solid-svg-icons/faMagnifyingGlassPlus';
 import { faMagnifyingGlassMinus } from '@fortawesome/free-solid-svg-icons/faMagnifyingGlassMinus';
+import { faUpDown } from '@fortawesome/free-solid-svg-icons/faUpDown';
+import { faLeftRight } from '@fortawesome/free-solid-svg-icons/faLeftRight';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import dataSource from '@nodecg/types/server/database/datasource';
 
-library.add(faMagnifyingGlassPlus, faMagnifyingGlassMinus);
+library.add(faMagnifyingGlassPlus, faMagnifyingGlassMinus, faUpDown, faLeftRight);
 
 type CropOutlineData = { width: number, height: number, top: number, left: number };
 
 const cropWrapper = ref<HTMLDataElement | null>();
+
+const selectedAspectRatio = ref('off');
+const aspectRatioOptions = [
+    { name: 'Off', value: 'off' },
+    { name: '16:9', value: '169' },
+    { name: '4:3', value: '43' },
+    { name: '3:2', value: '32' },
+    { name: '2:1', value: '21' }
+];
+function getNumericAspectRatio() {
+    switch (selectedAspectRatio.value) {
+        case '169':
+            return 16 / 9;
+        case '43':
+            return 4 / 3;
+        case '32':
+            return 3 / 2;
+        case '21':
+            return 2;
+        default:
+            return null;
+    }
+}
+watch(selectedAspectRatio, () => {
+    const numericAspectRatio = getNumericAspectRatio();
+    if (numericAspectRatio == null || cropOutlineData.value == null || sceneItem.value == null) return;
+    const sourceAspectRatio = sceneItem.value.sceneItemTransform.sourceWidth / sceneItem.value.sceneItemTransform.sourceHeight;
+    if (sourceAspectRatio < numericAspectRatio) {
+        const newHeight = cropOutlineData.value.width / numericAspectRatio * sourceAspectRatio;
+        cropOutlineData.value = {
+            ...cropOutlineData.value,
+            height: newHeight,
+            top: Math.min(cropOutlineData.value.top, 1 - newHeight)
+        };
+    } else {
+        const newWidth = cropOutlineData.value.height * numericAspectRatio / sourceAspectRatio;
+        cropOutlineData.value = {
+            ...cropOutlineData.value,
+            width: newWidth,
+            left: Math.min(cropOutlineData.value.left, 1 - newWidth)
+        };
+    }
+});
 
 const obsStore = useObsStore();
 const isOpen = ref(false);
@@ -128,6 +205,7 @@ function resetCrop() {
         top: 0,
         left: 0
     }
+    selectedAspectRatio.value = 'off';
 }
 
 watch(isOpen, async (newValue) => {
@@ -136,6 +214,7 @@ watch(isOpen, async (newValue) => {
         sourceScreenshot.value = '';
         loadingScreenshot.value = true;
         zoom.value = 1;
+        selectedAspectRatio.value = 'off';
         try {
             const sceneItemData = await Promise.all([
                 sendMessage('obs:getSourceScreenshot', { sourceName: selectedSourceName.value }),
@@ -205,20 +284,102 @@ function onWindowMouseup() {
     dragStartPosition.value = null;
 }
 function onWindowMouseMove(e: PointerEvent) {
-    if (dragStartPosition.value == null || cropWrapperSize.value == null || initialCropOutline.value == null) return;
+    if (dragStartPosition.value == null || cropWrapperSize.value == null || initialCropOutline.value == null || sceneItem.value == null) return;
+    const aspectRatio = getNumericAspectRatio();
     const newCropOutline = cloneDeep(initialCropOutline.value);
-    if (dragSideX.value === 'right') {
-        newCropOutline.width = Math.min(1 - newCropOutline.left, Math.max(0, newCropOutline.width - (dragStartPosition.value.x - e.clientX) / zoom.value / cropWrapperSize.value.width));
-    } else if (dragSideX.value === 'left') {
-        newCropOutline.width = Math.min(newCropOutline.left + newCropOutline.width, Math.max(0, newCropOutline.width + (dragStartPosition.value.x - e.clientX) / zoom.value / cropWrapperSize.value.width));
-        newCropOutline.left = Math.min(initialCropOutline.value.width + initialCropOutline.value.left, Math.max(0, newCropOutline.left - (dragStartPosition.value.x - e.clientX) / zoom.value / cropWrapperSize.value.width));
+
+    // i hate this logic with a passion but it _works_ so i'm not gonna touch it any further; i've got an event to run...
+
+    if (aspectRatio == null) {
+        // handle dragging with no aspect ratio constraints
+        if (dragSideX.value === 'right') {
+            newCropOutline.width = Math.min(1 - newCropOutline.left, Math.max(0, newCropOutline.width - (dragStartPosition.value.x - e.clientX) / zoom.value / cropWrapperSize.value.width));
+        } else if (dragSideX.value === 'left') {
+            newCropOutline.width = Math.min(newCropOutline.left + newCropOutline.width, Math.max(0, newCropOutline.width + (dragStartPosition.value.x - e.clientX) / zoom.value / cropWrapperSize.value.width));
+            newCropOutline.left = Math.min(initialCropOutline.value.width + initialCropOutline.value.left, Math.max(0, newCropOutline.left - (dragStartPosition.value.x - e.clientX) / zoom.value / cropWrapperSize.value.width));
+        }
+        if (dragSideY.value === 'bottom') {
+            newCropOutline.height = Math.min(1 - newCropOutline.top, Math.max(0, newCropOutline.height - (dragStartPosition.value.y - e.clientY) / zoom.value / cropWrapperSize.value.height));
+        } else if (dragSideY.value === 'top') {
+            newCropOutline.height = Math.min(newCropOutline.top + newCropOutline.height, Math.max(0, newCropOutline.height + (dragStartPosition.value.y - e.clientY) / zoom.value / cropWrapperSize.value.height));
+            newCropOutline.top = Math.min(initialCropOutline.value.height + initialCropOutline.value.top, Math.max(0, newCropOutline.top - (dragStartPosition.value.y - e.clientY) / zoom.value / cropWrapperSize.value.height));
+        }
+    } else {
+        // handle dragging WITH aspect ratio constraints
+        const sourceAspectRatio = sceneItem.value.sceneItemTransform.sourceWidth / sceneItem.value.sceneItemTransform.sourceHeight;
+        if (dragSideX.value != null) {
+            if (dragSideX.value === 'left') {
+                newCropOutline.left = Math.min(initialCropOutline.value.width + initialCropOutline.value.left, Math.max(0, newCropOutline.left - (dragStartPosition.value.x - e.clientX) / zoom.value / cropWrapperSize.value.width))
+                newCropOutline.width = Math.min(initialCropOutline.value.left + initialCropOutline.value.width, Math.max(0, newCropOutline.width + (dragStartPosition.value.x - e.clientX) / zoom.value / cropWrapperSize.value.width));
+            } else {
+                newCropOutline.width = Math.min(1 - newCropOutline.left, Math.max(0, newCropOutline.width - (dragStartPosition.value.x - e.clientX) / zoom.value / cropWrapperSize.value.width));
+            }
+            newCropOutline.height = newCropOutline.width / aspectRatio * sourceAspectRatio;
+            if (dragSideY.value === 'top') {
+                newCropOutline.top = newCropOutline.top - (newCropOutline.height - initialCropOutline.value.height);
+            } else if (dragSideY.value == null) {
+                newCropOutline.top = newCropOutline.top - (newCropOutline.height - initialCropOutline.value.height) / 2;
+            }
+            if (newCropOutline.height + newCropOutline.top > 1) {
+                if (dragSideY.value == null) {
+                    const remainingInitialHeight = 1 - (initialCropOutline.value.top + initialCropOutline.value.height);
+                    newCropOutline.top = initialCropOutline.value.top - remainingInitialHeight;
+                    newCropOutline.height = initialCropOutline.value.height + remainingInitialHeight * 2;
+                    if (dragSideX.value === 'left') {
+                        newCropOutline.left = initialCropOutline.value.left - remainingInitialHeight * 2;
+                    }
+                } else {
+                    newCropOutline.height = 1 - newCropOutline.top;
+                }
+                newCropOutline.width = newCropOutline.height * aspectRatio / sourceAspectRatio;
+                if (dragSideY.value === 'bottom' && dragSideX.value === 'left') {
+                    newCropOutline.left = initialCropOutline.value.left - (newCropOutline.width - initialCropOutline.value.width);
+                }
+            } else if (newCropOutline.top < 0) {
+                if (dragSideY.value == null) {
+                    newCropOutline.height = newCropOutline.height + newCropOutline.top * 2;
+                } else {
+                    newCropOutline.height = newCropOutline.height + newCropOutline.top;
+                }
+                newCropOutline.width = newCropOutline.height * aspectRatio / sourceAspectRatio;
+                if (dragSideY.value === 'bottom') {
+                    newCropOutline.top = initialCropOutline.value.top;
+                } else {
+                    newCropOutline.top = 0;
+                    if (dragSideX.value === 'left') {
+                        newCropOutline.left = initialCropOutline.value.left - (newCropOutline.width - initialCropOutline.value.width);
+                    }
+                }
+            }
+        } else {
+            if (dragSideY.value === 'top') {
+                newCropOutline.height = Math.min(initialCropOutline.value.top + initialCropOutline.value.height, Math.max(0, newCropOutline.height + ((dragStartPosition.value.y - e.clientY)) / zoom.value / cropWrapperSize.value.height));
+                newCropOutline.top = Math.max(0, newCropOutline.top - (newCropOutline.height - initialCropOutline.value.height));
+            } else {
+                newCropOutline.height = Math.min(1 - initialCropOutline.value.top, Math.max(0, newCropOutline.height - ((dragStartPosition.value.y - e.clientY)) / zoom.value / cropWrapperSize.value.height));
+            }
+            newCropOutline.width = newCropOutline.height / (1 / aspectRatio) * (1 / sourceAspectRatio);
+            newCropOutline.left = newCropOutline.left - (newCropOutline.width - initialCropOutline.value.width) / 2;
+
+            if (newCropOutline.left < 0 || newCropOutline.left + newCropOutline.width > 1) {
+                let remainingSpace: number;
+                if (newCropOutline.left < 0) {
+                    newCropOutline.left = 0;
+                    remainingSpace = initialCropOutline.value.left;
+                } else {
+                    remainingSpace = 1 - (initialCropOutline.value.width + initialCropOutline.value.left);
+                    newCropOutline.left = initialCropOutline.value.left - remainingSpace;
+                }
+
+                newCropOutline.width = initialCropOutline.value.width + remainingSpace * 2;
+                newCropOutline.height = newCropOutline.width * (1 / aspectRatio) / (1 / sourceAspectRatio);
+                if (dragSideY.value === 'top') {
+                    newCropOutline.top = initialCropOutline.value.top - (newCropOutline.height - initialCropOutline.value.height);
+                }
+            }
+        }
     }
-    if (dragSideY.value === 'bottom') {
-        newCropOutline.height = Math.min(1 - newCropOutline.top, Math.max(0, newCropOutline.height - (dragStartPosition.value.y - e.clientY) / zoom.value / cropWrapperSize.value.height));
-    } else if (dragSideY.value === 'top') {
-        newCropOutline.height = Math.min(newCropOutline.top + newCropOutline.height, Math.max(0, newCropOutline.height + (dragStartPosition.value.y - e.clientY) / zoom.value / cropWrapperSize.value.height));
-        newCropOutline.top = Math.min(initialCropOutline.value.height + initialCropOutline.value.top, Math.max(0, newCropOutline.top - (dragStartPosition.value.y - e.clientY) / zoom.value / cropWrapperSize.value.height));
-    }
+
     cropOutlineData.value = newCropOutline;
 }
 onMounted(() => {
@@ -229,6 +390,16 @@ onUnmounted(() => {
     window.document.removeEventListener('mouseup', onWindowMouseup);
     window.document.removeEventListener('mousemove', onWindowMouseMove);
 });
+
+function centerHorizontal() {
+    if (cropOutlineData.value == null) return;
+    cropOutlineData.value.left = (1 - cropOutlineData.value.width) / 2;
+}
+
+function centerVertical() {
+    if (cropOutlineData.value == null) return;
+    cropOutlineData.value.top = (1 - cropOutlineData.value.height) / 2;
+}
 
 function open(sourceName: string) {
     selectedSourceName.value = sourceName;
@@ -282,7 +453,7 @@ defineExpose({
 }
 
 .zoom-overflow-wrapper {
-    height: calc(90vh - 65px);
+    height: calc(90vh - 115px);
     width: calc(90vw - 50px);
     margin: 0 auto;
     overflow: auto;
@@ -297,8 +468,9 @@ defineExpose({
     zoom: var(--zoom-factor);
 
     img {
-        height: 80vh;
+        height: calc(90vh - 125px);
         user-select: none;
+        pointer-events: none;
         image-rendering: pixelated;
     }
 
