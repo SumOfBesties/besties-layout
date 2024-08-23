@@ -93,7 +93,18 @@ export class TwitchOauthClient {
         } catch (e) {
             if (isAxiosError(e) && e.response?.status === 401) {
                 this.logger.debug('Twitch token validation returned HTTP 401, refreshing token');
-                await this.refreshToken();
+                await this.refreshToken()
+                    .then(() => {
+                        this.twitchData.value.state = 'LOGGED_IN';
+                    })
+                    .catch(e => {
+                        this.logger.error('Failed to refresh Twitch token', e instanceof Error ? e.message : String(e));
+                        this.logger.debug('Failed to refresh Twitch token', e);
+                        this.twitchData.value = {
+                            state: 'NOT_LOGGED_IN',
+                            syncEnabled: this.twitchData.value.syncEnabled
+                        };
+                    });
             } else {
                 this.logger.debug('Twitch token validation returned unknown error:', e);
                 this.twitchData.value = {
