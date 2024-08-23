@@ -1,5 +1,6 @@
 import { MusicConfig, ObsConfig, ObsConnectionInfo, Talent } from '../schemas';
 import { ScheduleItem } from '../ScheduleHelpers';
+import { ObsSceneItem, ObsSceneItemTransform } from '../../extension/services/ObsConnectorService';
 
 export interface MessageInputMap {
     'log:warning': string
@@ -28,6 +29,9 @@ export interface MessageInputMap {
     'obs:setConfig': ObsConfig
     'obs:setEnabled': { enabled: boolean }
     'obs:setCurrentScene': { sceneName: string }
+    'obs:getSourceScreenshot': { sourceName: string }
+    'obs:getSceneItem': { sourceName: string, sceneName: string }
+    'obs:setSceneItemCrop': { sceneName: string, sceneItemId: number, crop: { cropTop: number, cropRight: number, cropBottom: number, cropLeft: number } }
 
     'tracker:newDonation': { amount: number, displayName: string | undefined | null }
 
@@ -39,6 +43,8 @@ type MessagesWithoutReturnValues = Exclude<keyof MessageInputMap, keyof InnerMes
 
 interface InnerMessageResultMap {
     'twitch:findCategory': { id: string, name: string, boxArtUrl: string }[] | undefined
+    'obs:getSourceScreenshot': string
+    'obs:getSceneItem': ObsSceneItem
 }
 
 export type MessageResultMap = InnerMessageResultMap & {

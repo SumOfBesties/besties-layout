@@ -17,6 +17,14 @@
                     >
                         {{ input.sourceName }}
                     </ipl-space>
+                    <ipl-button
+                        class="m-t-16"
+                        :disabled="!allowCropping"
+                        @click="sourceCroppingDialog?.open(obsStore.obsVideoInputAssignments[selectedCapture.type === 'game' ? 'gameCaptures' : 'cameraCaptures'][selectedCapture.index])"
+                    >
+                        <font-awesome-icon icon="crop" />
+                        Adjust crop
+                    </ipl-button>
                 </ipl-space>
             </transition>
 
@@ -77,11 +85,14 @@
             </div>
         </ipl-space>
         <scene-switcher />
+        <source-cropping-dialog
+            ref="sourceCroppingDialog"
+        />
     </div>
 </template>
 
 <script setup lang="ts">
-import { IplSpace } from '@iplsplatoon/vue-components';
+import { IplButton, IplSpace } from '@iplsplatoon/vue-components';
 import { layouts } from 'types/Layouts';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faVideo } from '@fortawesome/free-solid-svg-icons/faVideo';
@@ -92,8 +103,10 @@ import { useObsStore } from 'client-shared/stores/ObsStore';
 import cloneDeep from 'lodash/cloneDeep';
 import { updateRefOnValueChange } from 'client-shared/helpers/StoreHelper';
 import SceneSwitcher from '../../components/SceneSwitcher.vue';
+import { faCrop } from '@fortawesome/free-solid-svg-icons/faCrop';
+import SourceCroppingDialog from './SourceCroppingDialog.vue';
 
-library.add(faVideo, faGamepad);
+library.add(faVideo, faGamepad, faCrop);
 
 const obsStore = useObsStore();
 
@@ -134,6 +147,13 @@ function setVideoFeedAssignment(sourceName: string) {
     }
     obsStore.setVideoInputAssignments(selectedCapture.value.type, newAssignments);
 }
+
+const sourceCroppingDialog = ref<InstanceType<typeof SourceCroppingDialog>>();
+const allowCropping = computed(() => {
+    if (obsStore.obsState.videoInputs == null || obsStore.obsState.videoInputs?.length === 0 || selectedCapture.value == null) return false;
+    const selectedInput = obsStore.obsVideoInputAssignments[selectedCapture.value.type === 'game' ? 'gameCaptures' : 'cameraCaptures'][selectedCapture.value.index];
+    return selectedInput != null && obsStore.obsState.videoInputs.some(input => input.sourceName === selectedInput);
+});
 </script>
 
 <style scoped lang="scss">

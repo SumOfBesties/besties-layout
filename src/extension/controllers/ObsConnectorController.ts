@@ -44,5 +44,17 @@ export class ObsConnectorController extends BaseController {
         this.listen('obs:setCurrentScene', async (data) => {
             await obsConnectorService.setCurrentScene(data.sceneName);
         });
+
+        this.listen('obs:getSourceScreenshot', async (data) => {
+            return obsConnectorService.getSourceScreenshot(data.sourceName);
+        });
+
+        this.listen('obs:getSceneItem', async (data) => {
+            return obsConnectorService.getSceneItem(data.sourceName, data.sceneName);
+        });
+
+        this.listen('obs:setSceneItemCrop', async (data) => {
+            await obsConnectorService.setSceneItemCrop(data.sceneName, data.sceneItemId, data.crop);
+        });
     }
 }

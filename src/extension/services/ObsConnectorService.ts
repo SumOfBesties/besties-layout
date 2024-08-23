@@ -46,7 +46,7 @@ type ObsBoundsType =
     | 'OBS_BOUNDS_MAX_ONLY'
     | 'OBS_BOUNDS_NONE';
 
-type ObsSceneItemTransform = {
+export type ObsSceneItemTransform = {
     positionX: number
     positionY: number
     alignment: ObsAlignment
@@ -68,7 +68,7 @@ type ObsSceneItemTransform = {
     height: number
 };
 
-type ObsSceneItem = {
+export type ObsSceneItem = {
     inputKind: string | null
     isGroup: boolean | null
     sceneItemBlendMode: ObsBlendMode
@@ -196,6 +196,27 @@ export class ObsConnectorService {
         this.stopReconnecting();
     }
 
+    async getSourceScreenshot(sourceName: string): Promise<string> {
+        return (await this.socket.call('GetSourceScreenshot', { sourceName, imageFormat: 'png' })).imageData;
+    }
+
+    async getSceneItem(sourceName: string, sceneName: string): Promise<ObsSceneItem> {
+        const sceneItems = await this.getSceneItemList(sceneName);
+        const sceneItem = sceneItems.find(item => item.sourceName === sourceName);
+        if (sceneItem == null) {
+            throw new Error(`Could not find source ${sourceName} in scene ${sceneName}`);
+        }
+        return sceneItem;
+    }
+
+    async setSceneItemCrop(sceneName: string, sceneItemId: number, crop: { cropTop: number, cropRight: number, cropBottom: number, cropLeft: number }) {
+        await this.socket.call('SetSceneItemTransform', {
+            sceneName,
+            sceneItemId,
+            sceneItemTransform: crop
+        });
+    }
+
     private async handleSceneItemCreation(event: EventTypes['SceneItemCreated']) {
         if (event.sceneName === this.obsConfig.value.videoInputsScene) {
             // This event doesn't give us enough info about the created item, so we just reload the list
@@ -232,12 +253,16 @@ export class ObsConnectorService {
             }));
     }
 
+    private async getSceneItemList(sceneName: string): Promise<ObsSceneItem[]> {
+        const sceneItemListResponse = await this.socket.call('GetSceneItemList', { sceneName });
+        return sceneItemListResponse.sceneItems as ObsSceneItem[];
+    }
+
     private async setGameLayoutVideoFeedPositions() {
         const gameLayoutVideoFeedsScene = this.obsConfig.value.gameLayoutVideoFeedsScene;
         if (gameLayoutVideoFeedsScene == null || this.obsState.value.status !== 'CONNECTED') return;
 
-        const sceneItemListResponse = await this.socket.call('GetSceneItemList', { sceneName: gameLayoutVideoFeedsScene });
-        const unusedSceneItems = sceneItemListResponse.sceneItems as ObsSceneItem[];
+        const unusedSceneItems = await this.getSceneItemList(gameLayoutVideoFeedsScene);
 
         await this.assignCameraCaptures('camera', unusedSceneItems);
         await this.assignCameraCaptures('game', unusedSceneItems);
