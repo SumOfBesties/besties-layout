@@ -4,8 +4,16 @@
             <current-host-manager />
             <scene-switcher class="m-t-8" />
         </div>
-        <div />
-        <div />
+        <div style="overflow-y: auto">
+            <bid-list />
+            <prize-list class="m-t-8" />
+                <milestone-list class="m-t-8" />
+        </div>
+        <div>
+            <ipl-space class="text-center donation-total">
+                {{ formatCurrencyAmount(donationStore.donationTotal, true) }} kr
+            </ipl-space>
+        </div>
         <rundown-display readonly />
     </div>
     <country-select-dialog ref="countrySelectDialog" />
@@ -22,6 +30,14 @@ import { provide, ref } from 'vue';
 import { CountrySelectDialogInjectionKey, TalentItemEditDialogInjectionKey } from '../../helpers/Injections';
 import TalentItemEditDialog from '../../components/TalentItemEditDialog.vue';
 import SceneSwitcher from '../../components/SceneSwitcher.vue';
+import BidList from './BidList.vue';
+import MilestoneList from './MilestoneList.vue';
+import { IplSpace } from '@iplsplatoon/vue-components';
+import { useDonationStore } from 'client-shared/stores/DonationStore';
+import PrizeList from './PrizeList.vue';
+import { formatCurrencyAmount } from 'client-shared/helpers/StringHelper';
+
+const donationStore = useDonationStore();
 
 const countrySelectDialog = ref<InstanceType<typeof CountrySelectDialog>>();
 provide(CountrySelectDialogInjectionKey, countrySelectDialog);
@@ -41,10 +57,15 @@ body {
     display: grid;
     height: 100vh;
     padding: 8px;
-    grid-template-columns: 0.75fr 1.5fr 1fr 1fr;
+    grid-template-columns: 0.75fr 1fr 1fr 1fr;
     gap: 8px;
     box-sizing: border-box;
     min-width: 1500px;
     overflow-x: auto;
+}
+
+.donation-total {
+    font-weight: 700;
+    font-size: 1.75em;
 }
 </style>

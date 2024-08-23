@@ -59,6 +59,15 @@ export function formatNumber(number: number): string {
     return new Intl.NumberFormat('et-EE', { maximumFractionDigits: 0 }).format(Math.floor(number));
 }
 
+export function formatCurrencyAmount(number: number, alwaysShowDecimals = false): string {
+    // i don't like this solution, but it works how i want it to
+    if (alwaysShowDecimals || number % 1 !== 0) {
+        return new Intl.NumberFormat('et-EE', { useGrouping: 'min2', minimumFractionDigits: 2 }).format(number).replaceAll(',', '.');
+    } else {
+        return new Intl.NumberFormat('et-EE', { useGrouping: 'min2', minimumFractionDigits: 0 }).format(number);
+    }
+}
+
 export function shortenLargeNumber(number: number): string {
     if (number < 1000) {
         return String(number);

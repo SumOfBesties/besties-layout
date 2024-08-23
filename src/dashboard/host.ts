@@ -9,6 +9,8 @@ import { initTimerStore } from 'client-shared/stores/TimerStore';
 import { initDonationStore } from 'client-shared/stores/DonationStore';
 import HostPanel from './pages/host/HostPanel.vue';
 import { initObsStore } from 'client-shared/stores/ObsStore';
+import { initAllTrackerDataStore } from 'client-shared/stores/AllTrackerDataStore';
+import { initCurrentTrackerDataStore } from 'client-shared/stores/CurrentTrackerDataStore';
 
 (async () => {
     const app = createApp(HostPanel);
@@ -20,5 +22,7 @@ import { initObsStore } from 'client-shared/stores/ObsStore';
     await initTimerStore();
     await initDonationStore();
     await initObsStore();
+    await initAllTrackerDataStore();
+    await initCurrentTrackerDataStore();
     app.mount('#app');
 })();
