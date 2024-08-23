@@ -12,7 +12,9 @@ import { initScheduleStore } from 'client-shared/stores/ScheduleStore';
     app.use(createPinia());
     setUpErrorHandler(app);
     installCommonHelpers(app, false);
-    await initInternalStatusStore();
-    await initScheduleStore();
+    await Promise.all([
+        initInternalStatusStore(),
+        initScheduleStore()
+    ]);
     app.mount('#app');
 })();

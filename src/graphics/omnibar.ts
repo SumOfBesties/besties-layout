@@ -13,9 +13,11 @@ import { initCurrentTrackerDataStore } from 'client-shared/stores/CurrentTracker
     const app = createApp(OmnibarGraphic);
     installCommonHelpers(app);
     app.use(createPinia());
-    await initScheduleStore();
-    await initTalentStore();
-    await initDonationStore();
-    await initCurrentTrackerDataStore();
+    await Promise.all([
+        initScheduleStore(),
+        initTalentStore(),
+        initDonationStore(),
+        initCurrentTrackerDataStore()
+    ]);
     app.mount('#app');
 })();

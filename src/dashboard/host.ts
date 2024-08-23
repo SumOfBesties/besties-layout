@@ -17,12 +17,14 @@ import { initCurrentTrackerDataStore } from 'client-shared/stores/CurrentTracker
     app.use(createPinia());
     setUpErrorHandler(app);
     installCommonHelpers(app, false);
-    await initScheduleStore();
-    await initTalentStore();
-    await initTimerStore();
-    await initDonationStore();
-    await initObsStore();
-    await initAllTrackerDataStore();
-    await initCurrentTrackerDataStore();
+    await Promise.all([
+        initScheduleStore(),
+        initTalentStore(),
+        initTimerStore(),
+        initDonationStore(),
+        initObsStore(),
+        initAllTrackerDataStore(),
+        initCurrentTrackerDataStore()
+    ]);
     app.mount('#app');
 })();

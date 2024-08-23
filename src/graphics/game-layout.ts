@@ -14,10 +14,12 @@ import { initAssetStore } from 'client-shared/stores/AssetStore';
     const app = createApp(GameLayoutGraphic);
     installCommonHelpers(app);
     app.use(createPinia());
-    await initObsStore();
-    await initScheduleStore();
-    await initTalentStore();
-    await initTimerStore();
-    await initAssetStore();
+    await Promise.all([
+        initObsStore(),
+        initScheduleStore(),
+        initTalentStore(),
+        initTimerStore(),
+        initAssetStore()
+    ]);
     app.mount('#app');
 })();

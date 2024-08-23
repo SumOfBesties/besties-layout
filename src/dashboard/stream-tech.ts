@@ -17,12 +17,14 @@ import { initMusicStore } from 'client-shared/stores/MusicStore';
     app.use(createPinia());
     setUpErrorHandler(app);
     installCommonHelpers(app, false);
-    await initInternalStatusStore();
-    await initScheduleStore();
-    await initTalentStore();
-    await initTimerStore();
-    await initObsStore();
-    await initTwitchDataStore();
-    await initMusicStore();
+    await Promise.all([
+        initInternalStatusStore(),
+        initScheduleStore(),
+        initTalentStore(),
+        initTimerStore(),
+        initObsStore(),
+        initTwitchDataStore(),
+        initMusicStore()
+    ]);
     app.mount('#app');
 })();
