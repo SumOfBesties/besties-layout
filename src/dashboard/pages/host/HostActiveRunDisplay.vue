@@ -1,0 +1,118 @@
+<template>
+    <ipl-message
+        v-if="scheduleStore.activeSpeedrun == null"
+        type="warning"
+    >
+        No speedrun is currently active
+    </ipl-message>
+    <ipl-space
+        v-else
+        class="host-active-run-display"
+    >
+        <div class="m-t-8 m-b-16 m-x-8">
+            <div class="text-low-emphasis">Active run ({{ speedrunCount.current === -1 ? '?' : speedrunCount.current }}/{{ speedrunCount.total }})</div>
+            <div class="speedrun-name">{{ scheduleStore.activeSpeedrun.title }}</div>
+            <div>{{ scheduleStore.activeSpeedrun.category }}</div>
+        </div>
+        <ipl-space
+            color="secondary"
+            class="text-center m-x-8 m-b-8"
+        >
+            <timer-display
+                :time="timerStore.timer.time"
+                class="main-timer-display"
+                :style="{ color: timerColor }"
+            />
+        </ipl-space>
+        <div
+            v-for="team in scheduleStore.activeSpeedrun.teams"
+            :key="team.id"
+            class="team"
+        >
+            <div>{{ team.name || talentStore.formatTalentIdList(team.playerIds, 4) }}</div>
+            <div
+                class="team-result"
+                :class="{
+                    finished: timerStore.timer.teamResults[team.id]?.state === 'FINISHED',
+                    forfeited: timerStore.timer.teamResults[team.id]?.state === 'FORFEIT'
+                }"
+            >
+                <template v-if="timerStore.timer.teamResults[team.id] == null">
+                    Playing
+                </template>
+                <template v-else>
+                    {{ timerStore.timer.teamResults[team.id].state === 'FORFEIT' ? 'Forfeited' : 'Finished' }}
+                    <timer-display :time="timerStore.timer.teamResults[team.id].time" />
+                </template>
+            </div>
+        </div>
+    </ipl-space>
+</template>
+
+<script setup lang="ts">
+import { IplMessage, IplSpace } from '@iplsplatoon/vue-components';
+import { useScheduleStore } from 'client-shared/stores/ScheduleStore';
+import { computed } from 'vue';
+import TimerDisplay from '../../components/TimerDisplay.vue';
+import { useTimerStore } from 'client-shared/stores/TimerStore';
+import { useTalentStore } from 'client-shared/stores/TalentStore';
+
+const scheduleStore = useScheduleStore();
+const timerStore = useTimerStore();
+const talentStore = useTalentStore();
+
+const speedrunCount = computed(() => scheduleStore.speedrunCount(scheduleStore.activeSpeedrun?.id));
+const timerColor = computed(() => {
+    switch (timerStore.timer.state) {
+        case 'STOPPED':
+        case 'RUNNING':
+            return '#FFF';
+        case 'PAUSED':
+            return '#FFD337';
+        default:
+            return '#06D669';
+    }
+});
+
+</script>
+
+<style scoped lang="scss">
+.host-active-run-display {
+    padding: 8px 0 0;
+}
+
+.speedrun-name {
+    font-weight: 700;
+    font-size: 1.5em;
+}
+
+.main-timer-display {
+    font-size: 1.5em;
+    font-weight: 600;
+}
+
+.team {
+    border-top: 1px solid var(--ipl-input-color);
+    padding: 8px;
+    min-height: 32px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+
+    &:nth-of-type(odd) {
+        background-color: var(--ipl-input-color-alpha);
+    }
+}
+
+.team-result {
+    justify-self: end;
+
+    &.finished {
+        color: #06D669;
+    }
+
+    &.forfeited {
+        color: #e74e36;
+    }
+}
+</style>

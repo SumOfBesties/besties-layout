@@ -13,6 +13,7 @@
             <ipl-space class="text-center donation-total">
                 {{ formatCurrencyAmount(donationStore.donationTotal, true) }} kr
             </ipl-space>
+            <host-active-run-display class="m-t-8" />
         </div>
         <rundown-display readonly />
     </div>
@@ -36,6 +37,7 @@ import { IplSpace } from '@iplsplatoon/vue-components';
 import { useDonationStore } from 'client-shared/stores/DonationStore';
 import PrizeList from './PrizeList.vue';
 import { formatCurrencyAmount } from 'client-shared/helpers/StringHelper';
+import HostActiveRunDisplay from './HostActiveRunDisplay.vue';
 
 const donationStore = useDonationStore();
 
