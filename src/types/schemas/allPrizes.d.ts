@@ -12,6 +12,10 @@ export type AllPrizes = {
 	minimumBid: number;
 	sumDonations: boolean;
 	provider?: string;
+	startTime?: string;
+	startDrawTime?: string;
+	endTime?: string;
+	endDrawTime?: string;
 	startRun?: PrizeStartEndRun;
 	endRun?: PrizeStartEndRun;
 }[];

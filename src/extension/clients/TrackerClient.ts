@@ -61,7 +61,7 @@ interface TrackerPrizeSearchResponseItem {
         event: number
         startrun: number | null
         endrun: number | null
-        starrtime: string | null
+        starttime: string | null
         endtime: string | null
         maxwinners: number
         maxmultiwin: number
@@ -281,6 +281,10 @@ export class TrackerClient {
             minimumBid: prize.fields.minimumbid,
             sumDonations: prize.fields.sumdonations ?? false,
             provider: prize.fields.provider || undefined,
+            startTime: prize.fields.starttime || undefined,
+            endTime: prize.fields.endtime || undefined,
+            startDrawTime: prize.fields.start_draw_time || undefined,
+            endDrawTime: prize.fields.end_draw_time || undefined,
             startRun: prize.fields.startrun == null ? undefined : {
                 id: prize.fields.startrun,
                 name: prize.fields.startrun__name,

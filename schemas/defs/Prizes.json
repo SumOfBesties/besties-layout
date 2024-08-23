@@ -24,6 +24,10 @@
             "minimumBid": { "type": "number" },
             "sumDonations": { "type": "boolean" },
             "provider": { "type": "string" },
+            "startTime": { "type": "string" },
+            "startDrawTime": { "type": "string" },
+            "endTime": { "type": "string" },
+            "endDrawTime": { "type": "string" },
             "startRun": {
                 "$ref": "#/definitions/prizeStartEndRun"
             },
