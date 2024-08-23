@@ -1,6 +1,6 @@
 <template>
     <ipl-expanding-space
-        title="Bid wars"
+        title="Bid wars & Incentives"
         expanded
     >
         <div class="layout horizontal center-horizontal">
