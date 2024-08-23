@@ -38,7 +38,7 @@
                 }"
             >
                 <template v-if="timerStore.timer.teamResults[team.id] == null">
-                    Playing
+                    Waiting for result...
                 </template>
                 <template v-else>
                     {{ timerStore.timer.teamResults[team.id].state === 'FORFEIT' ? 'Forfeited' : 'Finished' }}
