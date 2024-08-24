@@ -150,7 +150,12 @@ function setVideoFeedAssignment(sourceName: string) {
 
 const sourceCroppingDialog = ref<InstanceType<typeof SourceCroppingDialog>>();
 const allowCropping = computed(() => {
-    if (obsStore.obsState.videoInputs == null || obsStore.obsState.videoInputs?.length === 0 || selectedCapture.value == null) return false;
+    if (
+        obsStore.obsState.status !== 'CONNECTED'
+        || obsStore.obsState.videoInputs == null
+        || obsStore.obsState.videoInputs?.length === 0
+        || selectedCapture.value == null
+    ) return false;
     const selectedInput = obsStore.obsVideoInputAssignments[selectedCapture.value.type === 'game' ? 'gameCaptures' : 'cameraCaptures'][selectedCapture.value.index];
     return selectedInput != null && obsStore.obsState.videoInputs.some(input => input.sourceName === selectedInput);
 });
