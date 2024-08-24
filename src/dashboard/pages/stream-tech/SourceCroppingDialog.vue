@@ -28,12 +28,20 @@
                         class="crop-outline"
                         :class="{ active: dragStartPosition != null }"
                         :style="{
-                        width: cropOutlineData == null || cropWrapperSize == null ? '100%' : `${cropOutlineData.width * cropWrapperSize.width}px`,
-                        height: cropOutlineData == null || cropWrapperSize == null ? '100%' : `${cropOutlineData.height * cropWrapperSize.height}px`,
-                        transform: cropOutlineData == null || cropWrapperSize == null ? undefined : `translate(${cropOutlineData.left * cropWrapperSize.width}px, ${cropOutlineData.top * cropWrapperSize.height}px)`
-                    }"
+                            width: cropOutlineData == null || cropWrapperSize == null ? '100%' : `${cropOutlineData.width * cropWrapperSize.width}px`,
+                            height: cropOutlineData == null || cropWrapperSize == null ? '100%' : `${cropOutlineData.height * cropWrapperSize.height}px`,
+                            transform: cropOutlineData == null || cropWrapperSize == null ? undefined : `translate(${cropOutlineData.left * cropWrapperSize.width}px, ${cropOutlineData.top * cropWrapperSize.height}px)`
+                        }"
                         @mousedown="onCropOutlineClick"
                     >
+                        <div
+                            v-if="selectedCapture?.type === 'camera'"
+                            class="input-slot-crop-preview"
+                            :style="{
+                                width: selectedSlotCropPreviewData == null ? '100%' : `${selectedSlotCropPreviewData.width * 100}%`,
+                                height: selectedSlotCropPreviewData == null ? '100%' : `${selectedSlotCropPreviewData.height * 100}%`
+                            }"
+                        />
                         <div class="handle top left" />
                         <div class="handle top" />
                         <div class="handle top right" />
@@ -120,7 +128,7 @@
 
 <script setup lang="ts">
 import { IplButton, IplDialog, IplMessage, IplRadio, IplSpinner } from '@iplsplatoon/vue-components';
-import { nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
 import { sendMessage } from 'client-shared/helpers/NodecgHelper';
 import { ObsSceneItem } from '../../../extension/services/ObsConnectorService';
 import { useObsStore } from 'client-shared/stores/ObsStore';
@@ -131,7 +139,6 @@ import { faMagnifyingGlassMinus } from '@fortawesome/free-solid-svg-icons/faMagn
 import { faUpDown } from '@fortawesome/free-solid-svg-icons/faUpDown';
 import { faLeftRight } from '@fortawesome/free-solid-svg-icons/faLeftRight';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import dataSource from '@nodecg/types/server/database/datasource';
 
 library.add(faMagnifyingGlassPlus, faMagnifyingGlassMinus, faUpDown, faLeftRight);
 
@@ -197,6 +204,38 @@ const dragSideY = ref<'top' | 'bottom' | null>(null);
 const dragStartPosition = ref<{ x: number, y: number } | null>(null);
 const cropWrapperSize = ref<{ width: number, height: number } | null>(null);
 const zoom = ref(1);
+
+const selectedCapture = ref<{ type: 'camera' | 'game', index: number } | null>(null);
+const selectedSlotCropPreviewData = computed(() => {
+    if (
+        selectedCapture.value == null
+        || selectedCapture.value.type !== 'camera'
+        || cropOutlineData.value == null
+        || cropWrapperSize.value == null
+    ) return;
+    const inputSlotPosition = obsStore.obsVideoInputPositions[`${selectedCapture.value.type}Captures`][selectedCapture.value.index];
+    if (inputSlotPosition == null) return null;
+
+    const f = inputSlotPosition.width / inputSlotPosition.height;
+    const c = (cropOutlineData.value.width * cropWrapperSize.value.width) / (cropOutlineData.value.height * cropWrapperSize.value.height);
+    const fc = f / c;
+    if (fc === 1) {
+        return {
+            height: 1,
+            width: 1
+        };
+    } else if (fc > 1) {
+        return {
+            height: 1 / fc,
+            width: 1
+        };
+    } else {
+        return {
+            width: fc,
+            height: 1
+        };
+    }
+});
 
 function resetCrop() {
     cropOutlineData.value = {
@@ -401,7 +440,8 @@ function centerVertical() {
     cropOutlineData.value.top = (1 - cropOutlineData.value.height) / 2;
 }
 
-function open(sourceName: string) {
+function open(sourceName: string, selectedCaptureData: { type: 'camera' | 'game', index: number }) {
+    selectedCapture.value = selectedCaptureData;
     selectedSourceName.value = sourceName;
     isOpen.value = true;
 }
@@ -457,6 +497,13 @@ defineExpose({
     width: calc(90vw - 50px);
     margin: 0 auto;
     overflow: auto;
+}
+
+.input-slot-crop-preview {
+    position: absolute;
+    border: calc(1px / var(--zoom-factor)) solid green;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
 }
 
 .crop-wrapper {
