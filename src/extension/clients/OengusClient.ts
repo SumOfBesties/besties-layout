@@ -84,7 +84,7 @@ export class OengusClient {
     // Place every player on the same team for co-op and relay runs
     // For races we can't predict team placements so everybody gets their own team initially
     private getTeamListV1(scheduleLine: OengusV1ScheduleLine): Speedrun['teams'] {
-        if (scheduleLine.type === 'RACE' || scheduleLine.type === 'COOP') {
+        if (scheduleLine.type === 'RELAY' || scheduleLine.type === 'COOP') {
             return [
                 {
                     id: '',
