@@ -2,7 +2,7 @@
     <ipl-dialog
         v-model:is-open="isOpen"
         class="source-cropping-dialog"
-        persistent
+        :persistent="!loadingScreenshot && screenshotLoadingError == null"
     >
         <div
             v-if="loadingScreenshot"
@@ -11,12 +11,17 @@
         >
             <ipl-spinner color="white" class="m-r-8" /> Loading...
         </div>
-        <ipl-message
-            v-else-if="screenshotLoadingError != null"
-            type="error"
-        >
-            {{ screenshotLoadingError }}
-        </ipl-message>
+        <template v-else-if="screenshotLoadingError != null">
+            <ipl-message type="error">
+                {{ screenshotLoadingError }}
+            </ipl-message>
+            <ipl-button
+                class="m-t-8"
+                color="red"
+                label="Close"
+                @click="isOpen = false"
+            />
+        </template>
         <template v-else>
             <div class="zoom-overflow-wrapper">
                 <div
