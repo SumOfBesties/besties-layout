@@ -87,8 +87,8 @@
                 />
                 <ipl-select
                     v-if="selectedScheduleItem.type === 'SPEEDRUN'"
-                    v-model="selectedScheduleItem.layout"
-                    :options="layoutOptions"
+                    v-model="selectedScheduleItem.layout as string | null"
+                    :options="layoutOptions as Option[]"
                     class="m-l-8 max-width"
                     label="Layout"
                 />
@@ -231,6 +231,7 @@ import { faPlus } from '@fortawesome/free-solid-svg-icons/faPlus';
 import { faXmark } from '@fortawesome/free-solid-svg-icons/faXmark';
 import TwitchCategorySelect from './TwitchCategorySelect.vue';
 import { layouts } from 'types/Layouts';
+import { Option } from '@iplsplatoon/vue-components/dist/types/select';
 
 library.add(faUserPlus, faPlus, faXmark);
 

@@ -11,7 +11,7 @@
         <div class="bid-name">{{ props.bid.name }}</div>
         <div>{{ props.bid.description }}</div>
         <div>{{ props.bid.speedrunName }}</div>
-        <div :style="{ color: endTimeColor }">{{ endTimeText }}</div>
+        <div :style="{ color: endTimeColor ?? undefined }">{{ endTimeText }}</div>
         <ipl-expanding-space
             v-if="props.bid.options != null"
             title="Options"

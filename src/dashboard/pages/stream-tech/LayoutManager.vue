@@ -20,11 +20,7 @@
                     <ipl-button
                         class="m-t-16"
                         :disabled="!allowCropping"
-                        @click="sourceCroppingDialog?.open(
-                            obsStore.obsVideoInputAssignments[selectedCapture.type === 'game' ? 'gameCaptures' : 'cameraCaptures'][selectedCapture.index]!,
-                            selectedCapture.type,
-                            selectedCapture.index
-                        )"
+                        @click="sourceCroppingDialog?.open(obsStore.obsVideoInputAssignments[selectedCapture.type === 'game' ? 'gameCaptures' : 'cameraCaptures'][selectedCapture.index]!, selectedCapture!)"
                     >
                         <font-awesome-icon icon="crop" />
                         Adjust crop
