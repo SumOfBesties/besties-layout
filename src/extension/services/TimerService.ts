@@ -81,8 +81,8 @@ export class TimerService {
 
     // todo: doesn't work properly if nodecg is restarted after the timer is finished
     undoStop(teamId?: string) {
-        if (!['FINISHED', 'RUNNING'].includes(this.timerRep.value.state)) {
-            throw new Error('Timer must be finished or running');
+        if (!['FINISHED', 'RUNNING', 'PAUSED'].includes(this.timerRep.value.state)) {
+            throw new Error('Timer must not be stopped');
         }
         const teamCount = this.activeSpeedrun.value?.teams.length ?? 0;
         if (teamId == null && this.activeSpeedrun.value != null && teamCount > 1) {
