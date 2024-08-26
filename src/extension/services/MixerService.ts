@@ -117,8 +117,6 @@ export class MixerService {
             matrixNames: this.getMatrixNameAddresses().map((address, i) => findName(address) ?? `Matrix ${i + 1}`),
             dcaNames: this.getDCANameAddresses().map((address, i) => findName(address) ?? `DCA ${i + 1}`)
         };
-
-        console.log('NEW STATE', this.mixerState.value);
     }
 
     private getChannelNameAddresses(): string[] {
