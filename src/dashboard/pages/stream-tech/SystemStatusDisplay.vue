@@ -22,6 +22,10 @@
             <div :class="`state-color-${trackerLoginStatus.color}`">
                 {{ trackerLoginStatus.text }}
             </div>
+            <div>Mixer</div>
+            <div :class="`state-color-${mixerStatus.color}`">
+                {{ mixerStatus.text }}
+            </div>
         </div>
     </ipl-space>
 </template>
@@ -34,6 +38,7 @@ import { useMusicStore } from 'client-shared/stores/MusicStore';
 import { Configschema } from 'types/schemas';
 import { useTwitchDataStore } from 'client-shared/stores/TwitchDataStore';
 import { useInternalStatusStore } from 'client-shared/stores/InternalStatusStore';
+import { useMixerStore } from 'client-shared/stores/MixerStore';
 
 const bundleConfig = nodecg.bundleConfig as Configschema;
 
@@ -175,6 +180,34 @@ const trackerLoginStatus = computed(() => {
                 return {
                     color: 'red',
                     text: 'Not logged in'
+                };
+        }
+    }
+});
+
+const mixerStore = useMixerStore();
+const mixerStatus = computed(() => {
+    if (bundleConfig?.x32?.address == null) {
+        return {
+            color: 'neutral',
+            text: 'Not configured'
+        };
+    } else {
+        switch (mixerStore.mixerState.connectionState) {
+            case 'CONNECTED':
+                return {
+                    color: 'green',
+                    text: 'Connected'
+                };
+            case 'CONNECTING':
+                return {
+                    color: 'yellow',
+                    text: 'Connecting'
+                };
+            case 'NOT_CONNECTED':
+                return {
+                    color: 'red',
+                    text: 'Not connected'
                 };
         }
     }

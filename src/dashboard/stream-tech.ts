@@ -11,6 +11,7 @@ import { initTimerStore } from 'client-shared/stores/TimerStore';
 import { initObsStore } from 'client-shared/stores/ObsStore';
 import { initTwitchDataStore } from 'client-shared/stores/TwitchDataStore';
 import { initMusicStore } from 'client-shared/stores/MusicStore';
+import { initMixerStore } from 'client-shared/stores/MixerStore';
 
 (async () => {
     const app = createApp(StreamTechPanel);
@@ -24,7 +25,8 @@ import { initMusicStore } from 'client-shared/stores/MusicStore';
         initTimerStore(),
         initObsStore(),
         initTwitchDataStore(),
-        initMusicStore()
+        initMusicStore(),
+        initMixerStore()
     ]);
     app.mount('#app');
 })();
