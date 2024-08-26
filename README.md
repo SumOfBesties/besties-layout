@@ -96,6 +96,11 @@ The following tags may be included at the end of OBS scene names to modify the s
 
 These tags may be combined. For example, a scene named `Test Scene [MG]` will play music and unmute the game audio while it is in the program feed.
 
+## X32 integration
+
+When configuring mixer channel mappings (`x32.channelMappings`), the following channel types are accepted:
+`CHANNEL`, `AUX_IN`, `FX_RETURN`, `BUS`, `MATRIX` & `DCA`
+
 ## npm commands
 
 - `build`: Create a production-ready build.
