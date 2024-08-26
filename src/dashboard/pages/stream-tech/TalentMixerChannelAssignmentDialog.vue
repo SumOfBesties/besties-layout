@@ -8,51 +8,30 @@
             color="secondary"
             @close="isOpen = false"
         />
-        <ipl-space
+
+        <talent-mixer-channel-assignment-space
+            v-for="talentId in scheduleStore.activeSpeedrunTalentIds"
+            :speaking-threshold="talentChannels[talentId]?.speakingThresholdDB"
+            :talent-id="talentId"
+            :assigned-channel="talentChannels[talentId]?.channelId"
+            :visible="isOpen"
             class="m-t-8"
-            color="secondary"
-        >
-            <template v-for="talentId in scheduleStore.activeSpeedrunTalentIds">
-                <ipl-select
-                    :model-value="talentChannels[talentId] ?? 'none'"
-                    :label="talentStore.findTalentItemById(talentId)?.name ?? `Unknown talent ${talentId}`"
-                    :option-groups="channelOptions"
-                    class="talent-channel-select"
-                    @update:model-value="talentChannels[talentId] = $event"
-                />
-                <div
-                    v-if="isOpen"
-                    class="channel-volume-display"
-                    :style="{ transform: `scaleX(${((mixerStore.mixerChannelLevels[talentChannels[talentId]] ?? -90) + 90) / 100})` }"
-                />
-                <div
-                    v-else
-                    class="channel-volume-display"
-                    style="transform: scaleX(0)"
-                />
-            </template>
-        </ipl-space>
-        <ipl-space
+            :fallback-talent-name="`Unknown talent ${talentId}`"
+            @update:assigned-channel="selectChannel(talentId, $event)"
+            @update:speaking-threshold="updateSpeakingThreshold(talentId, $event)"
+        />
+        <talent-mixer-channel-assignment-space
+            :speaking-threshold="hostChannel.speakingThresholdDB"
+            :talent-id="talentStore.currentHostId"
+            :assigned-channel="hostChannel.channelId"
             class="m-t-8"
-            color="secondary"
-        >
-            <ipl-select
-                :model-value="hostChannel ?? 'none'"
-                :label="talentStore.currentHostId == null ? 'Host (Not currently assigned)' : `${ talentStore.findTalentItemById(talentStore.currentHostId)?.name ?? `Unknown talent ${talentStore.currentHostId}`} (Host)`"
-                :option-groups="channelOptions"
-                @update:model-value="hostChannel = $event"
-            />
-            <div
-                v-if="isOpen"
-                class="channel-volume-display"
-                :style="{ transform: `scaleX(${(hostChannel == null || hostChannel === 'none' ? 0 : (mixerStore.mixerChannelLevels[hostChannel] ?? -90) + 90) / 100})` }"
-            />
-            <div
-                v-else
-                class="channel-volume-display"
-                style="transform: scaleX(0)"
-            />
-        </ipl-space>
+            fallback-talent-name="Host (None currently assigned)"
+            talent-name-suffix="(Host)"
+            :visible="isOpen"
+            @update:assigned-channel="hostChannel.channelId = $event"
+            @update:speaking-threshold="hostChannel.speakingThresholdDB = $event"
+        />
+
         <ipl-space
             class="m-t-8 layout horizontal"
             color="secondary"
@@ -73,103 +52,72 @@
 </template>
 
 <script setup lang="ts">
-import { IplButton, IplDialog, IplDialogTitle, IplSelect, IplSpace } from '@iplsplatoon/vue-components';
-import { computed, ref } from 'vue';
+import { IplButton, IplDialog, IplDialogTitle, IplSpace } from '@iplsplatoon/vue-components';
+import { ref } from 'vue';
 import { useMixerStore } from 'client-shared/stores/MixerStore';
 import { useScheduleStore } from 'client-shared/stores/ScheduleStore';
 import { useTalentStore } from 'client-shared/stores/TalentStore';
 import { MixerChannelAssignment } from 'types/schemas';
+import TalentMixerChannelAssignmentSpace from './TalentMixerChannelAssignmentSpace.vue';
 
 const mixerStore = useMixerStore();
 const scheduleStore = useScheduleStore();
 const talentStore = useTalentStore();
 
-// Channel IDs:
-// 0-31 = Ch 1-32
-// 32-39 = Aux 1-8
-// 40-47 = Fx 1L-4R
-// 48-63 = Bus 1-16
-// 64-69 = Matrix 1-6
-const channelOptions = computed(() => [
-    { name: 'None', options: [{ value: 'none', name: 'None' }] },
-    {
-        name: 'Input Channels',
-        options: mixerStore.mixerState.channelNames.map((channelName, i) => ({
-            value: String(i),
-            name: channelName
-        }))
-    },
-    {
-        name: 'Aux Returns',
-        options: mixerStore.mixerState.auxInNames.map((channelName, i) => ({
-            value: String(i + 32),
-            name: channelName
-        }))
-    },
-    {
-        name: 'FX Returns',
-        options: mixerStore.mixerState.fxReturnNames.map((channelName, i) => ({
-            value: String(i + 40),
-            name: channelName
-        }))
-    },
-    {
-        name: 'Mix Buses',
-        options: mixerStore.mixerState.busNames.map((channelName, i) => ({
-            value: String(i + 48),
-            name: channelName
-        }))
-    },
-    {
-        name: 'Matrices',
-        options: mixerStore.mixerState.matrixNames.map((channelName, i) => ({
-            value: String(i + 64),
-            name: channelName
-        }))
-    }
-]);
+const hostChannel = ref<{ channelId?: number, speakingThresholdDB?: number }>({ });
+const talentChannels = ref<Record<string, { channelId?: number, speakingThresholdDB?: number }>>({});
 
-const hostChannel = ref<string | null>(null);
-const talentChannels = ref<Record<string, string>>({});
+function selectChannel(talentId: string, channelId?: number) {
+    const existingEntry = talentChannels.value[talentId];
+    if (existingEntry == null) {
+        talentChannels.value[talentId] = { channelId };
+    } else {
+        existingEntry.channelId = channelId;
+    }
+}
+
+function updateSpeakingThreshold(talentId: string, threshold?: number) {
+    const existingEntry = talentChannels.value[talentId];
+    if (existingEntry == null) {
+        talentChannels.value[talentId] = { speakingThresholdDB: threshold };
+    } else {
+        existingEntry.speakingThresholdDB = threshold;
+    }
+}
 
 function save() {
     mixerStore.updateTalentChannelAssignments({
-        speedrunTalent: Object.entries(talentChannels.value).reduce((result, [talentId, channelId]) => {
-            if (channelId !== 'none') {
-                result[talentId] = { channelId: Number(channelId) };
+        speedrunTalent: Object.entries(talentChannels.value).reduce((result, [talentId, assignment]) => {
+            if (assignment.channelId != null) {
+                result[talentId] = {
+                    channelId: Number(assignment.channelId),
+                    speakingThresholdDB: assignment.speakingThresholdDB
+                };
             }
             return result;
         }, {} as Record<string, MixerChannelAssignment>),
-        host: hostChannel.value == null || hostChannel.value === 'none' ? undefined : { channelId: Number(hostChannel.value) }
+        host: hostChannel.value.channelId == null ? undefined : (hostChannel.value as { channelId: number, speakingThresholdDB?: number })
     });
 }
 
 const isOpen = ref(false);
 function open() {
     talentChannels.value = Object.entries(mixerStore.talentMixerChannelAssignments.speedrunTalent).reduce((result, [talentId, assignment]) => {
-        result[talentId] = String(assignment.channelId);
+        result[talentId] = {
+            channelId: assignment.channelId,
+            speakingThresholdDB: assignment.speakingThresholdDB
+        };
         return result;
-    }, {} as Record<string, string>);
-    const hostChannelId = mixerStore.talentMixerChannelAssignments.host?.channelId;
-    hostChannel.value = hostChannelId == null ? null : String(hostChannelId);
+    }, {} as Record<string, { channelId?: number, speakingThresholdDB?: number }>);
+    const existingHostChannel = mixerStore.talentMixerChannelAssignments.host;
+    if (existingHostChannel == null) {
+        hostChannel.value = { };
+    } else {
+        hostChannel.value = { ...existingHostChannel };
+    }
     isOpen.value = true;
 }
 defineExpose({
     open
 });
 </script>
-
-<style scoped lang="scss">
-.talent-channel-select:not(:first-child) {
-    margin-top: 4px;
-}
-
-.channel-volume-display {
-    width: 100%;
-    height: 8px;
-    background-color: #00A651;
-    margin-top: 4px;
-    transform-origin: left 0;
-    transition: transform 100ms;
-}
-</style>

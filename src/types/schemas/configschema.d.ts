@@ -51,6 +51,7 @@ export interface Configschema {
 	x32?: {
 		address?: string;
 		transitionFps?: number;
+		defaultSpeakingDBThreshold?: number;
 		transitionDurations?: {
 			mute?: number;
 			unmute?: number;
