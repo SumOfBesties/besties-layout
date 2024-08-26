@@ -95,7 +95,7 @@ export class X32Transitions {
         easingAlgorithm: EasingAlgorithm
     ): void {
         const floatTo = dbToFloat(to);
-        const floatFrom = from ? dbToFloat(from) : undefined;
+        const floatFrom = from != null ? dbToFloat(from) : undefined;
         this.run(path, floatFrom, floatTo, duration, easingAlgorithm);
     }
 
