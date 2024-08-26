@@ -145,7 +145,7 @@ export class MixerService {
         return range(1, 7).map(i => `/mtx/0${i}/config/name`);
     }
     private getDCANameAddresses(): string[] {
-        return range(1, 9).map(i => `/dca/0${i}/config/name`);
+        return range(1, 9).map(i => `/dca/${i}/config/name`);
     }
 
     private registerForUpdates() {
