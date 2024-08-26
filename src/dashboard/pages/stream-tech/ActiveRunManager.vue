@@ -114,6 +114,7 @@ const mixerStore = useMixerStore();
 const scheduleItemEditor = inject(ScheduleItemEditorInjectionKey);
 
 const someMixerAssignmentsMissing = computed(() => {
+    if (mixerStore.talentMixerChannelAssignments.host == null) return true;
     const activeSpeedrunTalentIds = scheduleStore.activeSpeedrunTalentIds;
     return activeSpeedrunTalentIds.some(talentId => mixerStore.talentMixerChannelAssignments.speedrunTalent[talentId] == null);
 });
