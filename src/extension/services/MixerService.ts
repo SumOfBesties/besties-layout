@@ -108,7 +108,7 @@ export class MixerService {
 
         this.mixerState.value = {
             connectionState: this.mixerState.value.connectionState,
-            mainLRName: findName('/main/st/config/name') ?? 'Main LR',
+            mainLRName: findName('/main/st/config/name') ?? 'LR',
             mainMonoName: findName('/main/m/config/name') ?? 'M/C',
             channelNames: this.getChannelNameAddresses().map((address, i) => findName(address) ?? `Ch ${String(i + 1).padStart(2, '0')}`),
             auxInNames: this.getAuxInNameAddresses().map((address, i) => findName(address) ?? `Aux ${i + 1}`),
