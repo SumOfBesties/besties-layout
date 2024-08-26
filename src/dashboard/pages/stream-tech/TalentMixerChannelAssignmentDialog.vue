@@ -16,7 +16,7 @@
                 <ipl-select
                     :model-value="talentChannels[talentId] ?? 'none'"
                     :label="talentStore.findTalentItemById(talentId)?.name ?? `Unknown talent ${talentId}`"
-                    :options="channelOptions"
+                    :option-groups="channelOptions"
                     class="talent-channel-select"
                     @update:model-value="talentChannels[talentId] = $event"
                 />
@@ -39,7 +39,7 @@
             <ipl-select
                 :model-value="hostChannel ?? 'none'"
                 :label="talentStore.currentHostId == null ? 'Host (Not currently assigned)' : `${ talentStore.findTalentItemById(talentStore.currentHostId)?.name ?? `Unknown talent ${talentStore.currentHostId}`} (Host)`"
-                :options="channelOptions"
+                :option-groups="channelOptions"
                 @update:model-value="hostChannel = $event"
             />
             <div
@@ -91,27 +91,42 @@ const talentStore = useTalentStore();
 // 48-63 = Bus 1-16
 // 64-69 = Matrix 1-6
 const channelOptions = computed(() => [
-    { value: 'none', name: 'None' },
-    ...mixerStore.mixerState.channelNames.map((channelName, i) => ({
-        value: String(i),
-        name: channelName
-    })),
-    ...mixerStore.mixerState.auxInNames.map((channelName, i) => ({
-        value: String(i + 32),
-        name: channelName
-    })),
-    ...mixerStore.mixerState.fxReturnNames.map((channelName, i) => ({
-        value: String(i + 40),
-        name: channelName
-    })),
-    ...mixerStore.mixerState.busNames.map((channelName, i) => ({
-        value: String(i + 48),
-        name: channelName
-    })),
-    ...mixerStore.mixerState.matrixNames.map((channelName, i) => ({
-        value: String(i + 64),
-        name: channelName
-    }))
+    { name: 'None', options: [{ value: 'none', name: 'None' }] },
+    {
+        name: 'Input Channels',
+        options: mixerStore.mixerState.channelNames.map((channelName, i) => ({
+            value: String(i),
+            name: channelName
+        }))
+    },
+    {
+        name: 'Aux Returns',
+        options: mixerStore.mixerState.auxInNames.map((channelName, i) => ({
+            value: String(i + 32),
+            name: channelName
+        }))
+    },
+    {
+        name: 'FX Returns',
+        options: mixerStore.mixerState.fxReturnNames.map((channelName, i) => ({
+            value: String(i + 40),
+            name: channelName
+        }))
+    },
+    {
+        name: 'Mix Buses',
+        options: mixerStore.mixerState.busNames.map((channelName, i) => ({
+            value: String(i + 48),
+            name: channelName
+        }))
+    },
+    {
+        name: 'Matrices',
+        options: mixerStore.mixerState.matrixNames.map((channelName, i) => ({
+            value: String(i + 64),
+            name: channelName
+        }))
+    }
 ]);
 
 const hostChannel = ref<string | null>(null);
