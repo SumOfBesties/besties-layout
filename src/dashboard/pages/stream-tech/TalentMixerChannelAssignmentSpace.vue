@@ -12,8 +12,7 @@
             style="align-items: flex-end"
         >
             <ipl-input
-                :model-value="props.speakingThreshold ?? defaultSpeakingDBThreshold"
-                type="number"
+                :model-value="internalSpeakingThreshold"
                 label="Speaking threshold (dB)"
                 name="speakingThreshold"
                 class="max-width"
@@ -42,7 +41,7 @@ import { Configschema } from 'types/schemas';
 import { IplInput, IplSelect, IplSpace } from '@iplsplatoon/vue-components';
 import { useTalentStore } from 'client-shared/stores/TalentStore';
 import { useMixerStore } from 'client-shared/stores/MixerStore';
-import { computed } from 'vue';
+import { computed, ref, watch } from 'vue';
 
 const defaultSpeakingDBThreshold = (nodecg.bundleConfig as Configschema).x32?.defaultSpeakingDBThreshold ?? -65;
 
@@ -76,8 +75,21 @@ function selectTalentChannel(channelId: string) {
     emit('update:assignedChannel', channelId === 'none' ? undefined : Number(channelId));
 }
 
-function updateSpeakingThreshold(threshold: unknown) {
-    emit('update:speakingThreshold', typeof threshold === 'number' ? threshold : undefined);
+const internalSpeakingThreshold = ref<string>(String(defaultSpeakingDBThreshold));
+watch(() => props.speakingThreshold, newValue => {
+    if (newValue != null) {
+        internalSpeakingThreshold.value = String(newValue);
+    }
+}, { immediate: true });
+watch(() => props.visible, newValue => {
+    if (newValue) {
+        internalSpeakingThreshold.value = String(props.speakingThreshold ?? defaultSpeakingDBThreshold);
+    }
+});
+function updateSpeakingThreshold(threshold: string) {
+    internalSpeakingThreshold.value = threshold;
+    const parsedThreshold = parseInt(threshold);
+    emit('update:speakingThreshold', !isNaN(parsedThreshold) ? parsedThreshold : undefined);
 }
 </script>
 
