@@ -1,5 +1,6 @@
 import type NodeCG from '@nodecg/types';
 import {
+    Configschema,
     ObsConfig,
     ObsConnectionInfo,
     ObsState,
@@ -84,6 +85,7 @@ export type ObsSceneItem = {
 export class ObsConnectorService {
     private readonly nodecg: NodeCG.ServerAPI;
     private readonly socket: OBSWebSocket;
+    private readonly sceneDataInTransitionEvents: boolean;
     private obsConnectionInfo: NodeCG.ServerReplicantWithSchemaDefault<ObsConnectionInfo>;
     private obsConfig: NodeCG.ServerReplicantWithSchemaDefault<ObsConfig>;
     private obsVideoInputAssignments: NodeCG.ServerReplicantWithSchemaDefault<ObsVideoInputAssignments>;
@@ -92,7 +94,7 @@ export class ObsConnectorService {
     private reconnectionCount: number;
     readonly obsState: NodeCG.ServerReplicantWithSchemaDefault<ObsState>;
 
-    constructor(nodecg: NodeCG.ServerAPI) {
+    constructor(nodecg: NodeCG.ServerAPI<Configschema>) {
         this.nodecg = nodecg;
         this.obsState = nodecg.Replicant('obsState') as unknown as NodeCG.ServerReplicantWithSchemaDefault<ObsState>;
         this.obsConnectionInfo = nodecg.Replicant('obsConnectionInfo') as unknown as NodeCG.ServerReplicantWithSchemaDefault<ObsConnectionInfo>;
@@ -101,6 +103,7 @@ export class ObsConnectorService {
         this.obsVideoInputPositions = nodecg.Replicant('obsVideoInputPositions') as unknown as NodeCG.ServerReplicantWithSchemaDefault<ObsVideoInputPositions>;
         this.socket = new OBSWebSocket();
         this.reconnectionCount = 0;
+        this.sceneDataInTransitionEvents = nodecg.bundleConfig.obs?.sceneDataInTransitionEvents ?? false;
 
         this.obsState.value.status = 'NOT_CONNECTED';
 
@@ -135,6 +138,20 @@ export class ObsConnectorService {
                 nodecg.log.error('Error updating capture positions:', e);
             }
         });
+    }
+
+    // We can use a slightly modified build of obs-websocket to know when the program scene changes when the transition
+    // begins instead of when it ends.
+    addProgramSceneChangeListener(callback: (sceneName: string) => void) {
+        if (this.sceneDataInTransitionEvents) {
+            this.socket.on('SceneTransitionStarted', event => {
+                callback((event as unknown as { toScene: string }).toScene);
+            });
+        } else {
+            this.socket.on('CurrentProgramSceneChanged', event => {
+                callback(event.sceneName);
+            });
+        }
     }
 
     private handleClosure(event: EventTypes['ConnectionClosed']): void {

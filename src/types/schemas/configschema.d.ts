@@ -6,6 +6,10 @@
  */
 
 export interface Configschema {
+	obs?: {
+		sceneDataInTransitionEvents?: boolean;
+		[k: string]: unknown;
+	};
 	event?: {
 		timezone: string;
 		name?: string;
@@ -46,7 +50,16 @@ export interface Configschema {
 	};
 	x32?: {
 		address?: string;
+		channelMapping?: {
+			runners?: ChannelItem[];
+			games?: ChannelItem[];
+			[k: string]: unknown;
+		};
 		[k: string]: unknown;
 	};
 	[k: string]: unknown;
+}
+export interface ChannelItem {
+	number: number;
+	type: 'CHANNEL' | 'AUX_IN' | 'FX_RETURN' | 'BUS' | 'MATRIX' | 'DCA';
 }

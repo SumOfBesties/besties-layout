@@ -1,7 +1,27 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
     "type": "object",
+    "definitions": {
+        "channelItem": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "number": { "type": "number" },
+                "type": {
+                    "type": "string",
+                    "enum": ["CHANNEL", "AUX_IN", "FX_RETURN", "BUS", "MATRIX", "DCA"]
+                }
+            },
+            "required": ["number", "type"]
+        }
+    },
     "properties": {
+        "obs": {
+            "type": "object",
+            "properties": {
+                "sceneDataInTransitionEvents": { "type": "boolean" }
+            }
+        },
         "event": {
             "type": "object",
             "required": ["timezone"],
@@ -57,7 +77,24 @@
         "x32": {
             "type": "object",
             "properties": {
-                "address": { "type": "string" }
+                "address": { "type": "string" },
+                "channelMapping": {
+                    "type": "object",
+                    "properties": {
+                        "runners": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/channelItem"
+                            }
+                        },
+                        "games": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/channelItem"
+                            }
+                        }
+                    }
+                }
             }
         }
     }

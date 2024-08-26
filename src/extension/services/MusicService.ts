@@ -34,14 +34,8 @@ export class MusicService {
 
         this.attemptConnection();
 
-        this.obsConnectorService.obsState.on('change', (newValue, oldValue) => {
-            if (!oldValue || newValue.currentScene == null) return;
-            if (
-                newValue.currentScene !== oldValue.currentScene
-                || newValue.status === 'CONNECTED' && oldValue.status !== 'CONNECTED'
-            ) {
-                this.onSceneChange(newValue.currentScene);
-            }
+        this.obsConnectorService.addProgramSceneChangeListener(sceneName => {
+            this.onSceneChange(sceneName);
         });
     }
 
@@ -60,7 +54,7 @@ export class MusicService {
         });
     }
 
-    private async onSceneChange(sceneName: string) {
+    private onSceneChange(sceneName: string) {
         if (sceneName.includes('[M]')) {
             this.play().catch(e => {
                 this.logger.error('Error playing music:', e instanceof Error ? e.message : String(e));

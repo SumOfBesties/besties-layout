@@ -14,6 +14,9 @@ To configure this bundle, create the file `[nodecg]/cfg/nsg2-layouts.json` with 
 
 ```json
 {
+  "obs": {
+    "sceneDataInTransitionEvents": false
+  },
   "event": {
     "timezone": "Europe/Oslo",
     "name": "NSG Fall 2024",
@@ -47,7 +50,11 @@ To configure this bundle, create the file `[nodecg]/cfg/nsg2-layouts.json` with 
     "password": "fb2k-pwd"
   },
   "x32": {
-    "address": "192.168.1.102"
+    "address": "192.168.1.102",
+    "channelMapping": {
+      "runners": [{ "type": "DCA", "number": 1 }],
+      "games": [{ "type": "DCA", "number": 2 }]
+    }
   }
 }
 ```
@@ -70,7 +77,13 @@ camera sources in OBS. This allows multiple game layout graphics to be open with
 one another.  
 Example: `http://localhost:9090/bundles/nsg2-layouts/graphics/game-layout.html?is-layout-leader`
 
-#### Other npm commands
+### OBS Websocket
+
+nsg2-layouts can be used in conjunction with a [modified build of obs-websocket](https://github.com/obsproject/obs-websocket/pull/1229) 
+to react to scene changes when a transition starts as opposed to when it completes. If this build is in use, set the 
+`obs.sceneDataInTransitionEvents` property in the bundle configuration file to `true`. Otherwise, set it to `false`.
+
+## npm commands
 
 - `build`: Create a production-ready build.
 - `build:dev`: Create a development build with better debugging options.
