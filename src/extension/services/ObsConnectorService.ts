@@ -92,6 +92,7 @@ export class ObsConnectorService {
     private obsVideoInputPositions: NodeCG.ServerReplicantWithSchemaDefault<ObsVideoInputPositions>;
     private reconnectionInterval: NodeJS.Timeout | null = null;
     private reconnectionCount: number;
+    private programSceneChangeListeners: ((sceneName: string) => void)[]
     readonly obsState: NodeCG.ServerReplicantWithSchemaDefault<ObsState>;
 
     constructor(nodecg: NodeCG.ServerAPI<Configschema>) {
@@ -104,6 +105,7 @@ export class ObsConnectorService {
         this.socket = new OBSWebSocket();
         this.reconnectionCount = 0;
         this.sceneDataInTransitionEvents = nodecg.bundleConfig.obs?.sceneDataInTransitionEvents ?? false;
+        this.programSceneChangeListeners = [];
 
         this.obsState.value.status = 'NOT_CONNECTED';
 
@@ -143,6 +145,7 @@ export class ObsConnectorService {
     // We can use a slightly modified build of obs-websocket to know when the program scene changes when the transition
     // begins instead of when it ends.
     addProgramSceneChangeListener(callback: (sceneName: string) => void) {
+        this.programSceneChangeListeners.push(callback);
         if (this.sceneDataInTransitionEvents) {
             this.socket.on('SceneTransitionStarted', event => {
                 callback((event as unknown as { toScene: string }).toScene);
@@ -197,6 +200,10 @@ export class ObsConnectorService {
     private async loadState(currentSceneCollection: string): Promise<void> {
         const scenes = await this.getScenes();
         const videoInputs = await this.getVideoInputs();
+
+        this.programSceneChangeListeners.forEach(callback => {
+            callback(scenes.currentScene);
+        });
 
         this.obsState.value = {
             ...this.obsState.value,
