@@ -40,6 +40,7 @@ export class X32Transitions {
                 remoteAddress: nodecg.bundleConfig.x32!.address!,
                 remotePort: 10023
             });
+            this.osc.open();
         }
     }
 
