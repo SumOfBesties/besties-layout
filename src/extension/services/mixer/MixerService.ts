@@ -6,6 +6,7 @@ import range from 'lodash/range';
 import debounce from 'lodash/debounce';
 import { ObsConnectorService } from '../ObsConnectorService';
 import { X32Transitions } from './X32Transitions';
+import { dbToFloat } from './X32Util';
 
 export class MixerService {
     private readonly logger: NodeCG.Logger;
@@ -24,6 +25,7 @@ export class MixerService {
     private readonly transitions: X32Transitions;
     private readonly muteTransitionDuration: number;
     private readonly unmuteTransitionDuration: number;
+    private readonly requiredFaderChannels: string[];
 
     constructor(nodecg: NodeCG.ServerAPI<Configschema>, obsConnectorService: ObsConnectorService) {
         this.mixerState = nodecg.Replicant('mixerState') as unknown as NodeCG.ServerReplicantWithSchemaDefault<MixerState>;
@@ -48,28 +50,32 @@ export class MixerService {
         this.transitions = new X32Transitions(nodecg);
         const channelMapping = nodecg.bundleConfig.x32?.channelMapping;
         if (channelMapping != null) {
-            obsConnectorService.addProgramSceneChangeListener(sceneName => {
-                if (ObsConnectorService.sceneNameTagPresent('G', sceneName)) {
-                    channelMapping.games?.forEach(gameChannel => {
-                        this.transitions.runForDb(this.channelItemToFaderPath(gameChannel), -90, 0, this.unmuteTransitionDuration, 'out');
-                    });
-                } else {
-                    channelMapping.games?.forEach(gameChannel => {
-                        this.transitions.runForDb(this.channelItemToFaderPath(gameChannel), 0, -90, this.muteTransitionDuration, 'in');
-                    });
-                }
+            this.requiredFaderChannels = [
+                ...(channelMapping.games ?? []).map(ch => this.channelItemToFaderPath(ch)),
+                ...(channelMapping.runners ?? []).map(ch => this.channelItemToFaderPath(ch))
+            ];
 
-                if (ObsConnectorService.sceneNameTagPresent('R', sceneName)) {
-                    channelMapping.runners?.forEach(runnerChannel => {
-                        this.transitions.runForDb(this.channelItemToFaderPath(runnerChannel), -90, 0, this.unmuteTransitionDuration, 'out');
-                    });
-                } else {
-                    channelMapping.runners?.forEach(runnerChannel => {
-                        this.transitions.runForDb(this.channelItemToFaderPath(runnerChannel), 0, -90, this.muteTransitionDuration, 'in');
-                    });
-                }
+            obsConnectorService.addProgramSceneChangeListener(sceneName => {
+                this.fadeChannels(ObsConnectorService.sceneNameTagPresent('G', sceneName) ? 'in' : 'out', channelMapping.games);
+                this.fadeChannels(ObsConnectorService.sceneNameTagPresent('R', sceneName) ? 'in' : 'out', channelMapping.runners);
             });
+        } else {
+            this.requiredFaderChannels = [];
         }
+    }
+
+    private fadeChannels(direction: 'out' | 'in', channels?: readonly ChannelItem[]) {
+        if (channels == null) return;
+        channels.forEach(channel => {
+            const faderPath = this.channelItemToFaderPath(channel);
+            const stateItem = this.oscState.get(faderPath);
+            const volumeFrom = stateItem != null && stateItem[0]?.type === 'f' ? stateItem[0].value as number : dbToFloat(0);
+            if (direction === 'out') {
+                this.transitions.run(faderPath, volumeFrom, 0, this.muteTransitionDuration, 'in');
+            } else {
+                this.transitions.run(faderPath, volumeFrom, dbToFloat(0), this.unmuteTransitionDuration, 'out');
+            }
+        });
     }
 
     private setupSocket() {
@@ -113,7 +119,8 @@ export class MixerService {
                 ...this.getMatrixNameAddresses(),
                 ...this.getDCANameAddresses(),
                 '/main/st/config/name',
-                '/main/m/config/name'
+                '/main/m/config/name',
+                ...this.requiredFaderChannels
             ];
             requiredState.forEach(address => {
                 this.queueEnsureLoaded(address);
