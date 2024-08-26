@@ -65,10 +65,10 @@
                     <ipl-button
                         inline
                         class="m-l-8"
+                        :color="someMixerAssignmentsMissing ? 'red' : 'blue'"
                         @click="talentMixerChannelAssignmentDialog?.open()"
                     >
                         <font-awesome-icon icon="headset" />
-                        <!-- todo: light this button up red if some assignments are missing? -->
                         Edit mixer assignments
                     </ipl-button>
                 </div>
@@ -101,6 +101,7 @@ import TimerManager from './TimerManager.vue';
 import { useTimerStore } from 'client-shared/stores/TimerStore';
 import { faHeadset } from '@fortawesome/free-solid-svg-icons/faHeadset';
 import TalentMixerChannelAssignmentDialog from './TalentMixerChannelAssignmentDialog.vue';
+import { useMixerStore } from 'client-shared/stores/MixerStore';
 
 library.add(faChevronRight, faChevronLeft, faSearch, faPenToSquare, faHeadset);
 
@@ -108,8 +109,14 @@ const talentMixerChannelAssignmentDialog = ref<InstanceType<typeof TalentMixerCh
 const scheduleItemSearchDialog = ref<InstanceType<typeof ScheduleItemSearchDialog>>();
 const scheduleStore = useScheduleStore();
 const timerStore = useTimerStore();
+const mixerStore = useMixerStore();
 
 const scheduleItemEditor = inject(ScheduleItemEditorInjectionKey);
+
+const someMixerAssignmentsMissing = computed(() => {
+    const activeSpeedrunTalentIds = scheduleStore.activeSpeedrunTalentIds;
+    return activeSpeedrunTalentIds.some(talentId => mixerStore.talentMixerChannelAssignments.speedrunTalent[talentId] == null);
+});
 
 const canSeekBackwards = computed(() => {
     if (scheduleStore.activeSpeedrunIndex <= 0 || timerStore.timerActive) return false;

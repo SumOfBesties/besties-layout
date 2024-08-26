@@ -12,7 +12,7 @@
             class="m-t-8"
             color="secondary"
         >
-            <template v-for="talentId in talentIds">
+            <template v-for="talentId in scheduleStore.activeSpeedrunTalentIds">
                 <ipl-select
                     :model-value="talentChannels[talentId] ?? 'none'"
                     :label="talentStore.findTalentItemById(talentId)?.name ?? `Unknown talent ${talentId}`"
@@ -116,20 +116,6 @@ const channelOptions = computed(() => [
 
 const hostChannel = ref<string | null>(null);
 const talentChannels = ref<Record<string, string>>({});
-const talentIds = computed(() => {
-    const talentIds = new Set<string>();
-    if (scheduleStore.activeSpeedrun != null) {
-        scheduleStore.activeSpeedrun.teams.forEach(team => {
-            team.playerIds.forEach(playerId => {
-                talentIds.add(playerId.id);
-            });
-        });
-        scheduleStore.activeSpeedrun.commentatorIds.forEach(commentatorId => {
-            talentIds.add(commentatorId.id);
-        });
-    }
-    return Array.from(talentIds.values());
-});
 
 function save() {
     mixerStore.updateTalentChannelAssignments({

@@ -55,6 +55,20 @@ export const useScheduleStore = defineStore('schedule', {
                 result.push(scheduleItem);
             }
             return result.reverse();
+        },
+        activeSpeedrunTalentIds(state): string[] {
+            const talentIds = new Set<string>();
+            if (state.activeSpeedrun != null) {
+                state.activeSpeedrun.teams.forEach(team => {
+                    team.playerIds.forEach(playerId => {
+                        talentIds.add(playerId.id);
+                    });
+                });
+                state.activeSpeedrun.commentatorIds.forEach(commentatorId => {
+                    talentIds.add(commentatorId.id);
+                });
+            }
+            return Array.from(talentIds.values());
         }
     }
 });
