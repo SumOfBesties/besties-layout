@@ -112,16 +112,8 @@ export class MixerService {
             mainMonoName: findName('/main/m/config/name') ?? 'M/C',
             channelNames: this.getChannelNameAddresses().map((address, i) => findName(address) ?? `Ch ${String(i + 1).padStart(2, '0')}`),
             auxInNames: this.getAuxInNameAddresses().map((address, i) => findName(address) ?? `Aux ${i + 1}`),
-            fxReturnNames: this.getFxReturnNameAddresses().map((address, i) => {
-                const foundName = findName(address);
-                if (foundName != null) return foundName;
-                if (i > 8) {
-                    return `Fx ${Math.floor(i / 2) + 1}${i % 2 === 0 ? 'L' : 'R'}`;
-                } else {
-                    return `Fx ${i - 7}`;
-                }
-            }),
-            busNames: this.getBusNameAddresses().map((address, i) => findName(address) ?? `MixBus ${i + 1}`),
+            fxReturnNames: this.getFxReturnNameAddresses().map((address, i) => findName(address) ?? `Fx ${Math.floor(i / 2) + 1}${i % 2 === 0 ? 'L' : 'R'}`),
+            busNames: this.getBusNameAddresses().map((address, i) => findName(address) ?? `Bus ${i + 1}`),
             matrixNames: this.getMatrixNameAddresses().map((address, i) => findName(address) ?? `Matrix ${i + 1}`),
             dcaNames: this.getDCANameAddresses().map((address, i) => findName(address) ?? `DCA ${i + 1}`)
         };
