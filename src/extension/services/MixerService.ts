@@ -136,7 +136,7 @@ export class MixerService {
         return range(1, 9).map(i => `/auxin/0${i}/config/name`);
     }
     private getFxReturnNameAddresses(): string[] {
-        return range(1, 9).map(i => `/ftrtn/0${i}/config/name`);
+        return range(1, 9).map(i => `/fxrtn/0${i}/config/name`);
     }
     private getBusNameAddresses(): string[] {
         return range(1, 17).map(i => `/bus/${String(i).padStart(2, '0')}/config/name`);
