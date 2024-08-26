@@ -35,6 +35,11 @@
                 :label="talentStore.currentHostId == null ? 'Host (Not currently assigned)' : `${ talentStore.findTalentItemById(talentStore.currentHostId)?.name ?? `Unknown talent ${talentStore.currentHostId}`} (Host)`"
                 :options="channelOptions"
             />
+            <div
+                v-if="isOpen"
+                class="channel-volume-display"
+                :style="{ transform: `scaleX(${(hostChannel == null ? -90 : (mixerStore.mixerChannelLevels[hostChannel] ?? -90) + 90) / 100})` }"
+            />
         </ipl-space>
         <ipl-space
             class="m-t-8"
@@ -149,5 +154,6 @@ defineExpose({
     background-color: #00A651;
     margin-top: 4px;
     transform-origin: left 0;
+    transition: transform 100ms;
 }
 </style>
