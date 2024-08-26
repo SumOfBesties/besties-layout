@@ -51,21 +51,21 @@ export class MixerService {
             obsConnectorService.addProgramSceneChangeListener(sceneName => {
                 if (ObsConnectorService.sceneNameTagPresent('G', sceneName)) {
                     channelMapping.games?.forEach(gameChannel => {
-                        this.transitions.run(this.channelItemToFaderPath(gameChannel), 0, 1, this.unmuteTransitionDuration, 'out');
+                        this.transitions.runForDb(this.channelItemToFaderPath(gameChannel), -90, 0, this.unmuteTransitionDuration, 'out');
                     });
                 } else {
                     channelMapping.games?.forEach(gameChannel => {
-                        this.transitions.run(this.channelItemToFaderPath(gameChannel), 1, 0, this.muteTransitionDuration, 'in');
+                        this.transitions.runForDb(this.channelItemToFaderPath(gameChannel), 0, -90, this.muteTransitionDuration, 'in');
                     });
                 }
 
                 if (ObsConnectorService.sceneNameTagPresent('R', sceneName)) {
                     channelMapping.runners?.forEach(runnerChannel => {
-                        this.transitions.run(this.channelItemToFaderPath(runnerChannel), 0, 1, this.unmuteTransitionDuration, 'out');
+                        this.transitions.runForDb(this.channelItemToFaderPath(runnerChannel), -90, 0, this.unmuteTransitionDuration, 'out');
                     });
                 } else {
                     channelMapping.runners?.forEach(runnerChannel => {
-                        this.transitions.run(this.channelItemToFaderPath(runnerChannel), 1, 0, this.muteTransitionDuration, 'in');
+                        this.transitions.runForDb(this.channelItemToFaderPath(runnerChannel), 0, -90, this.muteTransitionDuration, 'in');
                     });
                 }
             });
