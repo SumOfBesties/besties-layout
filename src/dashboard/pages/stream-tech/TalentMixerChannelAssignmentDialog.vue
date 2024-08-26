@@ -14,10 +14,11 @@
         >
             <template v-for="talentId in talentIds">
                 <ipl-select
-                    v-model="talentChannels[talentId]"
+                    :model-value="talentChannels[talentId] ?? 'none'"
                     :label="talentStore.findTalentItemById(talentId)?.name ?? `Unknown talent ${talentId}`"
                     :options="channelOptions"
                     class="talent-channel-select"
+                    @update:model-value="talentChannels[talentId] = $event"
                 />
                 <div
                     v-if="isOpen"
@@ -36,14 +37,15 @@
             color="secondary"
         >
             <ipl-select
-                v-model="hostChannel"
+                :model-value="hostChannel ?? 'none'"
                 :label="talentStore.currentHostId == null ? 'Host (Not currently assigned)' : `${ talentStore.findTalentItemById(talentStore.currentHostId)?.name ?? `Unknown talent ${talentStore.currentHostId}`} (Host)`"
                 :options="channelOptions"
+                @update:model-value="hostChannel = $event"
             />
             <div
                 v-if="isOpen"
                 class="channel-volume-display"
-                :style="{ transform: `scaleX(${(hostChannel == null ? -90 : (mixerStore.mixerChannelLevels[hostChannel] ?? -90) + 90) / 100})` }"
+                :style="{ transform: `scaleX(${(hostChannel == null || hostChannel === 'none' ? 0 : (mixerStore.mixerChannelLevels[hostChannel] ?? -90) + 90) / 100})` }"
             />
             <div
                 v-else
@@ -89,6 +91,7 @@ const talentStore = useTalentStore();
 // 48-63 = Bus 1-16
 // 64-69 = Matrix 1-6
 const channelOptions = computed(() => [
+    { value: 'none', name: 'None' },
     ...mixerStore.mixerState.channelNames.map((channelName, i) => ({
         value: String(i),
         name: channelName
@@ -131,10 +134,12 @@ const talentIds = computed(() => {
 function save() {
     mixerStore.updateTalentChannelAssignments({
         speedrunTalent: Object.entries(talentChannels.value).reduce((result, [talentId, channelId]) => {
-            result[talentId] = { channelId: Number(channelId) };
+            if (channelId !== 'none') {
+                result[talentId] = { channelId: Number(channelId) };
+            }
             return result;
         }, {} as Record<string, MixerChannelAssignment>),
-        host: hostChannel.value == null ? undefined : { channelId: Number(hostChannel.value) }
+        host: hostChannel.value == null || hostChannel.value === 'none' ? undefined : { channelId: Number(hostChannel.value) }
     });
 }
 
