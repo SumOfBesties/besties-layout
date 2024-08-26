@@ -44,6 +44,8 @@ export * from './scheduleImportStatus';
 // @ts-ignore
 export * from './talent';
 // @ts-ignore
+export * from './talentMixerChannelAssignments';
+// @ts-ignore
 export * from './timer';
 // @ts-ignore
 export * from './trackerState';

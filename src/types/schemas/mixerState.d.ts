@@ -7,12 +7,12 @@
 
 export interface MixerState {
 	connectionState: 'NOT_CONNECTED' | 'CONNECTING' | 'CONNECTED';
-	channelNames: (string | null)[];
-	auxInNames: (string | null)[];
-	fxReturnNames: (string | null)[];
-	busNames: (string | null)[];
-	matrixNames: (string | null)[];
-	dcaNames: (string | null)[];
-	mainLRName: string | null;
-	mainMonoName: string | null;
+	channelNames: string[];
+	auxInNames: string[];
+	fxReturnNames: string[];
+	busNames: string[];
+	matrixNames: string[];
+	dcaNames: string[];
+	mainLRName: string;
+	mainMonoName: string;
 }

@@ -62,12 +62,24 @@
                         <font-awesome-icon icon="pen-to-square" />
                         Edit active run
                     </ipl-button>
+                    <ipl-button
+                        inline
+                        class="m-l-8"
+                        @click="talentMixerChannelAssignmentDialog?.open()"
+                    >
+                        <font-awesome-icon icon="headset" />
+                        <!-- todo: light this button up red if some assignments are missing? -->
+                        Edit mixer assignments
+                    </ipl-button>
                 </div>
             </ipl-space>
             <timer-manager class="m-t-8" />
         </template>
         <schedule-item-search-dialog
             ref="scheduleItemSearchDialog"
+        />
+        <talent-mixer-channel-assignment-dialog
+            ref="talentMixerChannelAssignmentDialog"
         />
     </div>
 </template>
@@ -87,9 +99,12 @@ import { faPenToSquare } from '@fortawesome/free-solid-svg-icons';
 import { ScheduleItemEditorInjectionKey } from '../../helpers/Injections';
 import TimerManager from './TimerManager.vue';
 import { useTimerStore } from 'client-shared/stores/TimerStore';
+import { faHeadset } from '@fortawesome/free-solid-svg-icons/faHeadset';
+import TalentMixerChannelAssignmentDialog from './TalentMixerChannelAssignmentDialog.vue';
 
-library.add(faChevronRight, faChevronLeft, faSearch, faPenToSquare);
+library.add(faChevronRight, faChevronLeft, faSearch, faPenToSquare, faHeadset);
 
+const talentMixerChannelAssignmentDialog = ref<InstanceType<typeof TalentMixerChannelAssignmentDialog>>();
 const scheduleItemSearchDialog = ref<InstanceType<typeof ScheduleItemSearchDialog>>();
 const scheduleStore = useScheduleStore();
 const timerStore = useTimerStore();

@@ -1,0 +1,30 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "definitions": {
+        "mixerChannelAssignment": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "channelId": { "type": "number" }
+            },
+            "required": ["channelId"]
+        }
+    },
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "speedrunTalent": {
+            "type": "object",
+            "additionalProperties": {
+                "$ref": "#/definitions/mixerChannelAssignment"
+            }
+        },
+        "host": {
+            "$ref": "#/definitions/mixerChannelAssignment"
+        }
+    },
+    "required": ["speedrunTalent"],
+    "default": {
+        "speedrunTalent": { }
+    }
+}

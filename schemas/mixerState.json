@@ -10,44 +10,44 @@
         "channelNames": {
             "type": "array",
             "items": {
-                "type": ["string", "null"]
+                "type": "string"
             }
         },
         "auxInNames": {
             "type": "array",
             "items": {
-                "type": ["string", "null"]
+                "type": "string"
             }
         },
         "fxReturnNames": {
             "type": "array",
             "items": {
-                "type": ["string", "null"]
+                "type": "string"
             }
         },
         "busNames": {
             "type": "array",
             "items": {
-                "type": ["string", "null"]
+                "type": "string"
             }
         },
         "matrixNames": {
             "type": "array",
             "items": {
-                "type": ["string", "null"]
+                "type": "string"
             }
         },
         "dcaNames": {
             "type": "array",
             "items": {
-                "type": ["string", "null"]
+                "type": "string"
             }
         },
         "mainLRName": {
-            "type": ["string", "null"]
+            "type": "string"
         },
         "mainMonoName": {
-            "type": ["string", "null"]
+            "type": "string"
         }
     },
     "required": [
@@ -69,7 +69,7 @@
         "busNames": [],
         "matrixNames": [],
         "dcaNames": [],
-        "mainLRName": null,
-        "mainMonoName": null
+        "mainLRName": "LR",
+        "mainMonoName": "M/C"
     }
 }
