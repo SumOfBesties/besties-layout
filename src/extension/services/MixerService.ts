@@ -102,7 +102,8 @@ export class MixerService {
     private updateStateReplicant() {
         const findName = (address: string): string | undefined => {
             const stateItem = this.oscState.get(address);
-            return stateItem != null && stateItem[0].type === 's' ? stateItem[0].value as string : undefined;
+            const value = stateItem != null && stateItem[0].type === 's' ? stateItem[0].value as string : undefined;
+            return value?.length === 0 ? undefined : value;
         }
 
         this.mixerState.value = {
