@@ -14,3 +14,17 @@ export function dbToFloat(d: number): number {
     // Optionally round “f” to a X32 known value
     return f // Math.round((f * 1023.5) / 1023.0)
 }
+
+export function floatToDB(f: number): number {
+    if (f >= 0.5) {
+        return f * 40 - 30 // max dB value: +10.
+    } else if (f >= 0.25) {
+        return f * 80 - 50
+    } else if (f >= 0.0625) {
+        return f * 160 - 70
+    } else if (f >= 0.0) {
+        return f * 480 - 90 // min dB value: -90 or -oo
+    } else {
+        return -90;
+    }
+}

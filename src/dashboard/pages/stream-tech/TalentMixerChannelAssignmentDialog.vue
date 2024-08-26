@@ -12,14 +12,18 @@
             class="m-t-8"
             color="secondary"
         >
-            <ipl-select
-                v-for="talentId in talentIds"
-                v-model="talentChannels[talentId]"
-                :key="talentId"
-                :label="talentStore.findTalentItemById(talentId)?.name ?? `Unknown talent ${talentId}`"
-                :options="channelOptions"
-                class="talent-channel-select"
-            />
+            <template v-for="talentId in talentIds">
+                <ipl-select
+                    v-model="talentChannels[talentId]"
+                    :label="talentStore.findTalentItemById(talentId)?.name ?? `Unknown talent ${talentId}`"
+                    :options="channelOptions"
+                    class="talent-channel-select"
+                />
+                <div
+                    class="channel-volume-display"
+                    :style="{ transform: `scaleX(${((mixerStore.mixerChannelLevels[talentChannels[talentId]] ?? -90) + 90) / 100})` }"
+                />
+            </template>
         </ipl-space>
         <ipl-space
             class="m-t-8"
@@ -39,6 +43,12 @@
                 color="green"
                 label="Save"
                 @click="save"
+            />
+            <ipl-button
+                color="red"
+                label="Close"
+                class="m-t-8"
+                @click="isOpen = false"
             />
         </ipl-space>
     </ipl-dialog>
@@ -114,7 +124,6 @@ function save() {
         }, {} as Record<string, MixerChannelAssignment>),
         host: hostChannel.value == null ? undefined : { channelId: Number(hostChannel.value) }
     });
-    isOpen.value = false;
 }
 
 const isOpen = ref(false);
@@ -135,5 +144,13 @@ defineExpose({
 <style scoped lang="scss">
 .talent-channel-select:not(:first-child) {
     margin-top: 4px;
+}
+
+.channel-volume-display {
+    width: 100%;
+    height: 8px;
+    background-color: #00A651;
+    margin-top: 4px;
+    transform-origin: left 0;
 }
 </style>

@@ -1,16 +1,25 @@
 import type NodeCG from '@nodecg/types';
-import { ChannelItem, Configschema, MixerState } from 'types/schemas';
+import {
+    ChannelItem,
+    Configschema,
+    MixerChannelLevels,
+    MixerState,
+    TalentMixerChannelAssignments
+} from 'types/schemas';
 import { MetaArgument, UDPPort } from 'osc';
 import PQueue from 'p-queue';
 import range from 'lodash/range';
 import debounce from 'lodash/debounce';
 import { ObsConnectorService } from '../ObsConnectorService';
 import { X32Transitions } from './X32Transitions';
-import { dbToFloat } from './X32Util';
+import { dbToFloat, floatToDB } from './X32Util';
 
 export class MixerService {
     private readonly logger: NodeCG.Logger;
     private readonly mixerState: NodeCG.ServerReplicantWithSchemaDefault<MixerState>;
+    private readonly talentMixerChannelAssignments: NodeCG.ServerReplicantWithSchemaDefault<TalentMixerChannelAssignments>;
+    private readonly mixerChannelLevels: NodeCG.ServerReplicantWithSchemaDefault<MixerChannelLevels>;
+    private readonly localMixerChannelLevels: Map<string, number> = new Map();
     private readonly mixerAddress?: string;
     private osc: UDPPort | null;
     private subscriptionRenewalInterval: NodeJS.Timeout | undefined = undefined;
@@ -22,21 +31,23 @@ export class MixerService {
     private inFlightRequests: Record<string, () => void> = { };
     private readonly oscState: Map<string, MetaArgument[]> = new Map();
     private readonly debouncedUpdateStateReplicant: () => void;
+    private readonly debouncedUpdateMixerLevelsReplicant: () => void;
     private readonly transitions: X32Transitions;
     private readonly muteTransitionDuration: number;
     private readonly unmuteTransitionDuration: number;
-    private readonly requiredFaderChannels: string[];
+    private readonly requiredFaders: string[];
 
     constructor(nodecg: NodeCG.ServerAPI<Configschema>, obsConnectorService: ObsConnectorService) {
         this.mixerState = nodecg.Replicant('mixerState') as unknown as NodeCG.ServerReplicantWithSchemaDefault<MixerState>;
+        this.talentMixerChannelAssignments = nodecg.Replicant('talentMixerChannelAssignments') as unknown as NodeCG.ServerReplicantWithSchemaDefault<TalentMixerChannelAssignments>;
+        this.mixerChannelLevels = nodecg.Replicant('mixerChannelLevels') as unknown as NodeCG.ServerReplicantWithSchemaDefault<MixerChannelLevels>;
         this.logger = new nodecg.Logger(`${nodecg.bundleName}:MixerService`);
         this.unmuteTransitionDuration = nodecg.bundleConfig.x32?.transitionDurations?.unmute ?? 500;
         this.muteTransitionDuration = nodecg.bundleConfig.x32?.transitionDurations?.mute ?? 500;
-        this.debouncedUpdateStateReplicant = debounce(this.updateStateReplicant, 100, {
-            maxWait: 500,
-            trailing: true,
-            leading: false
-        });
+        this.debouncedUpdateStateReplicant = debounce(
+            this.updateStateReplicant, 100, { maxWait: 500, trailing: true, leading: false });
+        this.debouncedUpdateMixerLevelsReplicant = debounce(
+            this.updateMixerLevelsReplicant, 100, { maxWait: 500, trailing: true, leading: false });
 
         this.osc = null;
         if (MixerService.hasRequiredConfig(nodecg)) {
@@ -50,7 +61,7 @@ export class MixerService {
         this.transitions = new X32Transitions(nodecg);
         const channelMapping = nodecg.bundleConfig.x32?.channelMapping;
         if (channelMapping != null) {
-            this.requiredFaderChannels = [
+            this.requiredFaders = [
                 ...(channelMapping.games ?? []).map(ch => this.channelItemToFaderPath(ch)),
                 ...(channelMapping.runners ?? []).map(ch => this.channelItemToFaderPath(ch))
             ];
@@ -60,7 +71,7 @@ export class MixerService {
                 this.fadeChannels(ObsConnectorService.sceneNameTagPresent('R', sceneName) ? 'in' : 'out', channelMapping.runners);
             });
         } else {
-            this.requiredFaderChannels = [];
+            this.requiredFaders = [];
         }
     }
 
@@ -120,20 +131,43 @@ export class MixerService {
                 ...this.getDCANameAddresses(),
                 '/main/st/config/name',
                 '/main/m/config/name',
-                ...this.requiredFaderChannels
+                ...this.requiredFaders
             ];
             requiredState.forEach(address => {
                 this.queueEnsureLoaded(address);
             });
         });
         this.osc.on('message', message => {
-            this.oscState.set(message.address, message.args as MetaArgument[]);
-            if (this.inFlightRequests[message.address]) {
-                this.inFlightRequests[message.address]();
-                delete this.inFlightRequests[message.address];
-            }
-            if (message.address.endsWith('/config/name')) {
-                this.debouncedUpdateStateReplicant();
+            if (message.address.startsWith('/meters')) {
+                const channelId = message.address.match(/\/meters\/([0-9]+)/)?.[1];
+                if (channelId == null) {
+                    this.logger.warn(`Received meters message, but couldn't find a channel ID? (Message address: ${message.address})`);
+                    return;
+                }
+                const arg = (message.args as MetaArgument[])[0];
+                if (arg != null && arg.type === 'b') {
+                    const metersData = arg.value;
+                    const withoutLength = metersData.slice(4);
+                    const floatCount = withoutLength.byteLength / 4;
+                    if (floatCount !== 4) {
+                        this.logger.warn(`Received meters message with ${floatCount} floats? (Expected 4)`);
+                        return;
+                    } else {
+                        const dataView = new DataView(withoutLength.buffer);
+                        const meterValues = range(0, floatCount).map(i => dataView.getFloat32(i * 4, true));
+                        this.localMixerChannelLevels.set(channelId, floatToDB(meterValues[3]));
+                    }
+                }
+                this.debouncedUpdateMixerLevelsReplicant();
+            } else {
+                this.oscState.set(message.address, message.args as MetaArgument[]);
+                if (this.inFlightRequests[message.address]) {
+                    this.inFlightRequests[message.address]();
+                    delete this.inFlightRequests[message.address];
+                }
+                if (message.address.endsWith('/config/name')) {
+                    this.debouncedUpdateStateReplicant();
+                }
             }
         });
         this.osc.open();
@@ -159,6 +193,10 @@ export class MixerService {
         };
     }
 
+    private updateMixerLevelsReplicant() {
+        this.mixerChannelLevels.value = Object.fromEntries(this.localMixerChannelLevels.entries());
+    }
+
     private getChannelNameAddresses(): string[] {
         return range(1, 33).map(i => `/ch/${String(i).padStart(2, '0')}/config/name`);
     }
@@ -181,6 +219,25 @@ export class MixerService {
     private registerForUpdates() {
         if (this.osc == null) return;
         this.osc.send({ address: '/xremote', args: [] });
+
+        const levelChannelIds = new Set<number>();
+        Object.values(({
+            host: this.talentMixerChannelAssignments.value.host,
+            ...this.talentMixerChannelAssignments.value.speedrunTalent
+        })).forEach(assignment => {
+            if (assignment == null) return;
+            levelChannelIds.add(assignment.channelId);
+        });
+        Array.from(levelChannelIds).forEach(channelId => {
+            this.osc!.send({
+                address: '/meters',
+                args: [
+                    { type: 's', value: '/meters/6' },
+                    { type: 'i', value: channelId },
+                    { type: 'i', value: 99 }
+                ]
+            });
+        });
     }
 
     private queueEnsureLoaded(path: string) {
