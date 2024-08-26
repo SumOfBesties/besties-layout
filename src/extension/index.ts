@@ -20,7 +20,7 @@ import { TwitchOauthClient } from './clients/TwitchOauthClient';
 import { TwitchClient } from './clients/TwitchClient';
 import { TwitchController } from './controllers/TwitchController';
 import { MusicService } from './services/MusicService';
-import { MixerService } from './services/MixerService';
+import { MixerService } from './services/mixer/MixerService';
 
 export = (nodecg: NodeCG.ServerAPI<Configschema>): void => {
     const oengusClient = new OengusClient(nodecg);
@@ -39,7 +39,7 @@ export = (nodecg: NodeCG.ServerAPI<Configschema>): void => {
     new TrackerService(nodecg);
     const twitchService = new TwitchService(nodecg, twitchOauthClient, twitchClient, talentService, scheduleService);
     new MusicService(nodecg, obsConnectorService);
-    new MixerService(nodecg);
+    new MixerService(nodecg, obsConnectorService);
 
     new ScheduleController(nodecg, scheduleService);
     new SpeedrunController(nodecg, speedrunService);

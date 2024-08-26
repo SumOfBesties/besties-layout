@@ -55,7 +55,7 @@ export class MusicService {
     }
 
     private onSceneChange(sceneName: string) {
-        if (sceneName.includes('[M]')) {
+        if (ObsConnectorService.sceneNameTagPresent('M', sceneName)) {
             this.play().catch(e => {
                 this.logger.error('Error playing music:', e instanceof Error ? e.message : String(e));
             });

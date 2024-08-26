@@ -482,4 +482,8 @@ export class ObsConnectorService {
         this.obsConfig.value = newValue;
         this.obsState.value.videoInputs = await this.getVideoInputs();
     }
+
+    static sceneNameTagPresent(tag: string, sceneName: string): boolean {
+        return new RegExp(`\[.*${tag}]$`).test(sceneName);
+    }
 }

@@ -78,6 +78,7 @@
             "type": "object",
             "properties": {
                 "address": { "type": "string" },
+                "transitionFps": { "type": "number" },
                 "channelMapping": {
                     "type": "object",
                     "properties": {

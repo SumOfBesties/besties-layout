@@ -50,6 +50,7 @@ export interface Configschema {
 	};
 	x32?: {
 		address?: string;
+		transitionFps?: number;
 		channelMapping?: {
 			runners?: ChannelItem[];
 			games?: ChannelItem[];

@@ -1,9 +1,11 @@
 import type NodeCG from '@nodecg/types';
-import type { Configschema, MixerState } from 'types/schemas';
+import { ChannelItem, Configschema, MixerState } from 'types/schemas';
 import { MetaArgument, UDPPort } from 'osc';
 import PQueue from 'p-queue';
 import range from 'lodash/range';
 import debounce from 'lodash/debounce';
+import { ObsConnectorService } from '../ObsConnectorService';
+import { X32Transitions } from './X32Transitions';
 
 export class MixerService {
     private readonly logger: NodeCG.Logger;
@@ -19,8 +21,9 @@ export class MixerService {
     private inFlightRequests: Record<string, () => void> = { };
     private readonly oscState: Map<string, MetaArgument[]> = new Map();
     private readonly debouncedUpdateStateReplicant: () => void;
+    private readonly transitions: X32Transitions;
 
-    constructor(nodecg: NodeCG.ServerAPI<Configschema>) {
+    constructor(nodecg: NodeCG.ServerAPI<Configschema>, obsConnectorService: ObsConnectorService) {
         this.mixerState = nodecg.Replicant('mixerState') as unknown as NodeCG.ServerReplicantWithSchemaDefault<MixerState>;
         this.logger = new nodecg.Logger(`${nodecg.bundleName}:MixerService`);
         this.debouncedUpdateStateReplicant = debounce(this.updateStateReplicant, 100, {
@@ -36,6 +39,32 @@ export class MixerService {
         } else {
             this.mixerState.value.connectionState = 'NOT_CONNECTED';
             this.logger.warn('Some X32 mixer configuration is missing!');
+        }
+
+        this.transitions = new X32Transitions(nodecg);
+        const channelMapping = nodecg.bundleConfig.x32?.channelMapping;
+        if (channelMapping != null) {
+            obsConnectorService.addProgramSceneChangeListener(sceneName => {
+                if (ObsConnectorService.sceneNameTagPresent('G', sceneName)) {
+                    channelMapping.games?.forEach(gameChannel => {
+                        this.transitions.run(this.channelItemToFaderPath(gameChannel), 0, 1, 500, 'out');
+                    });
+                } else {
+                    channelMapping.games?.forEach(gameChannel => {
+                        this.transitions.run(this.channelItemToFaderPath(gameChannel), 1, 0, 500, 'in');
+                    });
+                }
+
+                if (ObsConnectorService.sceneNameTagPresent('R', sceneName)) {
+                    channelMapping.runners?.forEach(runnerChannel => {
+                        this.transitions.run(this.channelItemToFaderPath(runnerChannel), 0, 1, 500, 'out');
+                    });
+                } else {
+                    channelMapping.runners?.forEach(runnerChannel => {
+                        this.transitions.run(this.channelItemToFaderPath(runnerChannel), 1, 0, 500, 'in');
+                    });
+                }
+            });
         }
     }
 
@@ -162,6 +191,26 @@ export class MixerService {
             delete this.inFlightRequests[path];
             this.logger.error(`OSC request failed at path ${path}: ${'message' in e ? e.message : String(e)}`);
         });
+    }
+
+    private channelItemToFaderPath(item: ChannelItem): string {
+        switch (item.type) {
+            case 'AUX_IN':
+            case 'BUS':
+            case 'CHANNEL':
+            case 'FX_RETURN':
+            case 'MATRIX':
+                const base = {
+                    'AUX_IN': '/auxin/',
+                    'BUS': '/bus/',
+                    'CHANNEL': '/ch/',
+                    'FX_RETURN': '/fxrtn/',
+                    'MATRIX': '/mtx/'
+                }[item.type];
+                return `${base}${String(item.number).padStart(2, '0')}/mix/fader`;
+            case 'DCA':
+                return `/dca/${item.number}/fader`;
+        }
     }
 
     static hasRequiredConfig(nodecg: NodeCG.ServerAPI<Configschema>) {

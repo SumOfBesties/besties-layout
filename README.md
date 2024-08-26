@@ -51,6 +51,7 @@ To configure this bundle, create the file `[nodecg]/cfg/nsg2-layouts.json` with 
   },
   "x32": {
     "address": "192.168.1.102",
+    "transitionFps": 10,
     "channelMapping": {
       "runners": [{ "type": "DCA", "number": 1 }],
       "games": [{ "type": "DCA", "number": 2 }]
@@ -65,8 +66,7 @@ Find a list of time zones [here](https://en.wikipedia.org/wiki/List_of_tz_databa
 
 #### Music
 
-Music information is gathered through foobar2000 with the [beefweb](https://github.com/hyperblast/beefweb) plugin installed.  
-Include `[M]` in a scene's name to play music while it is in the program feed.
+Music information is gathered through foobar2000 with the [beefweb](https://github.com/hyperblast/beefweb) plugin installed.
 
 ## Usage
 
@@ -82,6 +82,15 @@ Example: `http://localhost:9090/bundles/nsg2-layouts/graphics/game-layout.html?i
 nsg2-layouts can be used in conjunction with a [modified build of obs-websocket](https://github.com/obsproject/obs-websocket/pull/1229) 
 to react to scene changes when a transition starts as opposed to when it completes. If this build is in use, set the 
 `obs.sceneDataInTransitionEvents` property in the bundle configuration file to `true`. Otherwise, set it to `false`.
+
+#### Scene name rules
+
+The following tags may be included at the end of OBS scene names to modify the stream while those scenes are in the program feed.
+- `[M]`: Play music
+- `[G]`: Unmute game audio
+- `[R]`: Unmute runners
+
+These tags may be combined. For example, a scene named `Test Scene [MG]` will play music and unmute the game audio while it is in the program feed.
 
 ## npm commands
 
