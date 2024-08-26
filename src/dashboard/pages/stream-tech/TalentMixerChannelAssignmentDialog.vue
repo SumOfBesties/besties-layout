@@ -20,6 +20,7 @@
                     class="talent-channel-select"
                 />
                 <div
+                    v-if="isOpen"
                     class="channel-volume-display"
                     :style="{ transform: `scaleX(${((mixerStore.mixerChannelLevels[talentChannels[talentId]] ?? -90) + 90) / 100})` }"
                 />
