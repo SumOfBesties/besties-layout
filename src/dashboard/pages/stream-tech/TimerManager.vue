@@ -148,7 +148,7 @@ async function resetTimer() {
 
 <style scoped lang="scss">
 .timer-manager {
-    padding: 0;
+    padding: 0 !important;
     overflow-y: auto;
 }
 

@@ -49,7 +49,7 @@ provide(TalentItemEditDialogInjectionKey, talentItemEditDialog);
 
 <style lang="scss">
 body {
-    margin: 0;
+    margin: 0 !important;
     overflow-y: hidden;
 }
 </style>

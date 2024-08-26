@@ -56,7 +56,7 @@ function onClick() {
 
 <style scoped lang="scss">
 .country-code-select {
-    padding: 4px;
+    padding: 4px !important;
     text-align: center !important;
     box-sizing: border-box;
 

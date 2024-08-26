@@ -78,7 +78,7 @@ const timerColor = computed(() => {
 
 <style scoped lang="scss">
 .host-active-run-display {
-    padding: 8px 0 0;
+    padding: 8px 0 0 !important;
 }
 
 .speedrun-name {
