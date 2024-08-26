@@ -47,7 +47,7 @@ export class MixerService {
         this.debouncedUpdateStateReplicant = debounce(
             this.updateStateReplicant, 100, { maxWait: 500, trailing: true, leading: false });
         this.debouncedUpdateMixerLevelsReplicant = debounce(
-            this.updateMixerLevelsReplicant, 100, { maxWait: 500, trailing: true, leading: false });
+            this.updateMixerLevelsReplicant, 100, { maxWait: 100, trailing: true, leading: false });
 
         this.osc = null;
         if (MixerService.hasRequiredConfig(nodecg)) {
