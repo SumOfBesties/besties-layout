@@ -484,6 +484,6 @@ export class ObsConnectorService {
     }
 
     static sceneNameTagPresent(tag: string, sceneName: string): boolean {
-        return new RegExp(`\[.*${tag}.*\]$`).test(sceneName);
+        return new RegExp(`\\[.*${tag}.*]$`).test(sceneName);
     }
 }
