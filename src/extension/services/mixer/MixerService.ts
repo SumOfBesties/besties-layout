@@ -22,10 +22,14 @@ export class MixerService {
     private readonly oscState: Map<string, MetaArgument[]> = new Map();
     private readonly debouncedUpdateStateReplicant: () => void;
     private readonly transitions: X32Transitions;
+    private readonly muteTransitionDuration: number;
+    private readonly unmuteTransitionDuration: number;
 
     constructor(nodecg: NodeCG.ServerAPI<Configschema>, obsConnectorService: ObsConnectorService) {
         this.mixerState = nodecg.Replicant('mixerState') as unknown as NodeCG.ServerReplicantWithSchemaDefault<MixerState>;
         this.logger = new nodecg.Logger(`${nodecg.bundleName}:MixerService`);
+        this.unmuteTransitionDuration = nodecg.bundleConfig.x32?.transitionDurations?.unmute ?? 500;
+        this.muteTransitionDuration = nodecg.bundleConfig.x32?.transitionDurations?.mute ?? 500;
         this.debouncedUpdateStateReplicant = debounce(this.updateStateReplicant, 100, {
             maxWait: 500,
             trailing: true,
@@ -47,21 +51,21 @@ export class MixerService {
             obsConnectorService.addProgramSceneChangeListener(sceneName => {
                 if (ObsConnectorService.sceneNameTagPresent('G', sceneName)) {
                     channelMapping.games?.forEach(gameChannel => {
-                        this.transitions.run(this.channelItemToFaderPath(gameChannel), 0, 1, 500, 'out');
+                        this.transitions.run(this.channelItemToFaderPath(gameChannel), 0, 1, this.unmuteTransitionDuration, 'out');
                     });
                 } else {
                     channelMapping.games?.forEach(gameChannel => {
-                        this.transitions.run(this.channelItemToFaderPath(gameChannel), 1, 0, 500, 'in');
+                        this.transitions.run(this.channelItemToFaderPath(gameChannel), 1, 0, this.muteTransitionDuration, 'in');
                     });
                 }
 
                 if (ObsConnectorService.sceneNameTagPresent('R', sceneName)) {
                     channelMapping.runners?.forEach(runnerChannel => {
-                        this.transitions.run(this.channelItemToFaderPath(runnerChannel), 0, 1, 500, 'out');
+                        this.transitions.run(this.channelItemToFaderPath(runnerChannel), 0, 1, this.unmuteTransitionDuration, 'out');
                     });
                 } else {
                     channelMapping.runners?.forEach(runnerChannel => {
-                        this.transitions.run(this.channelItemToFaderPath(runnerChannel), 1, 0, 500, 'in');
+                        this.transitions.run(this.channelItemToFaderPath(runnerChannel), 1, 0, this.muteTransitionDuration, 'in');
                     });
                 }
             });

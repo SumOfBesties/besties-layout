@@ -79,6 +79,13 @@
             "properties": {
                 "address": { "type": "string" },
                 "transitionFps": { "type": "number" },
+                "transitionDurations": {
+                    "type": "object",
+                    "properties": {
+                        "mute": { "type": "number" },
+                        "unmute": { "type": "number" }
+                    }
+                },
                 "channelMapping": {
                     "type": "object",
                     "properties": {

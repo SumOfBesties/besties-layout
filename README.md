@@ -52,6 +52,10 @@ To configure this bundle, create the file `[nodecg]/cfg/nsg2-layouts.json` with 
   "x32": {
     "address": "192.168.1.102",
     "transitionFps": 10,
+    "transitionDurations": {
+        "mute": 500,
+        "unmute": 750
+    },
     "channelMapping": {
       "runners": [{ "type": "DCA", "number": 1 }],
       "games": [{ "type": "DCA", "number": 2 }]

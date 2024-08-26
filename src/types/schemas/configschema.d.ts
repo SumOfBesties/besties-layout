@@ -51,6 +51,11 @@ export interface Configschema {
 	x32?: {
 		address?: string;
 		transitionFps?: number;
+		transitionDurations?: {
+			mute?: number;
+			unmute?: number;
+			[k: string]: unknown;
+		};
 		channelMapping?: {
 			runners?: ChannelItem[];
 			games?: ChannelItem[];
