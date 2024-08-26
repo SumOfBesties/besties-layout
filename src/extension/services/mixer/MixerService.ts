@@ -139,23 +139,20 @@ export class MixerService {
         });
         this.osc.on('message', message => {
             if (message.address.startsWith('/meters')) {
-                const channelId = message.address.match(/\/meters\/([0-9]+)/)?.[1];
-                if (channelId == null) {
-                    this.logger.warn(`Received meters message, but couldn't find a channel ID? (Message address: ${message.address})`);
-                    return;
-                }
                 const arg = (message.args as MetaArgument[])[0];
                 if (arg != null && arg.type === 'b') {
                     const metersData = arg.value;
                     const withoutLength = metersData.slice(4);
                     const floatCount = withoutLength.byteLength / 4;
-                    if (floatCount !== 4) {
-                        this.logger.warn(`Received meters message with ${floatCount} floats? (Expected 4)`);
+                    if (floatCount !== 70) {
+                        this.logger.warn(`Received meters message with ${floatCount} floats? (Expected 70)`);
                         return;
                     } else {
                         const dataView = new DataView(withoutLength.buffer);
                         const meterValues = range(0, floatCount).map(i => dataView.getFloat32(i * 4, true));
-                        this.localMixerChannelLevels.set(channelId, floatToDB(meterValues[3]));
+                        meterValues.forEach((value, i) => {
+                            this.localMixerChannelLevels.set(String(i), floatToDB(value));
+                        });
                     }
                 }
                 this.debouncedUpdateMixerLevelsReplicant();
@@ -194,7 +191,14 @@ export class MixerService {
     }
 
     private updateMixerLevelsReplicant() {
-        this.mixerChannelLevels.value = Object.fromEntries(this.localMixerChannelLevels.entries());
+        const assignedChannels = new Set<number>();
+        Object.values(this.talentMixerChannelAssignments.value.speedrunTalent).forEach(assignment => {
+            assignedChannels.add(assignment.channelId);
+        });
+        if (this.talentMixerChannelAssignments.value.host != null) {
+            assignedChannels.add(this.talentMixerChannelAssignments.value.host.channelId);
+        }
+        this.mixerChannelLevels.value = Object.fromEntries(Array.from(assignedChannels.values()).map(channelId => [channelId, this.localMixerChannelLevels.get(String(channelId)) ?? -90]));
     }
 
     private getChannelNameAddresses(): string[] {
@@ -220,23 +224,12 @@ export class MixerService {
         if (this.osc == null) return;
         this.osc.send({ address: '/xremote', args: [] });
 
-        const levelChannelIds = new Set<number>();
-        Object.values(({
-            host: this.talentMixerChannelAssignments.value.host,
-            ...this.talentMixerChannelAssignments.value.speedrunTalent
-        })).forEach(assignment => {
-            if (assignment == null) return;
-            levelChannelIds.add(assignment.channelId);
-        });
-        Array.from(levelChannelIds).forEach(channelId => {
-            this.osc!.send({
-                address: '/meters',
-                args: [
-                    { type: 's', value: '/meters/6' },
-                    { type: 'i', value: channelId },
-                    { type: 'i', value: 99 }
-                ]
-            });
+        this.osc!.send({
+            address: '/meters',
+            args: [
+                { type: 's', value: '/meters/0' },
+                { type: 'i', value: 99 }
+            ]
         });
     }
 

@@ -73,8 +73,6 @@ const talentStore = useTalentStore();
 // 40-47 = Fx 1L-4R
 // 48-63 = Bus 1-16
 // 64-69 = Matrix 1-6
-// 70 = LR
-// 71 = M/C
 const channelOptions = computed(() => [
     ...mixerStore.mixerState.channelNames.map((channelName, i) => ({
         value: String(i),
@@ -95,9 +93,7 @@ const channelOptions = computed(() => [
     ...mixerStore.mixerState.matrixNames.map((channelName, i) => ({
         value: String(i + 64),
         name: channelName
-    })),
-    { value: '70', name: mixerStore.mixerState.mainLRName },
-    { value: '71', name: mixerStore.mixerState.mainMonoName }
+    }))
 ]);
 
 const hostChannel = ref<string | null>(null);
