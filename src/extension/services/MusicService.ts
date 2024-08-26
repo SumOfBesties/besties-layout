@@ -1,6 +1,6 @@
 import type NodeCG from '@nodecg/types';
 import type { Configschema, MusicState } from 'types/schemas';
-import axios from 'axios';
+import axios, { isAxiosError } from 'axios';
 import { Readable } from 'stream';
 import { ObsConnectorService } from './ObsConnectorService';
 
@@ -42,7 +42,7 @@ export class MusicService {
     async attemptConnection() {
         this.connect().catch(e => {
             const message = e instanceof Error ? e.message : String(e);
-            if (message !== 'canceled') {
+            if (message !== 'canceled' && !(isAxiosError(e) && e.code === 'ECONNREFUSED')) {
                 this.logger.error('Error while connecting to foobar2000:', message);
             }
             if (this.reconnectionTimeout) {
