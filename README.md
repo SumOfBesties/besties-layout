@@ -45,6 +45,9 @@ To configure this bundle, create the file `[nodecg]/cfg/nsg2-layouts.json` with 
     "address": "http://localhost:8880",
     "username": "fb2k-user",
     "password": "fb2k-pwd"
+  },
+  "x32": {
+    "address": "192.168.1.102"
   }
 }
 ```

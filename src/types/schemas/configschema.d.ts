@@ -44,5 +44,9 @@ export interface Configschema {
 		password?: string;
 		[k: string]: unknown;
 	};
+	x32?: {
+		address?: string;
+		[k: string]: unknown;
+	};
 	[k: string]: unknown;
 }

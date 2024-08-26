@@ -23,7 +23,8 @@ export default defineConfig({
                 'livesplit-core',
                 'obs-websocket-js',
                 'ws',
-                'url'
+                'url',
+                'osc'
             ]
         }
     },

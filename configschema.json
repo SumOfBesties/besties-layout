@@ -53,6 +53,12 @@
                 "username": { "type": "string" },
                 "password": { "type": "string" }
             }
+        },
+        "x32": {
+            "type": "object",
+            "properties": {
+                "address": { "type": "string" }
+            }
         }
     }
 }

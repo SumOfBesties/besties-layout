@@ -1,0 +1,75 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "connectionState": {
+            "type": "string",
+            "enum": ["NOT_CONNECTED", "CONNECTING", "CONNECTED"]
+        },
+        "channelNames": {
+            "type": "array",
+            "items": {
+                "type": ["string", "null"]
+            }
+        },
+        "auxInNames": {
+            "type": "array",
+            "items": {
+                "type": ["string", "null"]
+            }
+        },
+        "fxReturnNames": {
+            "type": "array",
+            "items": {
+                "type": ["string", "null"]
+            }
+        },
+        "busNames": {
+            "type": "array",
+            "items": {
+                "type": ["string", "null"]
+            }
+        },
+        "matrixNames": {
+            "type": "array",
+            "items": {
+                "type": ["string", "null"]
+            }
+        },
+        "dcaNames": {
+            "type": "array",
+            "items": {
+                "type": ["string", "null"]
+            }
+        },
+        "mainLRName": {
+            "type": ["string", "null"]
+        },
+        "mainMonoName": {
+            "type": ["string", "null"]
+        }
+    },
+    "required": [
+        "connectionState",
+        "channelNames",
+        "auxInNames",
+        "fxReturnNames",
+        "busNames",
+        "matrixNames",
+        "dcaNames",
+        "mainLRName",
+        "mainMonoName"
+    ],
+    "default": {
+        "connectionState": "NOT_CONNECTED",
+        "channelNames": [],
+        "auxInNames": [],
+        "fxReturnNames": [],
+        "busNames": [],
+        "matrixNames": [],
+        "dcaNames": [],
+        "mainLRName": null,
+        "mainMonoName": null
+    }
+}
