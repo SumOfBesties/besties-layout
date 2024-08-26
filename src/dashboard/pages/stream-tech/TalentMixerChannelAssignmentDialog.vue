@@ -24,6 +24,11 @@
                     class="channel-volume-display"
                     :style="{ transform: `scaleX(${((mixerStore.mixerChannelLevels[talentChannels[talentId]] ?? -90) + 90) / 100})` }"
                 />
+                <div
+                    v-else
+                    class="channel-volume-display"
+                    style="transform: scaleX(0)"
+                />
             </template>
         </ipl-space>
         <ipl-space
@@ -40,9 +45,14 @@
                 class="channel-volume-display"
                 :style="{ transform: `scaleX(${(hostChannel == null ? -90 : (mixerStore.mixerChannelLevels[hostChannel] ?? -90) + 90) / 100})` }"
             />
+            <div
+                v-else
+                class="channel-volume-display"
+                style="transform: scaleX(0)"
+            />
         </ipl-space>
         <ipl-space
-            class="m-t-8"
+            class="m-t-8 layout horizontal"
             color="secondary"
         >
             <ipl-button
@@ -53,7 +63,7 @@
             <ipl-button
                 color="red"
                 label="Close"
-                class="m-t-8"
+                class="m-l-8"
                 @click="isOpen = false"
             />
         </ipl-space>
