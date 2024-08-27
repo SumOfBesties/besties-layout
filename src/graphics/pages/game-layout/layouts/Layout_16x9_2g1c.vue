@@ -14,13 +14,16 @@
         <div class="other-content-row">
             <div class="column">
                 <player-nameplate :index="0" />
-                <div class="timer-wrapper bg-timer layout vertical center-vertical max-height">
+                <div class="timer-wrapper bg-timer layout vertical center-vertical grow">
+                    <div class="space-filler" />
                     <speedrun-details class="bg-inset" />
                     <speedrun-timer class="m-t-8 bg-inset" />
-                    <img
-                        src="../../../assets/img/lslogo-white.png"
-                        class="livesplit-logo"
-                    >
+                    <div class="livesplit-logo-wrapper">
+                        <img
+                            src="../../../assets/img/lslogo-white.png"
+                            class="livesplit-logo"
+                        >
+                    </div>
                 </div>
             </div>
             <div
@@ -29,7 +32,7 @@
             />
             <div class="column">
                 <player-nameplate :index="1" />
-                <div class="max-height bg-panel layout vertical">
+                <div class="bg-panel layout vertical grow">
                     <other-nameplate-grid class="m-t-12 m-x-16" />
                     <media-box class="grow m-x-8 m-y-8" />
                 </div>
@@ -64,21 +67,31 @@ import MediaBox from 'components/MediaBox.vue';
 }
 
 .timer-wrapper {
-    padding: 18px;
+    padding: 0 18px;
     position: relative;
 
-    > *:not(img) {
+    .space-filler {
+        min-height: 18px;
+        flex-basis: 90%;
+    }
+
+    > .bg-inset {
         width: 100%;
         height: 105px;
     }
 
     .livesplit-logo {
         width: 150px;
-        position: absolute;
         opacity: 75%;
-        bottom: 11px;
-        left: 50%;
-        transform: translateX(-50%);
+    }
+
+    .livesplit-logo-wrapper {
+        min-height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
     }
 }
 
