@@ -232,6 +232,7 @@ import { faXmark } from '@fortawesome/free-solid-svg-icons/faXmark';
 import TwitchCategorySelect from './TwitchCategorySelect.vue';
 import { layouts } from 'types/Layouts';
 import { Option } from '@iplsplatoon/vue-components/dist/types/select';
+import { v4 as uuidV4 } from 'uuid';
 
 library.add(faUserPlus, faPlus, faXmark);
 
@@ -325,7 +326,7 @@ function addTeam() {
     if (selectedScheduleItem.value?.type !== 'SPEEDRUN') return;
 
     selectedScheduleItem.value.teams.push({
-        id: '',
+        id: uuidV4(),
         name: '',
         playerIds: []
     });
