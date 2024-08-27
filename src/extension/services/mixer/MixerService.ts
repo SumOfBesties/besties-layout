@@ -3,7 +3,6 @@ import {
     ChannelItem,
     Configschema,
     MixerChannelLevels,
-    MixerEQLevels,
     MixerState,
     TalentMixerChannelAssignments
 } from 'types/schemas';
@@ -15,16 +14,12 @@ import { ObsConnectorService } from '../ObsConnectorService';
 import { X32Transitions } from './X32Transitions';
 import { dbToFloat, floatToDB } from './X32Util';
 
-const DISPLAYED_MIXER_EQ_CHANNEL_COUNT = 12;
-
 export class MixerService {
     private readonly logger: NodeCG.Logger;
     private readonly mixerState: NodeCG.ServerReplicantWithSchemaDefault<MixerState>;
     private readonly talentMixerChannelAssignments: NodeCG.ServerReplicantWithSchemaDefault<TalentMixerChannelAssignments>;
     private readonly mixerChannelLevels: NodeCG.ServerReplicantWithSchemaDefault<MixerChannelLevels>;
-    private readonly mixerEQLevels: NodeCG.ServerReplicantWithSchemaDefault<MixerEQLevels>;
     private readonly localMixerChannelLevels: Map<string, number> = new Map();
-    private localMixerEQLevels: number[] = [];
     private readonly mixerAddress?: string;
     private osc: UDPPort | null;
     private subscriptionRenewalInterval: NodeJS.Timeout | undefined = undefined;
@@ -37,7 +32,6 @@ export class MixerService {
     private readonly oscState: Map<string, MetaArgument[]> = new Map();
     private readonly debouncedUpdateStateReplicant: () => void;
     private readonly debouncedUpdateMixerLevelsReplicant: () => void;
-    private readonly debouncedUpdateMixerEQLevelsReplicant: () => void;
     private readonly transitions: X32Transitions;
     private readonly muteTransitionDuration: number;
     private readonly unmuteTransitionDuration: number;
@@ -47,7 +41,6 @@ export class MixerService {
         this.mixerState = nodecg.Replicant('mixerState') as unknown as NodeCG.ServerReplicantWithSchemaDefault<MixerState>;
         this.talentMixerChannelAssignments = nodecg.Replicant('talentMixerChannelAssignments') as unknown as NodeCG.ServerReplicantWithSchemaDefault<TalentMixerChannelAssignments>;
         this.mixerChannelLevels = nodecg.Replicant('mixerChannelLevels') as unknown as NodeCG.ServerReplicantWithSchemaDefault<MixerChannelLevels>;
-        this.mixerEQLevels = nodecg.Replicant('mixerEQLevels') as unknown as NodeCG.ServerReplicantWithSchemaDefault<MixerEQLevels>;
         this.logger = new nodecg.Logger(`${nodecg.bundleName}:MixerService`);
         this.unmuteTransitionDuration = nodecg.bundleConfig.x32?.transitionDurations?.unmute ?? 500;
         this.muteTransitionDuration = nodecg.bundleConfig.x32?.transitionDurations?.mute ?? 500;
@@ -55,8 +48,6 @@ export class MixerService {
             this.updateStateReplicant, 100, { maxWait: 500, trailing: true, leading: false });
         this.debouncedUpdateMixerLevelsReplicant = debounce(
             this.updateMixerLevelsReplicant, 100, { maxWait: 100, trailing: true, leading: false });
-        this.debouncedUpdateMixerEQLevelsReplicant = debounce(
-            this.updateMixerEQLevelsReplicant, 100, { maxWait: 100, trailing: true, leading: false });
 
         this.osc = null;
         if (MixerService.hasRequiredConfig(nodecg)) {
@@ -152,33 +143,19 @@ export class MixerService {
                 if (arg != null && arg.type === 'b') {
                     const metersData = arg.value;
                     const withoutLength = metersData.slice(4);
-                    if (message.address === '/meters/0') {
-                        const floatCount = withoutLength.byteLength / 4;
-                        if (floatCount !== 70) {
-                            this.logger.warn(`Received meters message with ${floatCount} floats? (Expected 70)`);
-                            return;
-                        } else {
-                            const dataView = new DataView(withoutLength.buffer);
-                            const meterValues = range(0, floatCount).map(i => dataView.getFloat32(i * 4, true));
-                            meterValues.forEach((value, i) => {
-                                this.localMixerChannelLevels.set(String(i), floatToDB(value));
-                            });
-                        }
-
-                        this.debouncedUpdateMixerLevelsReplicant();
-                    } else if (message.address === '/meters/15') {
-                        const intCount = withoutLength.byteLength / 2;
-                        if (intCount !== 100) {
-                            this.logger.warn(`Received meters message with ${intCount} ints? (Expected 100)`);
-                            return;
-                        } else {
-                            const dataView = new DataView(withoutLength.buffer);
-                            this.localMixerEQLevels = range(0, intCount).map(i => dataView.getInt16(i * 2, true) / 256);
-                        }
-
-                        this.debouncedUpdateMixerEQLevelsReplicant();
+                    const floatCount = withoutLength.byteLength / 4;
+                    if (floatCount !== 70) {
+                        this.logger.warn(`Received meters message with ${floatCount} floats? (Expected 70)`);
+                        return;
+                    } else {
+                        const dataView = new DataView(withoutLength.buffer);
+                        const meterValues = range(0, floatCount).map(i => dataView.getFloat32(i * 4, true));
+                        meterValues.forEach((value, i) => {
+                            this.localMixerChannelLevels.set(String(i), floatToDB(value));
+                        });
                     }
                 }
+                this.debouncedUpdateMixerLevelsReplicant();
             } else {
                 this.oscState.set(message.address, message.args as MetaArgument[]);
                 if (this.inFlightRequests[message.address]) {
@@ -224,37 +201,6 @@ export class MixerService {
         this.mixerChannelLevels.value = Object.fromEntries(Array.from(assignedChannels.values()).map(channelId => [channelId, this.localMixerChannelLevels.get(String(channelId)) ?? -90]));
     }
 
-    private avg(arr: number[]): number {
-        return arr.reduce((a, b) => a + b) / arr.length;
-    }
-
-    private updateMixerEQLevelsReplicant() {
-        if (this.localMixerEQLevels.length === 0) {
-            this.mixerEQLevels.value = Array.from({ length: DISPLAYED_MIXER_EQ_CHANNEL_COUNT }, () => -128);
-            return;
-        }
-
-        // Since the number of displayed channels probably isn't divisible by 100, we spread out the remainder across the first few channels
-        const combinedChannelsAtEdges = (100 % DISPLAYED_MIXER_EQ_CHANNEL_COUNT) / 2;
-        const channelsPerResultChannel = (100 - Math.floor(combinedChannelsAtEdges) - Math.ceil(combinedChannelsAtEdges)) / DISPLAYED_MIXER_EQ_CHANNEL_COUNT;
-        let extraValues = 100 % DISPLAYED_MIXER_EQ_CHANNEL_COUNT;
-        const extraValuesPerChannel = Math.ceil(extraValues / DISPLAYED_MIXER_EQ_CHANNEL_COUNT);
-        let usedEQLevelIndex = 0;
-
-        this.mixerEQLevels.value = range(DISPLAYED_MIXER_EQ_CHANNEL_COUNT).map(i => {
-            let channelsToCombine = channelsPerResultChannel;
-            if (extraValues !== 0) {
-                const addedExtraValues = Math.min(extraValuesPerChannel, extraValues);
-                channelsToCombine += addedExtraValues;
-                extraValues -= addedExtraValues;
-            }
-
-            const channelValues = this.localMixerEQLevels.slice(usedEQLevelIndex, usedEQLevelIndex + channelsToCombine);
-            usedEQLevelIndex += channelsToCombine;
-            return this.avg(channelValues);
-        });
-    }
-
     private getChannelNameAddresses(): string[] {
         return range(1, 33).map(i => `/ch/${String(i).padStart(2, '0')}/config/name`);
     }
@@ -278,17 +224,10 @@ export class MixerService {
         if (this.osc == null) return;
         this.osc.send({ address: '/xremote', args: [] });
 
-        this.osc.send({
+        this.osc!.send({
             address: '/meters',
             args: [
                 { type: 's', value: '/meters/0' },
-                { type: 'i', value: 99 }
-            ]
-        });
-        this.osc.send({
-            address: '/meters',
-            args: [
-                { type: 's', value: '/meters/15' },
                 { type: 'i', value: 99 }
             ]
         });
