@@ -11,7 +11,7 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref, watch } from 'vue';
 import { colors } from '../../styles/colors';
-import { useMixerStore } from 'client-shared/stores/MixerStore';
+import { defaultSpeakingThreshold, useMixerStore } from 'client-shared/stores/MixerStore';
 import Badge from 'components/Badge.vue';
 
 const mixerStore = useMixerStore();
@@ -60,10 +60,10 @@ onMounted(() => {
 
     watch(() => {
         const assignment = mixerStore.talentMixerChannelAssignments.speedrunTalent[props.talentId];
-        if (assignment == null) return -90;
-        return mixerStore.mixerChannelLevels[assignment.channelId] ?? -90;
-    }, newValue => {
-        targetLevel = (newValue + 90) / 100;
+        if (assignment == null) return [-90, defaultSpeakingThreshold];
+        return [mixerStore.mixerChannelLevels[assignment.channelId] ?? -90, assignment.speakingThresholdDB ?? defaultSpeakingThreshold];
+    }, ([channelLevel, speakingThreshold]) => {
+        targetLevel = channelLevel > speakingThreshold ? (channelLevel + 90) / 100 : 0;
     });
 
     const redraw = (time: number) => {
