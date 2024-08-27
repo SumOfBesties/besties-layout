@@ -212,6 +212,9 @@ const scheduleItemTimeDeltas = computed(() => {
 
     .unit {
         color: colors.$vfd-teal-unlit;
+        transform: translateY(3.5px);
+        font-size: 24px;
+        line-height: 26px;
 
         &.lit {
             color: colors.$vfd-teal;
