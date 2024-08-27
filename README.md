@@ -14,6 +14,9 @@ To configure this bundle, create the file `[nodecg]/cfg/nsg2-layouts.json` with 
 
 ```json
 {
+  "intermission": {
+      "addVisualizerSpace": true
+  },
   "obs": {
     "sceneDataInTransitionEvents": false
   },

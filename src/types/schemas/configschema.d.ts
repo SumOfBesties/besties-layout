@@ -6,6 +6,10 @@
  */
 
 export interface Configschema {
+	intermission?: {
+		addVisualizerSpace?: boolean;
+		[k: string]: unknown;
+	};
 	obs?: {
 		sceneDataInTransitionEvents?: boolean;
 		[k: string]: unknown;

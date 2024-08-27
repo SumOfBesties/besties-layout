@@ -16,6 +16,12 @@
         }
     },
     "properties": {
+        "intermission": {
+            "type": "object",
+            "properties": {
+                "addVisualizerSpace": { "type": "boolean" }
+            }
+        },
         "obs": {
             "type": "object",
             "properties": {

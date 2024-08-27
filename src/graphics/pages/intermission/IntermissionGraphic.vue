@@ -1,5 +1,8 @@
 <template>
-    <div class="intermission-layout">
+    <div
+        class="intermission-layout"
+        :class="{ 'with-visualizer-space': addVisualizerSpace }"
+    >
         <div class="bg-panel">
             <div class="layout horizontal logos">
                 <img src="../../assets/img/large-logo.png">
@@ -21,60 +24,66 @@
                     :slide-title-width="150"
                     without-donation-reminder
                     without-schedule-items
-                    style="width: 830px"
+                    style="width: 845px"
                 />
             </div>
-            <div class="bg-inset m-t-16 layout horizontal center-vertical">
-                <div
-                    class="host-name-display layout vertical center-vertical center-horizontal"
-                    :class="{ speaking: hostSpeaking }"
-                >
-                    <template v-if="currentHost == null">
-                        No Host!
-                    </template>
-                    <template v-else>
-                        <fitted-content
-                            class="host-name"
-                            align="center"
-                        >
-                            {{ currentHost.name }}
-                        </fitted-content>
-                        <div
-                            class="layout horizontal center-horizontal center-vertical m-t-2 max-width"
-                            style="padding: 0 4px;"
-                        >
-                            <country-flag
-                                v-if="currentHost.countryCode != null"
-                                :country-code="currentHost.countryCode"
-                                class="host-flag"
-                            />
-                            <fitted-content class="host-pronoun-wrapper">
-                                <badge
-                                    v-if="!isBlank(currentHost.pronouns)"
-                                    class="host-pronouns"
-                                >
-                                    {{ currentHost.pronouns }}
-                                </badge>
+            <div class="bg-inset m-t-16 layout vertical">
+                <div class="layout horizontal center-vertical">
+                    <div
+                        class="host-name-display layout vertical center-vertical center-horizontal"
+                        :class="{ speaking: hostSpeaking }"
+                    >
+                        <template v-if="currentHost == null">
+                            No Host!
+                        </template>
+                        <template v-else>
+                            <fitted-content
+                                class="host-name"
+                                align="center"
+                            >
+                                {{ currentHost.name }}
                             </fitted-content>
-                        </div>
-                    </template>
-                    <div class="host-name-label">H</div>
+                            <div
+                                class="layout horizontal center-horizontal center-vertical m-t-2 max-width"
+                                style="padding: 0 4px;"
+                            >
+                                <country-flag
+                                    v-if="currentHost.countryCode != null"
+                                    :country-code="currentHost.countryCode"
+                                    class="host-flag"
+                                />
+                                <fitted-content class="host-pronoun-wrapper">
+                                    <badge
+                                        v-if="!isBlank(currentHost.pronouns)"
+                                        class="host-pronouns"
+                                    >
+                                        {{ currentHost.pronouns }}
+                                    </badge>
+                                </fitted-content>
+                            </div>
+                        </template>
+                        <div class="host-name-label">H</div>
+                    </div>
+                    <div class="music-icon">♫</div>
+                    <div class="grow" style="margin-top: -4px">
+                        <vfd-pixel-text
+                            :font-size="24"
+                            :text-content="musicStore.musicState.track?.artist ?? 'Unknown Artist'"
+                            align="left"
+                            text-align="left"
+                        />
+                        <vfd-pixel-text
+                            :font-size="24"
+                            :text-content="musicStore.musicState.track?.song ?? 'Unknown Song'"
+                            align="left"
+                            text-align="left"
+                        />
+                    </div>
                 </div>
-                <div class="music-icon">♫</div>
-                <div class="grow" style="margin-top: -4px">
-                    <vfd-pixel-text
-                        :font-size="24"
-                        :text-content="musicStore.musicState.track?.artist ?? 'Unknown Artist'"
-                        align="left"
-                        text-align="left"
-                    />
-                    <vfd-pixel-text
-                        :font-size="24"
-                        :text-content="musicStore.musicState.track?.song ?? 'Unknown Song'"
-                        align="left"
-                        text-align="left"
-                    />
-                </div>
+                <div
+                    v-if="addVisualizerSpace"
+                    style="height: 120px"
+                />
             </div>
         </div>
         <large-separator direction="vertical" />
@@ -105,6 +114,9 @@ import Badge from 'components/Badge.vue';
 import CountryFlag from 'components/CountryFlag.vue';
 import { useMusicStore } from 'client-shared/stores/MusicStore';
 import { defaultSpeakingThreshold, disableVolumeMeters, useMixerStore } from 'client-shared/stores/MixerStore';
+import { Configschema } from 'types/schemas';
+
+const addVisualizerSpace = (nodecg.bundleConfig as Configschema).intermission?.addVisualizerSpace ?? false;
 
 provide(MaxOmnibarBidWarItemsInjectionKey, 3);
 provide(MaxOmnibarBidWarTitleWidthInjectionKey, 200);
@@ -148,6 +160,21 @@ const hostSpeaking = computed(() => {
             }
         }
     }
+
+    &.with-visualizer-space {
+        .prize-display {
+            height: 250px;
+            margin-top: 32px;
+        }
+
+        .logos {
+            margin-top: 0;
+
+            img {
+                width: 225px;
+            }
+        }
+    }
 }
 
 .logos {
@@ -166,6 +193,7 @@ const hostSpeaking = computed(() => {
 
 .prize-display {
     margin-top: 56px;
+    height: 300px;
 }
 
 .donation-total {
@@ -239,6 +267,6 @@ const hostSpeaking = computed(() => {
 .music-icon {
     font-size: 40px;
     color: colors.$vfd-teal;
-    margin: 0 12px;
+    margin: -4px 12px 0;
 }
 </style>
