@@ -27,9 +27,9 @@ const props = defineProps<{
 
 .compact-player-speaking-indicator {
     font-size: 12px;
-    width: 18px;
+    width: 22px;
     height: 20px;
-    line-height: 20.5px;
+    line-height: 21px;
     text-align: center;
     font-weight: 600;
     background-color: colors.$vfd-teal-unlit;
