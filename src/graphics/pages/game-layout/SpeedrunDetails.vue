@@ -51,6 +51,6 @@ const systemAndReleaseYear = computed(() =>
 }
 
 .speedrun-title {
-    margin-top: -8px;
+    margin-top: -4px;
 }
 </style>
