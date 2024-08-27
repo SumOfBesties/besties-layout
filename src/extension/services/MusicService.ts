@@ -20,7 +20,8 @@ export class MusicService {
     private readonly config: Configschema['foobar2000'];
     private readonly authorization: string | undefined = undefined;
     private readonly obsConnectorService: ObsConnectorService;
-    private reconnectionTimeout: NodeJS.Timeout | null = null;
+    private reconnectionTimeout: NodeJS.Timeout | undefined = undefined;
+    private dataResetTimeout: NodeJS.Timeout | undefined = undefined;
 
     constructor(nodecg: NodeCG.ServerAPI<Configschema>, obsConnectorService: ObsConnectorService) {
         this.logger = new nodecg.Logger(`${nodecg.bundleName}:MusicService`);
@@ -117,6 +118,7 @@ export class MusicService {
         this.logger.debug('Connected to foobar2000');
         this.musicState.value.connectionState = 'CONNECTED';
         const currentScene = this.obsConnectorService.obsState.value.currentScene;
+        clearTimeout(this.dataResetTimeout);
         if (currentScene?.includes('[M]')) {
             this.onSceneChange(currentScene);
         }
@@ -144,9 +146,13 @@ export class MusicService {
         response.data.on('end', () => {
             this.musicState.value.connectionState = 'DISCONNECTED';
             this.logger.warn('Foobar2000 connection ended');
-            if (this.reconnectionTimeout) {
-                clearTimeout(this.reconnectionTimeout);
-            }
+            this.dataResetTimeout = setTimeout(() => {
+                this.musicState.value.track = {
+                    artist: undefined,
+                    song: undefined
+                };
+            }, FOOBAR_RECONNECTION_TIMEOUT * 2);
+            clearTimeout(this.reconnectionTimeout);
             this.reconnectionTimeout = setTimeout(() => {
                 this.attemptConnection();
             }, FOOBAR_RECONNECTION_TIMEOUT);
