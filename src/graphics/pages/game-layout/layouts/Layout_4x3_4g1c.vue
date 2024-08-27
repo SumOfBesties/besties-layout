@@ -19,8 +19,8 @@
                         <speedrun-timer class="bg-inset m-t-8" />
                     </div>
                     <div class="nameplate-layout">
-                        <player-nameplate :index="0" class="max-width" />
-                        <player-nameplate :index="1" class="max-width" />
+                        <player-nameplate :index="0" class="max-width" fixed-height />
+                        <player-nameplate :index="1" class="max-width" fixed-height />
                     </div>
                 </div>
                 <div
@@ -29,8 +29,8 @@
                 />
                 <div class="bg-panel layout vertical">
                     <div class="nameplate-layout">
-                        <player-nameplate :index="2" class="max-width" />
-                        <player-nameplate :index="3" class="max-width" />
+                        <player-nameplate :index="2" class="max-width" fixed-height />
+                        <player-nameplate :index="3" class="max-width" fixed-height />
                     </div>
                     <other-nameplate-grid class="m-x-16 m-t-4" />
                     <media-box class="max-height m-y-8 m-x-8" />

@@ -3,7 +3,8 @@
         class="player-nameplate"
         :data-nameplate-index="props.index"
         :style="{
-            minHeight: props.fixedHeight ? '80px' : `${Math.max(80, Math.min(props.maxConcurrentPlayers, talentList.length) * 39.5 + 16)}px`
+            minHeight: props.fixedHeight ? undefined : `${Math.max(80, Math.min(props.maxConcurrentPlayers, talentList.length) * 39.5 + 16)}px`,
+            height: props.fixedHeight ? '80px' : undefined
         }"
     >
         <opacity-swap-transition mode="default">
@@ -128,6 +129,7 @@ const baseIndex = computed(() => scheduleStore.playerNameplateAssignments
     grid-auto-flow: row;
     grid-auto-rows: 1fr;
     height: 60px;
+    row-gap: 4px;
 
     > .talent-details-anchor {
         position: relative;
