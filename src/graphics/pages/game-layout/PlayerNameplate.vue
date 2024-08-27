@@ -17,11 +17,16 @@
                     <div class="talent-details-anchor">
                         <div class="talent-details">
                             <badge
-                                v-if="disableVolumeMeters"
+                                v-if="disableVolumeMeters || useCompactVolumeMeters"
                                 class="talent-index"
                             >
                                 {{ baseIndex + i + 1 + Number(talentListSlides.activeComponent.value) * props.maxConcurrentPlayers }}
                             </badge>
+                            <compact-player-speaking-indicator
+                                v-if="useCompactVolumeMeters"
+                                :player-id="talent.id"
+                                class="compact-speaking-indicator"
+                            />
                             <fitted-content align="center">
                                 {{ talent.name }}
                             </fitted-content>
@@ -39,9 +44,10 @@
                         </div>
                     </div>
                     <player-volume-meter
-                        v-if="!disableVolumeMeters"
+                        v-if="!disableVolumeMeters && !useCompactVolumeMeters"
                         :talent-id="talent.id"
                         :index="baseIndex + i + 1 + Number(talentListSlides.activeComponent.value) * props.maxConcurrentPlayers"
+                        :compact="useCompactVolumeMeters"
                         class="volume-meter"
                     />
                 </div>
@@ -63,6 +69,7 @@ import { useSlides } from '../../helpers/useSlides';
 import OpacitySwapTransition from 'components/OpacitySwapTransition.vue';
 import { disableVolumeMeters } from 'client-shared/stores/MixerStore';
 import PlayerVolumeMeter from './PlayerVolumeMeter.vue';
+import CompactPlayerSpeakingIndicator from './CompactPlayerSpeakingIndicator.vue';
 
 const props = withDefaults(defineProps<{
     index: number
@@ -91,6 +98,8 @@ const baseIndex = computed(() => scheduleStore.playerNameplateAssignments
         result += assignments.playerIds.length;
         return result;
     }, 0));
+
+const useCompactVolumeMeters = computed(() => props.fixedHeight && talentList.value.length > 1);
 </script>
 
 <style scoped lang="scss">
@@ -115,12 +124,11 @@ const baseIndex = computed(() => scheduleStore.playerNameplateAssignments
         height: 100%;
         width: 100%;
         overflow: hidden;
-        padding: 8px 0;
+        padding: 4px 0;
     }
 }
 
 .talent-item {
-    margin: 2px 0;
     padding: 0 8px;
     width: 100%;
     overflow: hidden;
@@ -129,7 +137,6 @@ const baseIndex = computed(() => scheduleStore.playerNameplateAssignments
     grid-auto-flow: row;
     grid-auto-rows: 1fr;
     height: 60px;
-    row-gap: 4px;
 
     > .talent-details-anchor {
         position: relative;
@@ -142,15 +149,21 @@ const baseIndex = computed(() => scheduleStore.playerNameplateAssignments
         justify-content: center;
         width: 100%;
         position: absolute;
+        z-index: 2;
     }
 
     > .volume-meter {
-        height: 20px;
+        height: 18px;
         max-width: 400px;
         width: 100%;
-        margin-top: 2px;
+        margin-top: 4px;
         justify-self: center;
         align-self: center;
+
+        &.compact {
+            position: absolute;
+            height: 25px;
+        }
     }
 }
 
@@ -164,9 +177,20 @@ const baseIndex = computed(() => scheduleStore.playerNameplateAssignments
 }
 
 .talent-index {
-    margin-right: 6px;
-    min-width: 20px;
-    line-height: 22px;
+    font-size: 18px;
+    min-width: 18px;
+    height: 20px;
+    line-height: 19px;
     text-align: center;
+    font-weight: 600;
+    margin-right: 0;
+}
+
+.talent-index + *:not(.compact-speaking-indicator) {
+    margin-right: 6px;
+}
+
+.compact-speaking-indicator {
+    margin-right: 6px;
 }
 </style>

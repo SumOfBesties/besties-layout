@@ -16,7 +16,7 @@
         <div class="other-content-row">
             <div class="column">
                 <player-nameplate :index="0" />
-                <div class="timer-wrapper bg-timer layout vertical center-vertical max-height">
+                <div class="timer-wrapper bg-timer layout vertical center-vertical grow">
                     <speedrun-details class="bg-inset" />
                     <speedrun-timer class="m-t-8 bg-inset" />
                 </div>
@@ -27,7 +27,7 @@
             />
             <div class="column">
                 <player-nameplate :index="1" />
-                <div class="max-height bg-panel layout vertical">
+                <div class="grow bg-panel layout vertical">
                     <other-nameplate-grid class="m-t-8 m-x-16" />
                     <media-box class="grow m-x-8 m-y-8" />
                 </div>

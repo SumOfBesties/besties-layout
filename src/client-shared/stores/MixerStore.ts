@@ -1,6 +1,7 @@
 import { Configschema, MixerChannelLevels, MixerState, TalentMixerChannelAssignments } from 'types/schemas';
 import { defineStore } from 'pinia';
 import { createReplicantStoreInitializer } from 'client-shared/helpers/StoreHelper';
+import { useTalentStore } from 'client-shared/stores/TalentStore';
 
 const mixerState = nodecg.Replicant<MixerState>('mixerState');
 const talentMixerChannelAssignments = nodecg.Replicant<TalentMixerChannelAssignments>('talentMixerChannelAssignments');
@@ -72,6 +73,18 @@ export const useMixerStore = defineStore('mixer', {
                     }))
                 }
             ];
+        },
+        isSpeaking(state) {
+            const talentStore = useTalentStore();
+            return (talentId: string) => {
+                if (disableVolumeMeters || talentId == null) return false;
+                const assignment = talentId === talentStore.currentHostId
+                    ? state.talentMixerChannelAssignments.host
+                    : state.talentMixerChannelAssignments.speedrunTalent[talentId];
+                return assignment == null
+                    ? false
+                    : (state.mixerChannelLevels[assignment.channelId] ?? -90) > (assignment.speakingThresholdDB ?? defaultSpeakingThreshold);
+            };
         }
     }
 });
