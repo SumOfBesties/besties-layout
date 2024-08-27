@@ -48,7 +48,7 @@ onMounted(() => {
     let targetLevels: number[] = [];
 
     watch(() => mixerEQStore.mixerEQLevels, newValue => {
-        targetLevels = newValue.map(level => Math.min(100, Math.abs(level)) / 100);
+        targetLevels = newValue;
     });
 
     const channelSegmentHeight = 5;
@@ -60,12 +60,12 @@ onMounted(() => {
         const deltaTime = time - lastTime;
         lastTime = time;
         for (let i = 0; i < DISPLAYED_MIXER_EQ_CHANNEL_COUNT; i++) {
-            const targetLevel = targetLevels[i] ?? 0;
-            const currentLevel = currentLevels[i] ?? 0;
+            const targetLevel = targetLevels[i] ?? -128;
+            const currentLevel = currentLevels[i] ?? -128;
             if (currentLevel > targetLevel) {
-                currentLevels[i] = Math.max(targetLevel, currentLevel - deltaTime / 250);
+                currentLevels[i] = Math.max(targetLevel, currentLevel - deltaTime / 6);
             } else if (currentLevel < targetLevel) {
-                currentLevels[i] = Math.min(targetLevel, currentLevel + deltaTime / 250);
+                currentLevels[i] = Math.min(targetLevel, currentLevel + deltaTime / 6);
             }
         }
 
@@ -74,8 +74,8 @@ onMounted(() => {
         const channelSegmentWidth = width / DISPLAYED_MIXER_EQ_CHANNEL_COUNT;
 
         for (let i = 0; i < DISPLAYED_MIXER_EQ_CHANNEL_COUNT; i++) {
-            const channelLevel = currentLevels[i] ?? 0;
-            const litSegmentCount = Math.round(channelSegmentCount * channelLevel);
+            const normalizedChannelLevel = currentLevels[i] == null ? 0 : (1 - Math.abs(currentLevels[i]) / 128);
+            const litSegmentCount = Math.round(channelSegmentCount * normalizedChannelLevel);
 
             for (let j = 0; j < channelSegmentCount; j++) {
                 if (channelSegmentCount - j <= litSegmentCount) {
