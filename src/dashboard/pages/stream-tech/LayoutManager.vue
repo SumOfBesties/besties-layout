@@ -10,7 +10,7 @@
                     <ipl-space
                         v-for="input in obsStore.obsState.videoInputs ?? []"
                         :key="input.sourceName"
-                        :color="obsStore.obsVideoInputAssignments[selectedCapture.type === 'game' ? 'gameCaptures' : 'cameraCaptures'][selectedCapture.index] === input.sourceName ? 'blue' : 'secondary'"
+                        :color="obsStore.obsVideoInputAssignments[selectedCapture.type === 'game' ? 'gameCaptures' : 'cameraCaptures'][selectedCapture.index]?.sourceName === input.sourceName ? 'blue' : 'secondary'"
                         class="m-t-8"
                         clickable
                         @click="setVideoFeedAssignment(input.sourceName)"
@@ -105,6 +105,8 @@ import { updateRefOnValueChange } from 'client-shared/helpers/StoreHelper';
 import SceneSwitcher from '../../components/SceneSwitcher.vue';
 import { faCrop } from '@fortawesome/free-solid-svg-icons/faCrop';
 import SourceCroppingDialog from './SourceCroppingDialog.vue';
+import { sendMessage } from 'client-shared/helpers/NodecgHelper';
+import { VideoInputAssignment } from 'types/schemas';
 
 library.add(faVideo, faGamepad, faCrop);
 
@@ -115,6 +117,7 @@ const selectedLayoutData = computed(() => activeGameLayout.value === '' ? null :
 updateRefOnValueChange(() => obsStore.activeGameLayout, activeGameLayout);
 
 const selectedCapture = ref<{ type: 'camera' | 'game', index: number } | null>(null);
+const captureAssignmentInProgress = ref(false);
 
 function selectCapture(type: 'camera' | 'game', index: number) {
     if (selectedCapture.value != null && type === selectedCapture.value.type && index === selectedCapture.value.index) {
@@ -125,27 +128,34 @@ function selectCapture(type: 'camera' | 'game', index: number) {
     selectedCapture.value = { type, index };
 }
 
-function isAssignedInput(sourceName?: string | null) {
-    return sourceName != null
+function isAssignedInput(assignment: VideoInputAssignment | null) {
+    return assignment != null
+        && assignment.sceneItemId != null
         && obsStore.obsState.videoInputs != null
-        && obsStore.obsState.videoInputs.some(input => input.sourceName === sourceName);
+        && obsStore.obsState.videoInputs.some(input => input.sourceName === assignment.sourceName);
 }
 
-function setVideoFeedAssignment(sourceName: string) {
-    if (selectedCapture.value == null) return;
+async function setVideoFeedAssignment(sourceName: string) {
+    if (selectedCapture.value == null || captureAssignmentInProgress.value) return;
     const newAssignments = cloneDeep(selectedCapture.value.type === 'game'
         ? obsStore.obsVideoInputAssignments.gameCaptures
         : obsStore.obsVideoInputAssignments.cameraCaptures);
     const oldLength = newAssignments.length;
-    if (newAssignments[selectedCapture.value.index] === sourceName) {
+    if (newAssignments[selectedCapture.value.index]?.sourceName === sourceName) {
         newAssignments[selectedCapture.value.index] = null;
     } else {
-        newAssignments[selectedCapture.value.index] = sourceName;
+        newAssignments[selectedCapture.value.index] = { sourceName };
     }
     if (oldLength - 1 < selectedCapture.value.index) {
         newAssignments.fill(null, oldLength, selectedCapture.value.index);
     }
-    obsStore.setVideoInputAssignments(selectedCapture.value.type, newAssignments);
+
+    captureAssignmentInProgress.value = true;
+    try {
+        await sendMessage('obs:setVideoInputAssignments', { type: selectedCapture.value.type, assignments: newAssignments });
+    } finally {
+        captureAssignmentInProgress.value = false;
+    }
 }
 
 const sourceCroppingDialog = ref<InstanceType<typeof SourceCroppingDialog>>();
@@ -157,7 +167,7 @@ const allowCropping = computed(() => {
         || selectedCapture.value == null
     ) return false;
     const selectedInput = obsStore.obsVideoInputAssignments[selectedCapture.value.type === 'game' ? 'gameCaptures' : 'cameraCaptures'][selectedCapture.value.index];
-    return selectedInput != null && obsStore.obsState.videoInputs.some(input => input.sourceName === selectedInput);
+    return selectedInput != null && selectedInput.sceneItemId != null && obsStore.obsState.videoInputs.some(input => input.sourceName === selectedInput.sourceName);
 });
 </script>
 

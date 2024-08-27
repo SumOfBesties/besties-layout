@@ -131,7 +131,7 @@
 import { IplButton, IplDialog, IplMessage, IplRadio, IplSpinner } from '@iplsplatoon/vue-components';
 import { onUnmounted, ref, watch } from 'vue';
 import { sendMessage } from 'client-shared/helpers/NodecgHelper';
-import { ObsSceneItem } from '../../../extension/services/ObsConnectorService';
+import { ObsSceneItemTransform } from '../../../extension/services/ObsConnectorService';
 import { useObsStore } from 'client-shared/stores/ObsStore';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faMagnifyingGlassPlus } from '@fortawesome/free-solid-svg-icons/faMagnifyingGlassPlus';
@@ -139,6 +139,7 @@ import { faMagnifyingGlassMinus } from '@fortawesome/free-solid-svg-icons/faMagn
 import { faUpDown } from '@fortawesome/free-solid-svg-icons/faUpDown';
 import { faLeftRight } from '@fortawesome/free-solid-svg-icons/faLeftRight';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { VideoInputAssignment } from 'types/schemas';
 
 library.add(faMagnifyingGlassPlus, faMagnifyingGlassMinus, faUpDown, faLeftRight);
 
@@ -170,8 +171,8 @@ function getNumericAspectRatio() {
 }
 watch(selectedAspectRatio, () => {
     const numericAspectRatio = getNumericAspectRatio();
-    if (numericAspectRatio == null || cropOutlineData == null || sceneItem == null) return;
-    const sourceAspectRatio = sceneItem.sceneItemTransform.sourceWidth / sceneItem.sceneItemTransform.sourceHeight;
+    if (numericAspectRatio == null || cropOutlineData == null || sceneItemTransform == null) return;
+    const sourceAspectRatio = sceneItemTransform.sourceWidth / sceneItemTransform.sourceHeight;
     if (sourceAspectRatio < numericAspectRatio) {
         const newHeight = cropOutlineData.width / numericAspectRatio * sourceAspectRatio;
         cropOutlineData.height = newHeight;
@@ -188,10 +189,11 @@ watch(selectedAspectRatio, () => {
 const obsStore = useObsStore();
 const isOpen = ref(false);
 const selectedSourceName = ref<string | null>(null);
+const selectedSceneItemId = ref<number | null>(null);
 const loadingScreenshot = ref(false);
 const sourceScreenshot = ref('');
 const screenshotLoadingError = ref<string | null>(null);
-let sceneItem: ObsSceneItem | null = null;
+let sceneItemTransform: ObsSceneItemTransform | null = null;
 
 const cropOutlineElem = ref<HTMLDivElement>();
 let sides: NodeListOf<HTMLElement> | null = null;
@@ -230,7 +232,7 @@ function resetCrop() {
 
 watch(isOpen, async (newValue) => {
     const gameLayoutVideoFeedsScene = obsStore.obsConfig.gameLayoutVideoFeedsScene;
-    if (gameLayoutVideoFeedsScene != null && newValue && selectedSourceName.value != null) {
+    if (gameLayoutVideoFeedsScene != null && newValue && selectedSourceName.value != null && selectedSceneItemId.value != null) {
         sourceScreenshot.value = '';
         loadingScreenshot.value = true;
         zoom.value = 1;
@@ -238,12 +240,11 @@ watch(isOpen, async (newValue) => {
         try {
             const sceneItemData = await Promise.all([
                 sendMessage('obs:getSourceScreenshot', { sourceName: selectedSourceName.value }),
-                sendMessage('obs:getSceneItem', { sceneName: gameLayoutVideoFeedsScene, sourceName: selectedSourceName.value })
+                sendMessage('obs:getSceneItemTransform', { sceneName: gameLayoutVideoFeedsScene, sceneItemId: selectedSceneItemId.value })
             ]);
             screenshotLoadingError.value = null;
             sourceScreenshot.value = sceneItemData[0];
-            sceneItem = sceneItemData[1];
-            const sceneItemTransform = sceneItemData[1].sceneItemTransform;
+            sceneItemTransform = sceneItemData[1];
             cropOutlineData = {
                 width: ((sceneItemTransform.sourceWidth - sceneItemTransform.cropLeft - sceneItemTransform.cropRight) / sceneItemTransform.sourceWidth),
                 height: ((sceneItemTransform.sourceHeight - sceneItemTransform.cropTop - sceneItemTransform.cropBottom) / sceneItemTransform.sourceHeight),
@@ -313,7 +314,7 @@ function onWindowMouseup() {
     croppingActive.value = false;
 }
 function onWindowMouseMove(e: PointerEvent) {
-    if (dragStartPosition == null || cropWrapperSize == null || initialCropOutline == null || sceneItem == null) return;
+    if (dragStartPosition == null || cropWrapperSize == null || initialCropOutline == null || sceneItemTransform == null) return;
     const aspectRatio = getNumericAspectRatio();
     const newCropOutline = { ...initialCropOutline };
 
@@ -335,7 +336,7 @@ function onWindowMouseMove(e: PointerEvent) {
         }
     } else {
         // handle dragging WITH aspect ratio constraints
-        const sourceAspectRatio = sceneItem.sceneItemTransform.sourceWidth / sceneItem.sceneItemTransform.sourceHeight;
+        const sourceAspectRatio = sceneItemTransform.sourceWidth / sceneItemTransform.sourceHeight;
         if (dragSideX != null) {
             if (dragSideX === 'left') {
                 newCropOutline.left = Math.min(initialCropOutline.width + initialCropOutline.left, Math.max(0, newCropOutline.left - (dragStartPosition.x - e.clientX) / zoom.value / cropWrapperSize.width))
@@ -494,20 +495,22 @@ function updateTransforms(element: HTMLElement, translations: { x: number, y: nu
     }
 }
 
-function open(sourceName: string, selectedCaptureData: { type: 'camera' | 'game', index: number }) {
+function open(inputAssignment: VideoInputAssignment, selectedCaptureData: { type: 'camera' | 'game', index: number }) {
+    if (inputAssignment.sceneItemId == null) return;
     selectedCapture.value = selectedCaptureData;
-    selectedSourceName.value = sourceName;
+    selectedSourceName.value = inputAssignment.sourceName;
+    selectedSceneItemId.value = inputAssignment.sceneItemId;
     isOpen.value = true;
 }
 
 async function apply() {
     try {
         const gameLayoutVideoFeedsScene = obsStore.obsConfig.gameLayoutVideoFeedsScene;
-        if (sceneItem == null || cropOutlineData == null || gameLayoutVideoFeedsScene == null) return;
-        const height = sceneItem.sceneItemTransform.sourceHeight;
-        const width = sceneItem.sceneItemTransform.sourceWidth;
+        if (sceneItemTransform == null || cropOutlineData == null || gameLayoutVideoFeedsScene == null || selectedSceneItemId.value == null) return;
+        const height = sceneItemTransform.sourceHeight;
+        const width = sceneItemTransform.sourceWidth;
         await sendMessage('obs:setSceneItemCrop', {
-            sceneItemId: sceneItem.sceneItemId,
+            sceneItemId: selectedSceneItemId.value,
             sceneName: gameLayoutVideoFeedsScene,
             crop: {
                 cropTop: Math.round(cropOutlineData.top * height),

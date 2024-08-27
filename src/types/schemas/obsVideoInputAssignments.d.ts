@@ -6,6 +6,10 @@
  */
 
 export interface ObsVideoInputAssignments {
-	cameraCaptures: (string | null)[];
-	gameCaptures: (string | null)[];
+	cameraCaptures: (VideoInputAssignment | null)[];
+	gameCaptures: (VideoInputAssignment | null)[];
+}
+export interface VideoInputAssignment {
+	sourceName: string;
+	sceneItemId?: number;
 }

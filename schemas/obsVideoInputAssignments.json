@@ -1,15 +1,36 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
+    "definitions": {
+        "videoInputAssignment": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "sourceName": { "type": "string" },
+                "sceneItemId": { "type": "number" }
+            },
+            "required": ["sourceName"]
+        }
+    },
     "type": "object",
     "additionalProperties": false,
     "properties": {
         "cameraCaptures": {
             "type": "array",
-            "items": { "type": ["string", "null"] }
+            "items": {
+                "oneOf": [
+                    { "$ref": "#/definitions/videoInputAssignment" },
+                    { "type": "null" }
+                ]
+            }
         },
         "gameCaptures": {
             "type": "array",
-            "items": { "type": ["string", "null"] }
+            "items": {
+                "oneOf": [
+                    { "$ref": "#/definitions/videoInputAssignment" },
+                    { "type": "null" }
+                ]
+            }
         }
     },
     "required": ["gameCaptures", "cameraCaptures"],

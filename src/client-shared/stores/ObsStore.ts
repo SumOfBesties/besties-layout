@@ -36,9 +36,6 @@ export const useObsStore = defineStore('obs', {
         activeGameLayout: null
     } as unknown as ObsStore),
     actions: {
-        setVideoInputAssignments(type: 'game' | 'camera', newValue: (string | null)[]) {
-            obsVideoInputAssignments.value![type === 'game' ? 'gameCaptures' : 'cameraCaptures'] = newValue;
-        },
         setVideoInputPositions(newValue: ObsVideoInputPositions) {
             obsVideoInputPositions.value = newValue;
         },

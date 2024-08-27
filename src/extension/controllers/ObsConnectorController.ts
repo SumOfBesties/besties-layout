@@ -49,12 +49,16 @@ export class ObsConnectorController extends BaseController {
             return obsConnectorService.getSourceScreenshot(data.sourceName);
         });
 
-        this.listen('obs:getSceneItem', async (data) => {
-            return obsConnectorService.getSceneItem(data.sourceName, data.sceneName);
+        this.listen('obs:getSceneItemTransform', async (data) => {
+            return obsConnectorService.getSceneItemTransform(data.sceneItemId, data.sceneName);
         });
 
         this.listen('obs:setSceneItemCrop', async (data) => {
             await obsConnectorService.setSceneItemCrop(data.sceneName, data.sceneItemId, data.crop);
+        });
+
+        this.listen('obs:setVideoInputAssignments', async (data) => {
+            await obsConnectorService.setGameLayoutVideoFeedAssignments(data.type, data.assignments);
         });
     }
 }
