@@ -131,7 +131,6 @@
 import { IplButton, IplDialog, IplMessage, IplRadio, IplSpinner } from '@iplsplatoon/vue-components';
 import { onUnmounted, ref, watch } from 'vue';
 import { sendMessage } from 'client-shared/helpers/NodecgHelper';
-import { ObsSceneItemTransform } from '../../../extension/services/ObsConnectorService';
 import { useObsStore } from 'client-shared/stores/ObsStore';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faMagnifyingGlassPlus } from '@fortawesome/free-solid-svg-icons/faMagnifyingGlassPlus';
@@ -140,6 +139,7 @@ import { faUpDown } from '@fortawesome/free-solid-svg-icons/faUpDown';
 import { faLeftRight } from '@fortawesome/free-solid-svg-icons/faLeftRight';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { VideoInputAssignment } from 'types/schemas';
+import { ObsSceneItemTransform } from 'types/obs';
 
 library.add(faMagnifyingGlassPlus, faMagnifyingGlassMinus, faUpDown, faLeftRight);
 
@@ -246,10 +246,10 @@ watch(isOpen, async (newValue) => {
             sourceScreenshot.value = sceneItemData[0];
             sceneItemTransform = sceneItemData[1];
             cropOutlineData = {
-                width: ((sceneItemTransform.sourceWidth - sceneItemTransform.cropLeft - sceneItemTransform.cropRight) / sceneItemTransform.sourceWidth),
-                height: ((sceneItemTransform.sourceHeight - sceneItemTransform.cropTop - sceneItemTransform.cropBottom) / sceneItemTransform.sourceHeight),
-                left: (sceneItemTransform.cropLeft / sceneItemTransform.sourceWidth),
-                top: (sceneItemTransform.cropTop / sceneItemTransform.sourceHeight)
+                width: ((sceneItemTransform!.sourceWidth - sceneItemTransform!.cropLeft - sceneItemTransform!.cropRight) / sceneItemTransform!.sourceWidth),
+                height: ((sceneItemTransform!.sourceHeight - sceneItemTransform!.cropTop - sceneItemTransform!.cropBottom) / sceneItemTransform!.sourceHeight),
+                left: (sceneItemTransform!.cropLeft / sceneItemTransform!.sourceWidth),
+                top: (sceneItemTransform!.cropTop / sceneItemTransform!.sourceHeight)
             }
             loadingScreenshot.value = false;
         } catch (e) {

@@ -10,6 +10,7 @@ import {
 import { EventTypes, OBSWebSocketError, OBSWebSocket } from 'obs-websocket-js';
 import { isBlank } from '../../client-shared/helpers/StringHelper';
 import cloneDeep from 'lodash/cloneDeep';
+import { ObsSceneItem, ObsSceneItemTransform } from 'types/obs';
 
 // Authentication failed, Unsupported protocol version, Session invalidated
 const SOCKET_CLOSURE_CODES_FORBIDDING_RECONNECTION = [4009, 4010, 4011];
@@ -27,61 +28,6 @@ const OBS_INPUT_KINDS_WITHOUT_VIDEO = [
     'audio_line',
     'sndio_output_capture'
 ];
-
-type ObsBlendMode =
-    | 'OBS_BLEND_NORMAL'
-    | 'OBS_BLEND_ADDITIVE'
-    | 'OBS_BLEND_SUBTRACT'
-    | 'OBS_BLEND_SCREEN'
-    | 'OBS_BLEND_MULTIPLY'
-    | 'OBS_BLEND_LIGHTEN'
-    | 'OBS_BLEND_DARKEN';
-
-type ObsAlignment = 5 | 4 | 6 | 1 | 0 | 2 | 9 | 8 | 10;
-
-type ObsBoundsType =
-    | 'OBS_BOUNDS_STRETCH'
-    | 'OBS_BOUNDS_SCALE_INNER'
-    | 'OBS_BOUNDS_SCALE_OUTER'
-    | 'OBS_BOUNDS_SCALE_TO_WIDTH'
-    | 'OBS_BOUNDS_SCALE_TO_HEIGHT'
-    | 'OBS_BOUNDS_MAX_ONLY'
-    | 'OBS_BOUNDS_NONE';
-
-export type ObsSceneItemTransform = {
-    positionX: number
-    positionY: number
-    alignment: ObsAlignment
-    rotation: number
-    scaleX: number
-    scaleY: number
-    cropTop: number
-    cropRight: number
-    cropBottom: number
-    cropLeft: number
-    cropToBounds: boolean
-    boundsType: ObsBoundsType
-    boundsAlignment: ObsAlignment
-    boundsWidth: number
-    boundsHeight: number
-    sourceWidth: number
-    sourceHeight: number
-    width: number
-    height: number
-};
-
-export type ObsSceneItem = {
-    inputKind: string | null
-    isGroup: boolean | null
-    sceneItemBlendMode: ObsBlendMode
-    sceneItemEnabled: boolean
-    sceneItemId: number
-    sceneItemIndex: number
-    sceneItemLocked: boolean
-    sceneItemTransform: ObsSceneItemTransform
-    sourceName: string
-    sourceType: 'OBS_SOURCE_TYPE_INPUT' | 'OBS_SOURCE_TYPE_SCENE'
-};
 
 export class ObsConnectorService {
     private readonly nodecg: NodeCG.ServerAPI;
