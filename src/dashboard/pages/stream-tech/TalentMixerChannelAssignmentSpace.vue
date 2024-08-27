@@ -21,7 +21,9 @@
             <div
                 class="speaking-indicator"
                 :class="{ speaking: visible && (props.speakingThreshold ?? defaultSpeakingThreshold) < (props.assignedChannel == null ? -90 : (mixerStore.mixerChannelLevels[props.assignedChannel] ?? -90)) }"
-            />
+            >
+                SPEAKING
+            </div>
         </div>
         <div
             v-if="visible"
@@ -101,15 +103,20 @@ function updateSpeakingThreshold(threshold: string) {
 }
 
 .speaking-indicator {
-    min-width: 25px;
     min-height: 25px;
-    border-radius: 99px;
+    border-radius: 8px;
     margin-left: 8px;
     background-color: rgba(34, 34, 34, 0.5);
-    transition: background-color 150ms;
+    color: var(--ipl-bg-secondary);
+    font-weight: 700;
+    padding: 0 8px;
+    line-height: 1.55em;
+    transition-property: background-color, color;
+    transition-duration: 150ms;
 
     &.speaking {
         background-color: #00A651;
+        color: white;
     }
 }
 </style>
