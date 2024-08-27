@@ -12,6 +12,7 @@ import { initTimerStore } from 'client-shared/stores/TimerStore';
 import { initAssetStore } from 'client-shared/stores/AssetStore';
 import { initMusicStore } from 'client-shared/stores/MusicStore';
 import { initMixerStore } from 'client-shared/stores/MixerStore';
+import { initMixerEQStore } from 'client-shared/stores/MixerEQStore';
 
 (async () => {
     const app = createApp(IntermissionGraphic);
@@ -25,7 +26,8 @@ import { initMixerStore } from 'client-shared/stores/MixerStore';
         initTimerStore(),
         initAssetStore(),
         initMusicStore(),
-        initMixerStore()
+        initMixerStore(),
+        initMixerEQStore()
     ]);
     app.mount('#app');
 })();

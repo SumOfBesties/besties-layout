@@ -76,7 +76,7 @@ const activePrize = computed(() => prizeSlides.activeComponent.value == null ? n
 @use '../../styles/colors';
 
 .prize-display {
-    height: 300px;
+    height: 275px;
 
     > div {
         position: relative;

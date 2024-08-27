@@ -24,57 +24,62 @@
                     style="width: 830px"
                 />
             </div>
-            <div class="bg-inset m-t-16 layout horizontal center-vertical">
-                <div
-                    class="host-name-display layout vertical center-vertical center-horizontal"
-                    :class="{ speaking: hostSpeaking }"
-                >
-                    <template v-if="currentHost == null">
-                        No Host!
-                    </template>
-                    <template v-else>
-                        <fitted-content
-                            class="host-name"
-                            align="center"
-                        >
-                            {{ currentHost.name }}
-                        </fitted-content>
-                        <div
-                            class="layout horizontal center-horizontal center-vertical m-t-2 max-width"
-                            style="padding: 0 4px;"
-                        >
-                            <country-flag
-                                v-if="currentHost.countryCode != null"
-                                :country-code="currentHost.countryCode"
-                                class="host-flag"
-                            />
-                            <fitted-content class="host-pronoun-wrapper">
-                                <badge
-                                    v-if="!isBlank(currentHost.pronouns)"
-                                    class="host-pronouns"
-                                >
-                                    {{ currentHost.pronouns }}
-                                </badge>
+            <div class="bg-inset m-t-16 layout vertical">
+                <div class="layout horizontal center-vertical">
+                    <div
+                        class="host-name-display layout vertical center-vertical center-horizontal"
+                        :class="{ speaking: hostSpeaking }"
+                    >
+                        <template v-if="currentHost == null">
+                            No Host!
+                        </template>
+                        <template v-else>
+                            <fitted-content
+                                class="host-name"
+                                align="center"
+                            >
+                                {{ currentHost.name }}
                             </fitted-content>
-                        </div>
-                    </template>
-                    <div class="host-name-label">H</div>
+                            <div
+                                class="layout horizontal center-horizontal center-vertical m-t-2 max-width"
+                                style="padding: 0 4px;"
+                            >
+                                <country-flag
+                                    v-if="currentHost.countryCode != null"
+                                    :country-code="currentHost.countryCode"
+                                    class="host-flag"
+                                />
+                                <fitted-content class="host-pronoun-wrapper">
+                                    <badge
+                                        v-if="!isBlank(currentHost.pronouns)"
+                                        class="host-pronouns"
+                                    >
+                                        {{ currentHost.pronouns }}
+                                    </badge>
+                                </fitted-content>
+                            </div>
+                        </template>
+                        <div class="host-name-label">H</div>
+                    </div>
+                    <div class="music-icon">♫</div>
+                    <div class="grow" style="margin-top: -4px">
+                        <vfd-pixel-text
+                            :font-size="24"
+                            :text-content="musicStore.musicState.track?.artist ?? 'Unknown Artist'"
+                            align="left"
+                            text-align="left"
+                        />
+                        <vfd-pixel-text
+                            :font-size="24"
+                            :text-content="musicStore.musicState.track?.song ?? 'Unknown Song'"
+                            align="left"
+                            text-align="left"
+                        />
+                    </div>
                 </div>
-                <div class="music-icon">♫</div>
-                <div class="grow" style="margin-top: -4px">
-                    <vfd-pixel-text
-                        :font-size="24"
-                        :text-content="musicStore.musicState.track?.artist ?? 'Unknown Artist'"
-                        align="left"
-                        text-align="left"
-                    />
-                    <vfd-pixel-text
-                        :font-size="24"
-                        :text-content="musicStore.musicState.track?.song ?? 'Unknown Song'"
-                        align="left"
-                        text-align="left"
-                    />
-                </div>
+                <intermission-equalizer
+                    class="equalizer"
+                />
             </div>
         </div>
         <large-separator direction="vertical" />
@@ -105,6 +110,7 @@ import Badge from 'components/Badge.vue';
 import CountryFlag from 'components/CountryFlag.vue';
 import { useMusicStore } from 'client-shared/stores/MusicStore';
 import { defaultSpeakingThreshold, disableVolumeMeters, useMixerStore } from 'client-shared/stores/MixerStore';
+import IntermissionEqualizer from './IntermissionEqualizer.vue';
 
 provide(MaxOmnibarBidWarItemsInjectionKey, 3);
 provide(MaxOmnibarBidWarTitleWidthInjectionKey, 200);
@@ -152,7 +158,7 @@ const hostSpeaking = computed(() => {
 
 .logos {
     justify-content: space-between;
-    margin: 25px 60px 0;
+    margin: 0 60px 0;
 
     img {
         width: 250px;
@@ -165,7 +171,7 @@ const hostSpeaking = computed(() => {
 }
 
 .prize-display {
-    margin-top: 56px;
+    margin-top: 32px;
 }
 
 .donation-total {
@@ -180,7 +186,7 @@ const hostSpeaking = computed(() => {
 
 .charity-logo {
     height: 129px;
-    margin: -8px 0;
+    margin: -24px 0;
 }
 
 .host-name-display {
@@ -240,5 +246,11 @@ const hostSpeaking = computed(() => {
     font-size: 40px;
     color: colors.$vfd-teal;
     margin: 0 12px;
+}
+
+.equalizer {
+    width: 100%;
+    height: 92px;
+    margin-top: 8px;
 }
 </style>

@@ -1,0 +1,1 @@
+export const DISPLAYED_MIXER_EQ_CHANNEL_COUNT = 25;
