@@ -26,8 +26,14 @@
                 </transition>
                 <div class="slide-content">
                     <transition name="slide-swap">
+                        <div
+                            v-if="slides.activeComponent.value === 'fallback'"
+                            class="no-slide-placeholder max-height"
+                        >
+                            Benefiting Norges Blindeforbund
+                        </div>
                         <omnibar-schedule-item-display
-                            v-if="slides.activeComponent.value === 'nextUp'"
+                            v-else-if="slides.activeComponent.value === 'nextUp'"
                             :key="nextScheduleItem?.id"
                             :schedule-item="nextScheduleItem"
                         />
@@ -88,6 +94,7 @@ const props = withDefaults(defineProps<{
 });
 
 const eventName = (nodecg.bundleConfig as Configschema).event?.name ?? 'the Norway Speedrunner Gathering';
+const fallbackSlideTitle = (nodecg.bundleConfig as Configschema).event?.name ?? 'NSG';
 const donationUrl = (nodecg.bundleConfig as Configschema).event?.donationUrl;
 const showDonationReminder = computed(() => donationUrl != null && !props.withoutDonationReminder);
 
@@ -173,6 +180,8 @@ const {
 } = useRotatingList(() => currentTrackerDataStore.currentBids.filter(bid => bid.options != null && (bid.userOptionsAllowed || bid.options.length > 0)));
 
 const slides = useSlides([
+    // This'll only show up if every other slide is disabled.
+    { component: 'fallback', enabled: computed(() => false), duration: 10 },
     { component: 'nextUp', enabled: computed(() => nextScheduleItem.value != null), duration: 30 },
     { component: 'later', enabled: computed(() => scheduleItemAfterNext.value != null), duration: 30 },
     { component: 'nextSpeedrun', enabled: computed(() => nextSpeedrun.value != null), duration: 30 },
@@ -185,6 +194,8 @@ const slides = useSlides([
 
 const slideTitle = computed(() => {
     switch (slides.activeComponent.value) {
+        case 'fallback':
+            return fallbackSlideTitle;
         case 'nextUp':
             return 'Up Next';
         case 'later':
@@ -285,6 +296,14 @@ const slideTitle = computed(() => {
         color: colors.$vfd-red;
         font-weight: 700;
     }
+}
+
+.no-slide-placeholder {
+    color: colors.$vfd-teal;
+    font-weight: 700;
+    text-align: center;
+    width: 100%;
+    font-size: 35px;
 }
 
 .slide-swap-enter-active {
