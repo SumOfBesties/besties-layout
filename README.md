@@ -74,6 +74,17 @@ Find a list of time zones [here](https://en.wikipedia.org/wiki/List_of_tz_databa
 
 Music information is gathered through foobar2000 with the [beefweb](https://github.com/hyperblast/beefweb) plugin installed.
 
+#### X32 integration
+
+When configuring mixer channel mappings (`x32.channelMappings`), the following channel types are accepted:
+`CHANNEL`, `AUX_IN`, `FX_RETURN`, `BUS`, `MATRIX` & `DCA`
+
+#### OBS Websocket
+
+nsg2-layouts can be used in conjunction with a [modified build of obs-websocket](https://github.com/obsproject/obs-websocket/pull/1229)
+to react to scene changes when a transition starts as opposed to when it completes. If this build is in use, set the
+`obs.sceneDataInTransitionEvents` property in the bundle configuration file to `true`. Otherwise, set it to `false`.
+
 ## Usage
 
 ### Game layout
@@ -83,25 +94,14 @@ camera sources in OBS. This allows multiple game layout graphics to be open with
 one another.  
 Example: `http://localhost:9090/bundles/nsg2-layouts/graphics/game-layout.html?is-layout-leader`
 
-### OBS Websocket
+### Scene name rules
 
-nsg2-layouts can be used in conjunction with a [modified build of obs-websocket](https://github.com/obsproject/obs-websocket/pull/1229) 
-to react to scene changes when a transition starts as opposed to when it completes. If this build is in use, set the 
-`obs.sceneDataInTransitionEvents` property in the bundle configuration file to `true`. Otherwise, set it to `false`.
-
-#### Scene name rules
-
-The following tags may be included at the end of OBS scene names to modify the stream while those scenes are in the program feed.
+The following suffixes may be added to the end of OBS scene names to modify the stream while those scenes are in the program feed.
 - `[M]`: Play music
 - `[G]`: Unmute game audio
 - `[R]`: Unmute runners
 
-These tags may be combined. For example, a scene named `Test Scene [MG]` will play music and unmute the game audio while it is in the program feed.
-
-## X32 integration
-
-When configuring mixer channel mappings (`x32.channelMappings`), the following channel types are accepted:
-`CHANNEL`, `AUX_IN`, `FX_RETURN`, `BUS`, `MATRIX` & `DCA`
+These suffixes may be combined. For example, a scene named `Test Scene [MG]` will play music and unmute the game audio while it is in the program feed.
 
 ## npm commands
 
