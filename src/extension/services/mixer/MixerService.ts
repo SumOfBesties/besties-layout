@@ -14,7 +14,8 @@ import debounce from 'lodash/debounce';
 import { ObsConnectorService } from '../ObsConnectorService';
 import { X32Transitions } from './X32Transitions';
 import { dbToFloat, floatToDB } from './X32Util';
-import { DISPLAYED_MIXER_EQ_CHANNEL_COUNT } from '../../../shared/MixerHelpers';
+
+const DISPLAYED_MIXER_EQ_CHANNEL_COUNT = 12;
 
 export class MixerService {
     private readonly logger: NodeCG.Logger;
@@ -240,7 +241,7 @@ export class MixerService {
         const extraValuesPerChannel = Math.ceil(extraValues / DISPLAYED_MIXER_EQ_CHANNEL_COUNT);
         let usedEQLevelIndex = 0;
 
-        this.mixerEQLevels.value = range(DISPLAYED_MIXER_EQ_CHANNEL_COUNT).map(() => {
+        this.mixerEQLevels.value = range(DISPLAYED_MIXER_EQ_CHANNEL_COUNT).map(i => {
             let channelsToCombine = channelsPerResultChannel;
             if (extraValues !== 0) {
                 const addedExtraValues = Math.min(extraValuesPerChannel, extraValues);
