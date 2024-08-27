@@ -151,6 +151,10 @@ const baseIndex = computed(() => scheduleStore.playerNameplateAssignments
     font-size: 20px;
 }
 
+.talent-country {
+    height: 25.5px;
+}
+
 .talent-index {
     margin-right: 6px;
     min-width: 20px;
