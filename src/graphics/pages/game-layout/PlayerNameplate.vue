@@ -15,7 +15,12 @@
                 >
                     <div class="talent-details-anchor">
                         <div class="talent-details">
-                            <badge class="talent-index">{{ baseIndex + i + 1 + Number(talentListSlides.activeComponent.value) * props.maxConcurrentPlayers }}</badge>
+                            <badge
+                                v-if="disableVolumeMeters"
+                                class="talent-index"
+                            >
+                                {{ baseIndex + i + 1 + Number(talentListSlides.activeComponent.value) * props.maxConcurrentPlayers }}
+                            </badge>
                             <fitted-content align="center">
                                 {{ talent.name }}
                             </fitted-content>
@@ -35,6 +40,7 @@
                     <player-volume-meter
                         v-if="!disableVolumeMeters"
                         :talent-id="talent.id"
+                        :index="baseIndex + i + 1 + Number(talentListSlides.activeComponent.value) * props.maxConcurrentPlayers"
                         class="volume-meter"
                     />
                 </div>

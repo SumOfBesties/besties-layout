@@ -1,18 +1,24 @@
 <template>
-    <canvas
-        ref="volumeMeterCanvas"
-    />
+    <div class="layout horizontal">
+        <badge class="volume-meter-talent-index">{{ props.index }}</badge>
+        <canvas
+            ref="volumeMeterCanvas"
+            class="max-width"
+        />
+    </div>
 </template>
 
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref, watch } from 'vue';
 import { colors } from '../../styles/colors';
 import { useMixerStore } from 'client-shared/stores/MixerStore';
+import Badge from 'components/Badge.vue';
 
 const mixerStore = useMixerStore();
 
 const props = defineProps<{
     talentId: string
+    index: number
 }>();
 
 const volumeMeterCanvas = ref<HTMLCanvasElement>();
@@ -22,9 +28,8 @@ onMounted(() => {
         console.warn('Mounted PlayerVolumeMeter with no canvas?');
         return;
     }
-    const ctx = canvas.getContext('2d'),
-          width = canvas.clientWidth,
-          height = canvas.clientHeight;
+    const ctx = canvas.getContext('2d');
+    let width = canvas.clientWidth;
     if (ctx == null) {
         console.warn('Received no canvas context');
         return;
@@ -34,6 +39,7 @@ onMounted(() => {
     const canvasScale = 2;
     const resizeObserver = new ResizeObserver(entries => {
         if (entries.length !== 1) return;
+        width = entries[0].contentRect.width;
         canvas.width = entries[0].contentRect.width * canvasScale;
         canvas.height = entries[0].contentRect.height * canvasScale;
         ctx.scale(canvasScale, canvasScale);
@@ -115,5 +121,13 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
-
+.volume-meter-talent-index {
+    font-size: 18px;
+    min-width: 18px;
+    height: 20px;
+    line-height: 19px;
+    text-align: center;
+    margin-top: -2px;
+    font-weight: 600;
+}
 </style>
