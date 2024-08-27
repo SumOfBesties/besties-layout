@@ -9,6 +9,7 @@
                     <td
                         v-for="(talent, j) in talentRow"
                         :key="talent?.id ?? j"
+                        :class="{ speaking: isSpeaking(talent?.id) }"
                     >
                         <template v-if="talent != null">
                             <fitted-content
@@ -51,12 +52,24 @@ import FittedContent from 'components/FittedContent.vue';
 import CountryFlag from 'components/CountryFlag.vue';
 import { isBlank } from 'client-shared/helpers/StringHelper';
 import Badge from 'components/Badge.vue';
+import { defaultSpeakingThreshold, disableVolumeMeters, useMixerStore } from 'client-shared/stores/MixerStore';
 
 const scheduleStore = useScheduleStore();
 const talentStore = useTalentStore();
+const mixerStore = useMixerStore();
 
 const columnCount = 2;
 const rowCount = 2;
+
+function isSpeaking(talentId?: string) {
+    if (disableVolumeMeters || talentId == null) return false;
+    const assignment = talentId === talentStore.currentHostId
+        ? mixerStore.talentMixerChannelAssignments.host
+        : mixerStore.talentMixerChannelAssignments.speedrunTalent[talentId];
+    return assignment == null
+        ? false
+        : (mixerStore.mixerChannelLevels[assignment.channelId] ?? -90) > (assignment.speakingThresholdDB ?? defaultSpeakingThreshold);
+}
 
 const nameplatePlayerCount = computed(() => scheduleStore.playerNameplateAssignments.reduce((result, assignment) => {
     result += assignment.playerIds.length;
@@ -77,6 +90,7 @@ const talent = computed(() => {
 </script>
 
 <style scoped lang="scss">
+@use 'sass:color';
 @use '../../styles/decorations';
 @use '../../styles/colors';
 
@@ -99,6 +113,12 @@ table {
         text-align: center;
         position: relative;
         padding: 0;
+        background-color: transparent;
+        transition: background-color 150ms;
+
+        &.speaking {
+            background-color: color.adjust(colors.$vfd-teal, $alpha: -0.8);
+        }
     }
 }
 

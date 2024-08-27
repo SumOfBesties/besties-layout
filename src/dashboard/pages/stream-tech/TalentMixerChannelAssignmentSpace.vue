@@ -20,7 +20,7 @@
             />
             <div
                 class="speaking-indicator"
-                :class="{ speaking: visible && (props.speakingThreshold ?? defaultSpeakingDBThreshold) < (props.assignedChannel == null ? -90 : (mixerStore.mixerChannelLevels[props.assignedChannel] ?? -90)) }"
+                :class="{ speaking: visible && (props.speakingThreshold ?? defaultSpeakingThreshold) < (props.assignedChannel == null ? -90 : (mixerStore.mixerChannelLevels[props.assignedChannel] ?? -90)) }"
             />
         </div>
         <div
@@ -37,13 +37,10 @@
 </template>
 
 <script setup lang="ts">
-import { Configschema } from 'types/schemas';
 import { IplInput, IplSelect, IplSpace } from '@iplsplatoon/vue-components';
 import { useTalentStore } from 'client-shared/stores/TalentStore';
-import { useMixerStore } from 'client-shared/stores/MixerStore';
+import { defaultSpeakingThreshold, useMixerStore } from 'client-shared/stores/MixerStore';
 import { computed, ref, watch } from 'vue';
-
-const defaultSpeakingDBThreshold = (nodecg.bundleConfig as Configschema).x32?.defaultSpeakingDBThreshold ?? -65;
 
 const talentStore = useTalentStore();
 const mixerStore = useMixerStore();
@@ -75,7 +72,7 @@ function selectTalentChannel(channelId: string) {
     emit('update:assignedChannel', channelId === 'none' ? undefined : Number(channelId));
 }
 
-const internalSpeakingThreshold = ref<string>(String(defaultSpeakingDBThreshold));
+const internalSpeakingThreshold = ref<string>(String(defaultSpeakingThreshold));
 watch(() => props.speakingThreshold, newValue => {
     if (newValue != null) {
         internalSpeakingThreshold.value = String(newValue);
@@ -83,7 +80,7 @@ watch(() => props.speakingThreshold, newValue => {
 }, { immediate: true });
 watch(() => props.visible, newValue => {
     if (newValue) {
-        internalSpeakingThreshold.value = String(props.speakingThreshold ?? defaultSpeakingDBThreshold);
+        internalSpeakingThreshold.value = String(props.speakingThreshold ?? defaultSpeakingThreshold);
     }
 });
 function updateSpeakingThreshold(threshold: string) {

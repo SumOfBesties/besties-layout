@@ -25,7 +25,10 @@
                 />
             </div>
             <div class="bg-inset m-t-16 layout horizontal center-vertical">
-                <div class="host-name-display layout vertical center-vertical center-horizontal">
+                <div
+                    class="host-name-display layout vertical center-vertical center-horizontal"
+                    :class="{ speaking: hostSpeaking }"
+                >
                     <template v-if="currentHost == null">
                         No Host!
                     </template>
@@ -101,16 +104,26 @@ import { isBlank } from 'client-shared/helpers/StringHelper';
 import Badge from 'components/Badge.vue';
 import CountryFlag from 'components/CountryFlag.vue';
 import { useMusicStore } from 'client-shared/stores/MusicStore';
+import { defaultSpeakingThreshold, disableVolumeMeters, useMixerStore } from 'client-shared/stores/MixerStore';
 
 provide(MaxOmnibarBidWarItemsInjectionKey, 3);
 provide(MaxOmnibarBidWarTitleWidthInjectionKey, 200);
 
 const talentStore = useTalentStore();
 const musicStore = useMusicStore();
+const mixerStore = useMixerStore();
 const currentHost = computed(() => talentStore.findTalentItemById(talentStore.currentHostId));
+
+const hostSpeaking = computed(() => {
+    if (disableVolumeMeters || talentStore.currentHostId == null) return false;
+    const assignment = mixerStore.talentMixerChannelAssignments.host;
+    if (assignment == null) return false;
+    return (mixerStore.mixerChannelLevels[assignment.channelId] ?? -90) > (assignment.speakingThresholdDB ?? defaultSpeakingThreshold);
+});
 </script>
 
 <style scoped lang="scss">
+@use 'sass:color';
 @use '../../styles/colors';
 
 .intermission-layout {
@@ -179,6 +192,12 @@ const currentHost = computed(() => talentStore.findTalentItemById(talentStore.cu
     width: 250px;
     height: 73px;
     overflow: hidden;
+    background-color: transparent;
+    transition: background-color 150ms;
+
+    &.speaking {
+        background-color: color.adjust(colors.$vfd-teal, $alpha: -0.8);
+    }
 
     > .host-name-label {
         font-family: 'Roboto Condensed', sans-serif;

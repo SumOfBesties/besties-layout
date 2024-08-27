@@ -11,6 +11,7 @@ import { initCurrentTrackerDataStore } from 'client-shared/stores/CurrentTracker
 import { initTimerStore } from 'client-shared/stores/TimerStore';
 import { initAssetStore } from 'client-shared/stores/AssetStore';
 import { initMusicStore } from 'client-shared/stores/MusicStore';
+import { initMixerStore } from 'client-shared/stores/MixerStore';
 
 (async () => {
     const app = createApp(IntermissionGraphic);
@@ -23,7 +24,8 @@ import { initMusicStore } from 'client-shared/stores/MusicStore';
         initCurrentTrackerDataStore(),
         initTimerStore(),
         initAssetStore(),
-        initMusicStore()
+        initMusicStore(),
+        initMixerStore()
     ]);
     app.mount('#app');
 })();

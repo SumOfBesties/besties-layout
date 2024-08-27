@@ -52,6 +52,7 @@ export interface Configschema {
 		address?: string;
 		transitionFps?: number;
 		defaultSpeakingDBThreshold?: number;
+		disableNameplateVolumeMeters?: boolean;
 		transitionDurations?: {
 			mute?: number;
 			unmute?: number;

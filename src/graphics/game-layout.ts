@@ -9,6 +9,7 @@ import { initScheduleStore } from 'client-shared/stores/ScheduleStore';
 import { initTalentStore } from 'client-shared/stores/TalentStore';
 import { initTimerStore } from 'client-shared/stores/TimerStore';
 import { initAssetStore } from 'client-shared/stores/AssetStore';
+import { initMixerStore } from 'client-shared/stores/MixerStore';
 
 (async () => {
     const app = createApp(GameLayoutGraphic);
@@ -19,7 +20,8 @@ import { initAssetStore } from 'client-shared/stores/AssetStore';
         initScheduleStore(),
         initTalentStore(),
         initTimerStore(),
-        initAssetStore()
+        initAssetStore(),
+        initMixerStore()
     ]);
     app.mount('#app');
 })();

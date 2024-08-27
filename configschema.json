@@ -80,6 +80,7 @@
                 "address": { "type": "string" },
                 "transitionFps": { "type": "number" },
                 "defaultSpeakingDBThreshold": { "type": "number" },
+                "disableNameplateVolumeMeters": { "type": "boolean" },
                 "transitionDurations": {
                     "type": "object",
                     "properties": {

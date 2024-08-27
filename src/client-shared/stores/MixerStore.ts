@@ -1,4 +1,4 @@
-import { MixerChannelLevels, MixerState, TalentMixerChannelAssignments } from 'types/schemas';
+import { Configschema, MixerChannelLevels, MixerState, TalentMixerChannelAssignments } from 'types/schemas';
 import { defineStore } from 'pinia';
 import { createReplicantStoreInitializer } from 'client-shared/helpers/StoreHelper';
 
@@ -11,6 +11,9 @@ interface MixerStore {
     talentMixerChannelAssignments: TalentMixerChannelAssignments
     mixerChannelLevels: MixerChannelLevels
 }
+
+export const defaultSpeakingThreshold = (nodecg.bundleConfig as Configschema).x32?.defaultSpeakingDBThreshold ?? -65;
+export const disableVolumeMeters = (nodecg.bundleConfig as Configschema).x32?.disableNameplateVolumeMeters ?? false;
 
 export const useMixerStore = defineStore('mixer', {
     state: () => ({
