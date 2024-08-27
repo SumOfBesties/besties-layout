@@ -76,7 +76,7 @@ export const useMixerStore = defineStore('mixer', {
         },
         isSpeaking(state) {
             const talentStore = useTalentStore();
-            return (talentId: string) => {
+            return (talentId?: string | null) => {
                 if (disableVolumeMeters || talentId == null) return false;
                 const assignment = talentId === talentStore.currentHostId
                     ? state.talentMixerChannelAssignments.host
