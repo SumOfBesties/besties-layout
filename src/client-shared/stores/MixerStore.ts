@@ -5,7 +5,7 @@ import { useTalentStore } from 'client-shared/stores/TalentStore';
 
 const mixerState = nodecg.Replicant<MixerState>('mixerState');
 const talentMixerChannelAssignments = nodecg.Replicant<TalentMixerChannelAssignments>('talentMixerChannelAssignments');
-const mixerChannelLevels = nodecg.Replicant<MixerChannelLevels>('mixerChannelLevels');
+const mixerChannelLevels = nodecg.Replicant<MixerChannelLevels>('mixerChannelLevels', { persistent: false });
 
 interface MixerStore {
     mixerState: MixerState

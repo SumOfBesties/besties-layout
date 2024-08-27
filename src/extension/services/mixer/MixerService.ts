@@ -40,7 +40,7 @@ export class MixerService {
     constructor(nodecg: NodeCG.ServerAPI<Configschema>, obsConnectorService: ObsConnectorService) {
         this.mixerState = nodecg.Replicant('mixerState') as unknown as NodeCG.ServerReplicantWithSchemaDefault<MixerState>;
         this.talentMixerChannelAssignments = nodecg.Replicant('talentMixerChannelAssignments') as unknown as NodeCG.ServerReplicantWithSchemaDefault<TalentMixerChannelAssignments>;
-        this.mixerChannelLevels = nodecg.Replicant('mixerChannelLevels') as unknown as NodeCG.ServerReplicantWithSchemaDefault<MixerChannelLevels>;
+        this.mixerChannelLevels = nodecg.Replicant('mixerChannelLevels', { persistent: false }) as unknown as NodeCG.ServerReplicantWithSchemaDefault<MixerChannelLevels>;
         this.logger = new nodecg.Logger(`${nodecg.bundleName}:MixerService`);
         this.unmuteTransitionDuration = nodecg.bundleConfig.x32?.transitionDurations?.unmute ?? 500;
         this.muteTransitionDuration = nodecg.bundleConfig.x32?.transitionDurations?.mute ?? 500;
