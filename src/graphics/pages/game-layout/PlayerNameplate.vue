@@ -148,10 +148,11 @@ const baseIndex = computed(() => scheduleStore.playerNameplateAssignments
 
 .talent-country, .talent-pronouns {
     margin-left: 8px;
+    font-size: 20px;
 }
 
 .talent-index {
-    margin-right: 4px;
+    margin-right: 6px;
     min-width: 20px;
     line-height: 22px;
     text-align: center;

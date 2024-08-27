@@ -227,11 +227,12 @@ const hostSpeaking = computed(() => {
     }
 
     .host-pronoun-wrapper {
-        margin-top: -8px;
+        margin-top: -12px;
     }
 
     .host-pronouns {
-        font-size: 18px;
+        font-size: 16.25px !important;
+        transform: translateY(1.5px);
     }
 }
 

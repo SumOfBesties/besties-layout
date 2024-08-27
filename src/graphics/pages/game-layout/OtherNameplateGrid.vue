@@ -152,6 +152,7 @@ table {
 }
 
 .commentator-pronouns {
-    font-size: 18px;
+    font-size: 16.75px !important;
+    transform: translateY(0.5px);
 }
 </style>
