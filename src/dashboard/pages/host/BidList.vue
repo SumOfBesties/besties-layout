@@ -24,23 +24,13 @@ import { IplCheckbox, IplExpandingSpace } from '@iplsplatoon/vue-components';
 import { useAllTrackerDataStore } from 'client-shared/stores/AllTrackerDataStore';
 import BidListItem from './BidListItem.vue';
 import { computed, ref } from 'vue';
-import { DateTime } from 'luxon';
+import { useCurrentTrackerDataStore } from 'client-shared/stores/CurrentTrackerDataStore';
 
 const allTrackerDataStore = useAllTrackerDataStore();
+const currentTrackerDataStore = useCurrentTrackerDataStore();
 
 const completedBidsVisible = ref(false);
-const visibleBids = computed(() => {
-    if (completedBidsVisible.value) return allTrackerDataStore.allBids;
-
-    return allTrackerDataStore.allBids.filter(bid => {
-        if (bid.speedrunEndTime == null) {
-            return true;
-        }
-        const parsedEndTime = DateTime.fromISO(bid.speedrunEndTime);
-        if (!parsedEndTime.isValid) {
-            return true;
-        }
-        return parsedEndTime.diffNow().milliseconds > 0;
-    });
-});
+const visibleBids = computed(() => completedBidsVisible.value
+    ? allTrackerDataStore.allBids
+    : currentTrackerDataStore.currentBids);
 </script>
