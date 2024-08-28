@@ -149,7 +149,7 @@ const hostSpeaking = computed(() => {
         flex-direction: column;
 
         &.right-panel {
-            $schedule-height: 720px;
+            $schedule-height: 723px;
             // Will explode if the schedule's height changes, but I don't foresee that.
             clip-path: polygon(0% 0%, 0% 100%, 53px 100%, 53px $schedule-height, calc(100% - 53px) $schedule-height, calc(100% - 53px) calc(100% - 53px), 50px calc(100% - 53px), 53px 100%, 100% 100%, 100% 0%);
 
