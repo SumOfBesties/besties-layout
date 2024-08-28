@@ -6,11 +6,12 @@
                 style="margin-left: 4px"
             >
                 <div v-if="scheduleStore.activeSpeedrun != null">est. {{ formatDuration(scheduleStore.activeSpeedrun.estimate) }}</div>
-                <timer-display
-                    :time="timerStore.timer.time"
+                <span
                     class="main-timer-display"
                     :style="{ color: timerColor }"
-                />
+                >
+                    {{ formatTimer(timerStore.timer.time) }}
+                </span>
             </div>
             <div class="max-width main-timer-controls-layout">
                 <ipl-button
@@ -63,17 +64,15 @@ import { faBackward } from '@fortawesome/free-solid-svg-icons/faBackward';
 import { faPlay } from '@fortawesome/free-solid-svg-icons/faPlay';
 import { faRotateLeft } from '@fortawesome/free-solid-svg-icons/faRotateLeft';
 import { faStop } from '@fortawesome/free-solid-svg-icons/faStop';
-import { useTalentStore } from 'client-shared/stores/TalentStore';
-import TimerDisplay from '../../components/TimerDisplay.vue';
 import { faChevronLeft } from '@fortawesome/free-solid-svg-icons/faChevronLeft';
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons/faChevronRight';
 import TeamTimerManager from './TeamTimerManager.vue';
+import { formatTimer } from 'client-shared/helpers/TimerHelper';
 
 library.add(faFlagCheckered, faPause, faBackward, faPlay, faRotateLeft, faStop, faChevronLeft, faChevronRight);
 
 const scheduleStore = useScheduleStore();
 const timerStore = useTimerStore();
-const talentStore = useTalentStore();
 
 const startStopUndoButton = computed(() => {
     switch (timerStore.timer.state) {

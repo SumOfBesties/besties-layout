@@ -18,11 +18,12 @@
             color="secondary"
             class="text-center m-x-8 m-b-8"
         >
-            <timer-display
-                :time="timerStore.timer.time"
+            <span
                 class="main-timer-display"
                 :style="{ color: timerColor }"
-            />
+            >
+                {{ formatTimer(timerStore.timer.time) }}
+            </span>
         </ipl-space>
         <div
             v-for="team in scheduleStore.activeSpeedrun.teams"
@@ -42,7 +43,7 @@
                 </template>
                 <template v-else>
                     {{ timerStore.timer.teamResults[team.id].state === 'FORFEIT' ? 'Forfeited' : 'Finished' }}
-                    <timer-display :time="timerStore.timer.teamResults[team.id].time" />
+                    <span>{{ formatTimer(timerStore.timer.teamResults[team.id].time, true) }}</span>
                 </template>
             </div>
         </div>
@@ -53,9 +54,9 @@
 import { IplMessage, IplSpace } from '@iplsplatoon/vue-components';
 import { useScheduleStore } from 'client-shared/stores/ScheduleStore';
 import { computed } from 'vue';
-import TimerDisplay from '../../components/TimerDisplay.vue';
 import { useTimerStore } from 'client-shared/stores/TimerStore';
 import { useTalentStore } from 'client-shared/stores/TalentStore';
+import { formatTimer } from 'client-shared/helpers/TimerHelper';
 
 const scheduleStore = useScheduleStore();
 const timerStore = useTimerStore();

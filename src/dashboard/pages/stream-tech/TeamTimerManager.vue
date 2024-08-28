@@ -4,7 +4,7 @@
             <div class="team-name">{{ props.team.name || talentStore.formatTalentIdList(team.playerIds, 4) }}</div>
             <div v-if="timerStore.timer.teamResults[team.id]">
                 {{ timerStore.timer.teamResults[props.team.id].state === 'FORFEIT' ? 'Forfeited' : 'Finished' }}
-                <timer-display :time="timerStore.timer.teamResults[props.team.id].time" />
+                <span>{{ formatTimer(timerStore.timer.teamResults[props.team.id].time, true) }}</span>
             </div>
             <div v-if="assignedPlayers.length > 0" class="m-t-8">
                 Now playing: <span class="text-bold">{{ talentStore.formatTalentIdList(assignedPlayers, 4) }}</span>
@@ -89,7 +89,6 @@
 </template>
 
 <script setup lang="ts">
-import TimerDisplay from '../../components/TimerDisplay.vue';
 import { IplButton, IplDialog, IplDialogTitle, IplSpace } from '@iplsplatoon/vue-components';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { Speedrun } from 'types/schemas';
@@ -98,6 +97,7 @@ import { useScheduleStore } from 'client-shared/stores/ScheduleStore';
 import { sendMessage } from 'client-shared/helpers/NodecgHelper';
 import { useTalentStore } from 'client-shared/stores/TalentStore';
 import { computed, ref } from 'vue';
+import { formatTimer } from 'client-shared/helpers/TimerHelper';
 
 const timerStore = useTimerStore();
 const scheduleStore = useScheduleStore();
