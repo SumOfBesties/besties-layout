@@ -1,6 +1,9 @@
 <template>
     <ipl-space color="secondary">
-        <div style="float: right">
+        <div
+            style="float: right"
+            :class="{ 'goal-met': props.bid.goal != null && props.bid.total >= props.bid.goal }"
+        >
             <template v-if="props.bid.goal != null">
                 {{ formatCurrencyAmount(props.bid.total) }}/{{ formatCurrencyAmount(props.bid.goal) }}kr
             </template>
@@ -45,7 +48,7 @@ import { IplExpandingSpace, IplSpace } from '@iplsplatoon/vue-components';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faCircleInfo } from '@fortawesome/free-solid-svg-icons/faCircleInfo';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { formatCurrencyAmount, formatNumber } from '../../../client-shared/helpers/StringHelper';
+import { formatCurrencyAmount } from 'client-shared/helpers/StringHelper';
 
 library.add(faCircleInfo);
 
@@ -92,6 +95,10 @@ watch(parsedSpeedrunEndTime, updateEndTimeInfo, { immediate: true });
 </script>
 
 <style scoped lang="scss">
+.goal-met {
+    color: #00A651
+}
+
 .bid-name {
     font-weight: 700;
     font-size: 1.25em;
