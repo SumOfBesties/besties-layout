@@ -35,6 +35,8 @@ onMounted(() => {
         return;
     }
 
+    let alive = true;
+
     // The canvas looks blurry in OBS if I don't scale it up
     const canvasScale = 2;
     const resizeObserver = new ResizeObserver(entries => {
@@ -46,6 +48,7 @@ onMounted(() => {
     });
     resizeObserver.observe(canvas);
     onUnmounted(() => {
+        alive = false;
         resizeObserver.disconnect();
     });
 
@@ -67,6 +70,9 @@ onMounted(() => {
     });
 
     const redraw = (time: number) => {
+        if (!alive) {
+            return;
+        }
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         const deltaTime = time - lastTime;
         lastTime = time;
