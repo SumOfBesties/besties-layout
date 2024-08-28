@@ -231,8 +231,8 @@ export class ObsConnectorService {
 
         const unusedSceneItems = await this.getSceneItemList(gameLayoutVideoFeedsScene);
 
-        const cameraCaptureSceneItemIds = await this.assignCameraCaptures('camera', videoInputAssignments.cameraCaptures, unusedSceneItems);
-        const gameCaptureSceneItemIds = await this.assignCameraCaptures('game', videoInputAssignments.gameCaptures, unusedSceneItems);
+        const cameraCaptureSceneItemIds = await this.assignCameraCaptures('camera', videoInputAssignments, unusedSceneItems);
+        const gameCaptureSceneItemIds = await this.assignCameraCaptures('game', videoInputAssignments, unusedSceneItems);
 
         const newInputAssignments = cloneDeep(videoInputAssignments);
         cameraCaptureSceneItemIds.forEach((sceneItemId, i) => {
@@ -258,9 +258,14 @@ export class ObsConnectorService {
         }
     }
 
-    private async assignCameraCaptures(type: 'game' | 'camera', captureAssignments: (VideoInputAssignment | null)[], unusedSceneItems: ObsSceneItem[]): Promise<(number | undefined)[]> {
+    private async assignCameraCaptures(type: 'game' | 'camera', inputAssignments: ObsVideoInputAssignments, unusedSceneItems: ObsSceneItem[]): Promise<(number | undefined)[]> {
         const gameLayoutVideoFeedsScene = this.obsConfig.value.gameLayoutVideoFeedsScene;
         if (gameLayoutVideoFeedsScene == null) return [];
+        const typeAssignments = inputAssignments[type === 'game' ? 'gameCaptures' : 'cameraCaptures'];
+        const allAssignments = [
+            ...inputAssignments.gameCaptures,
+            ...inputAssignments.cameraCaptures
+        ];
         const capturePositions = type === 'camera'
             ? this.obsVideoInputPositions.value.cameraCaptures
             : this.obsVideoInputPositions.value.gameCaptures;
@@ -270,22 +275,26 @@ export class ObsConnectorService {
         this.nodecg.log.debug(`Assigning ${capturePositions.length} ${type} capture(s)`);
         for (let i = 0; i < capturePositions.length; i++) {
             const capture = capturePositions[i];
-            const assignedFeed = captureAssignments[i] ?? null;
+            const assignedFeed = typeAssignments[i] ?? null;
             if (assignedFeed == null || !this.obsState.value.videoInputs?.some(input => input.sourceName === assignedFeed?.sourceName)) {
                 this.nodecg.log.debug(`${type} ${i + 1} - Assigned input is missing`);
                 sceneItemIds.push(undefined);
                 continue;
             }
 
-            const exactExistingSceneItemIndex = assignedFeed.sceneItemId == null
-                ? -1
-                : unusedSceneItems.findIndex(sceneItem =>
+            let sceneItemIndex: number = -1;
+            if (assignedFeed.sceneItemId != null) {
+                sceneItemIndex = unusedSceneItems.findIndex(sceneItem =>
                     sceneItem.sourceName === assignedFeed.sourceName
                     && sceneItem.sceneItemId === assignedFeed.sceneItemId);
-            const existingSceneItemIndex = exactExistingSceneItemIndex === -1 ? unusedSceneItems.findIndex(sceneItem => sceneItem.sourceName === assignedFeed?.sourceName) : -1;
+            }
+            if (sceneItemIndex === -1) {
+                sceneItemIndex = unusedSceneItems.findIndex(sceneItem =>
+                    !allAssignments.some(assignment => assignment?.sceneItemId === sceneItem.sceneItemId)
+                    && sceneItem.sourceName === assignedFeed?.sourceName);
+            }
 
-            if (existingSceneItemIndex !== -1 || exactExistingSceneItemIndex !== -1) {
-                const sceneItemIndex = exactExistingSceneItemIndex === -1 ? existingSceneItemIndex : exactExistingSceneItemIndex;
+            if (sceneItemIndex !== -1) {
                 const existingSceneItem = unusedSceneItems[sceneItemIndex];
                 this.nodecg.log.debug(`${type} ${i + 1} - Found existing scene item`);
                 if (
