@@ -52,7 +52,7 @@ const props = withDefaults(defineProps<{
     nameplateIndex: number
     xPosition: 'left' | 'right' | 'center'
     yPosition: 'bottom'
-    animationDirection: 'x' | 'y'
+    animationDirection?: 'x' | 'y'
 }>(), {
     animationDirection: 'y'
 });
