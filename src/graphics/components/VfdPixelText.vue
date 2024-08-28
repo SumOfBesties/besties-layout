@@ -5,11 +5,13 @@
         :style="{
             fontSize: `${props.fontSize}px`,
             height: `${characterHeight}px`,
+            textAlign: props.textAlign,
             justifyContent
         }"
     >
         <span class="background">{{ '▓'.repeat(characterCount) }}</span>
         <fitted-content
+            v-if="useFittedContent"
             :align="props.textAlign"
             :style="{
                 width: `${characterWidth * characterCount}px`,
@@ -23,11 +25,25 @@
                 {{ props.textContent }}
             </template>
         </fitted-content>
+        <span
+            v-else
+            style="white-space: pre; width: 100%"
+            :style="{
+                width: `${characterWidth * characterCount}px`
+            }"
+        >
+            <template v-if="progressBarInfo != null">
+                {{ progressBarInfo.formattedText }}
+            </template>
+            <template v-else>
+                {{ visibleText }}
+            </template>
+        </span>
     </div>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref } from 'vue';
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import FittedContent from 'components/FittedContent.vue';
 import { shortenLargeNumber } from 'client-shared/helpers/StringHelper';
 
@@ -41,6 +57,11 @@ const props = withDefaults(defineProps<{
     align: 'center',
     textAlign: 'center'
 });
+
+const emit = defineEmits<{
+    'scrollStarted': [],
+    'scrollEndReached': []
+}>();
 
 const wrapper = ref<HTMLDivElement>();
 const wrapperWidth = ref(1);
@@ -66,6 +87,74 @@ const justifyContent = computed(() => {
         case 'right':
             return 'flex-end';
     }
+});
+
+const useFittedContent = computed(() => props.textContent != null && props.textContent.length - characterCount.value < 4);
+let textScrollTimeout: number | undefined = undefined;
+let currentTextPosition = 0;
+let scrollDirection: 'left' | 'right' = 'left';
+const visibleText = ref('');
+const scrollSpeed = 200;
+const midTextPauseDuration = 5000;
+const textEndPauseDuration = 7500;
+watch(() => [props.textContent, characterCount.value] as [string | undefined | null, number], ([newText, newCharacterCount]) => {
+    currentTextPosition = 0;
+    window.clearTimeout(textScrollTimeout);
+    scrollDirection = 'left';
+
+    if (newText == null || useFittedContent.value) {
+        visibleText.value = '';
+        return;
+    }
+
+    visibleText.value = newText.slice(0, newCharacterCount);
+
+    if (newText.length > newCharacterCount) {
+        const scrollText = () => {
+            if (scrollDirection === 'left') {
+                if (newText.length - currentTextPosition > newCharacterCount) {
+                    currentTextPosition++;
+                    visibleText.value = newText.slice(currentTextPosition, newCharacterCount + currentTextPosition);
+                } else {
+                    currentTextPosition = 0;
+                    visibleText.value = newText.slice(0, newCharacterCount);
+                }
+
+                if (newText.length - currentTextPosition <= newCharacterCount) {
+                    scrollDirection = 'right';
+                    textScrollTimeout = window.setTimeout(scrollText, textEndPauseDuration);
+                    emit('scrollEndReached');
+                    return;
+                }
+                if (currentTextPosition % newCharacterCount === 0) {
+                    textScrollTimeout = window.setTimeout(scrollText, midTextPauseDuration);
+                    return;
+                }
+
+                textScrollTimeout = window.setTimeout(scrollText, scrollSpeed * 0.75);
+            } else {
+                if (newText.length + currentTextPosition >= newCharacterCount) {
+                    currentTextPosition--;
+                    visibleText.value = newText.slice(currentTextPosition, newCharacterCount + currentTextPosition);
+                }
+
+                if (currentTextPosition === 0) {
+                    scrollDirection = 'left';
+                    textScrollTimeout = window.setTimeout(scrollText, textEndPauseDuration);
+                    return;
+                }
+
+                textScrollTimeout = window.setTimeout(scrollText, scrollSpeed / 2);
+            }
+        };
+
+        textScrollTimeout = window.setTimeout(scrollText, textEndPauseDuration);
+        emit('scrollStarted');
+    }
+});
+
+onUnmounted(() => {
+    window.clearTimeout(textScrollTimeout);
 });
 
 const progressBarInfo = computed(() => {

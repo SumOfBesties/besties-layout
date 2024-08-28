@@ -4,7 +4,7 @@ import { getNextIndex } from './ArrayHelper';
 interface Slide {
     component: string
     enabled?: ComputedRef<boolean> | undefined
-    duration?: number | undefined
+    duration?: number | null
     beforeChange?: (component: string) => Promise<void> | void
 }
 
@@ -12,7 +12,7 @@ function isSlideEnabled(slide: Slide): boolean {
     return slide.enabled == null || slide.enabled.value;
 }
 
-export function useSlides(slideRef: MaybeRefOrGetter<Array<Slide>>): { activeComponent: Ref<string | null>, forceSetSlide: (component: string) => void } {
+export function useSlides(slideRef: MaybeRefOrGetter<Array<Slide>>): { activeComponent: Ref<string | null>, forceSetSlide: (component: string) => void, advanceSlide: () => void } {
     const activeIndex = ref<number | null>(null);
     const activeComponent = ref<string | null>(null);
 
@@ -48,10 +48,13 @@ export function useSlides(slideRef: MaybeRefOrGetter<Array<Slide>>): { activeCom
     const setSlideChangeTimeout = () => {
         const slides = toValue(slideRef);
         const activeSlide = activeIndex.value == null ? null : slides[activeIndex.value];
-        slideChangeTimeout = window.setTimeout(() => {
-            findNextVisibleSlide();
-            setSlideChangeTimeout();
-        }, (activeSlide?.duration ?? 30) * 1000);
+        // If a slide's duration is null, it must be manually advanced. If it is unset, the default duration is used.
+        if (activeSlide?.duration !== null) {
+            slideChangeTimeout = window.setTimeout(() => {
+                findNextVisibleSlide();
+                setSlideChangeTimeout();
+            }, (activeSlide?.duration ?? 30) * 1000);
+        }
     };
 
     let forceAllowSlide = false;
@@ -67,6 +70,11 @@ export function useSlides(slideRef: MaybeRefOrGetter<Array<Slide>>): { activeCom
         forceAllowSlide = true;
         activeIndex.value = newSlideIndex;
         setSlide(newSlide);
+        setSlideChangeTimeout();
+    };
+
+    const advanceSlide = () => {
+        findNextVisibleSlide();
         setSlideChangeTimeout();
     };
 
@@ -90,6 +98,7 @@ export function useSlides(slideRef: MaybeRefOrGetter<Array<Slide>>): { activeCom
 
     return {
         activeComponent,
-        forceSetSlide
+        forceSetSlide,
+        advanceSlide
     };
 }

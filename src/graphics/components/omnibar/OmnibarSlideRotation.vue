@@ -36,16 +36,19 @@
                             v-else-if="slides.activeComponent.value === 'nextUp'"
                             :key="nextScheduleItem?.id"
                             :schedule-item="nextScheduleItem"
+                            @ready-to-switch="onSlideSwitchReady"
                         />
                         <omnibar-schedule-item-display
                             v-else-if="slides.activeComponent.value === 'later'"
                             :key="scheduleItemAfterNext?.id"
                             :schedule-item="scheduleItemAfterNext"
+                            @ready-to-switch="onSlideSwitchReady"
                         />
                         <omnibar-schedule-item-display
                             v-else-if="slides.activeComponent.value === 'nextSpeedrun'"
                             :key="nextSpeedrun?.id"
                             :schedule-item="nextSpeedrun"
+                            @ready-to-switch="onSlideSwitchReady"
                         />
                         <omnibar-milestone-display
                             v-else-if="slides.activeComponent.value === 'milestone'"
@@ -72,7 +75,7 @@
 <script setup lang="ts">
 import { useScheduleStore } from 'client-shared/stores/ScheduleStore';
 import { useCurrentTrackerDataStore } from 'client-shared/stores/CurrentTrackerDataStore';
-import { computed, ComputedRef, MaybeRefOrGetter, ref, Ref, toValue, UnwrapRef } from 'vue';
+import { computed, ComputedRef, MaybeRefOrGetter, ref, Ref, toValue, UnwrapRef, watch } from 'vue';
 import { getNextIndex } from '../../helpers/ArrayHelper';
 import { useSlides } from '../../helpers/useSlides';
 import { Configschema } from 'types/schemas';
@@ -182,15 +185,25 @@ const {
 const slides = useSlides([
     // This'll only show up if every other slide is disabled.
     { component: 'fallback', enabled: computed(() => false), duration: 10 },
-    { component: 'nextUp', enabled: computed(() => nextScheduleItem.value != null), duration: 30 },
-    { component: 'later', enabled: computed(() => scheduleItemAfterNext.value != null), duration: 30 },
-    { component: 'nextSpeedrun', enabled: computed(() => nextSpeedrun.value != null), duration: 30 },
+    { component: 'nextUp', enabled: computed(() => nextScheduleItem.value != null), duration: null },
+    { component: 'later', enabled: computed(() => scheduleItemAfterNext.value != null), duration: null },
+    { component: 'nextSpeedrun', enabled: computed(() => nextSpeedrun.value != null), duration: null },
     { component: 'milestone', enabled: milestonesEnabled, beforeChange: beforeMilestoneShow, duration: 30 },
     { component: 'incentive', enabled: incentivesEnabled, beforeChange: beforeIncentiveShow, duration: 30 },
     { component: 'bidwar', enabled: bidWarsEnabled, beforeChange: beforeBidWarShow, duration: 30 },
     { component: 'donationReminder1', enabled: showDonationReminder, duration: 10 },
     { component: 'donationReminder2', enabled: showDonationReminder, duration: 10 }
 ]);
+
+let manualSlideAdvanceTimeout: number | undefined = undefined;
+function onSlideSwitchReady() {
+    if (manualSlideAdvanceTimeout == null) {
+        manualSlideAdvanceTimeout = window.setTimeout(() => {
+            manualSlideAdvanceTimeout = undefined;
+            slides.advanceSlide();
+        }, 29 * 1000);
+    }
+}
 
 const slideTitle = computed(() => {
     switch (slides.activeComponent.value) {
