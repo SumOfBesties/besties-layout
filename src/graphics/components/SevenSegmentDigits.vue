@@ -1,7 +1,7 @@
 <template>
     <div
         class="wrapper"
-        :class="{ flash: props.flash }"
+        :class="{ flash: props.flash, [`color-${props.color}`]: true }"
     >
         <span class="unlit">{{ unlitSegment ?? '8'.repeat(props.digitCount ?? 1) }}</span>
         <span class="digits">{{ props.padDigits ? String(props.value ?? '').padStart(props.digitCount ?? 1, '0') : props.value }}</span>
@@ -17,9 +17,11 @@ const props = withDefaults(defineProps<{
     value?: number | string | null
     padDigits?: boolean
     flash?: boolean
+    color?: 'teal' | 'red'
 }>(), {
     padDigits: false,
-    flash: false
+    flash: false,
+    color: 'teal'
 });
 </script>
 
@@ -35,37 +37,52 @@ const props = withDefaults(defineProps<{
     &.flash > .digits {
         animation: digits-flash 2s 3;
     }
-}
 
-.unlit {
-    color: colors.$vfd-teal-unlit;
+    &.color-teal {
+        .digits, .always-lit-segment {
+            color: colors.$vfd-teal;
+        }
+
+        .unlit {
+            color: colors.$vfd-teal-unlit;
+        }
+    }
+
+    &.color-red {
+        .digits, .always-lit-segment {
+            color: colors.$vfd-red;
+        }
+
+        .unlit {
+            color: colors.$vfd-red-unlit;
+        }
+    }
 }
 
 .digits, .always-lit-segment {
-    color: colors.$vfd-teal;
     position: absolute;
     right: 0;
 }
 
 @keyframes digits-flash {
     0% {
-        color: colors.$vfd-teal;
+        opacity: 1;
     }
 
     48% {
-        color: colors.$vfd-teal;
+        opacity: 1;
     }
 
     50% {
-        color: colors.$vfd-teal-unlit;
+        opacity: 0;
     }
 
     98% {
-        color: colors.$vfd-teal-unlit;
+        opacity: 0;
     }
 
     100% {
-        color: colors.$vfd-teal;
+        opacity: 1;
     }
 }
 </style>

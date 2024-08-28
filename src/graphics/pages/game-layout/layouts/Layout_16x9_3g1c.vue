@@ -5,13 +5,25 @@
                 <div
                     class="game-capture"
                     data-capture-index="0"
-                />
+                >
+                    <team-result-display
+                        :nameplate-index="0"
+                        x-position="center"
+                        y-position="bottom"
+                    />
+                </div>
                 <player-nameplate :index="0" class="max-width" fixed-height />
                 <large-separator direction="horizontal" class="max-width" />
                 <div
                     class="game-capture"
                     data-capture-index="2"
-                />
+                >
+                    <team-result-display
+                        :nameplate-index="2"
+                        x-position="center"
+                        y-position="bottom"
+                    />
+                </div>
                 <player-nameplate :index="2" class="max-width" fixed-height />
             </div>
             <div class="layout-gap-right layout-gap-left middle-panel">
@@ -30,7 +42,13 @@
                 <div
                     class="game-capture"
                     data-capture-index="1"
-                />
+                >
+                    <team-result-display
+                        :nameplate-index="1"
+                        x-position="center"
+                        y-position="bottom"
+                    />
+                </div>
                 <player-nameplate :index="1" class="max-width" fixed-height />
                 <large-separator direction="horizontal" class="max-width" />
                 <div
@@ -50,6 +68,7 @@ import SpeedrunDetails from '../SpeedrunDetails.vue';
 import SpeedrunTimer from '../SpeedrunTimer.vue';
 import OtherNameplateGrid from '../OtherNameplateGrid.vue';
 import MediaBox from 'components/MediaBox.vue';
+import TeamResultDisplay from '../TeamResultDisplay.vue';
 </script>
 
 <style scoped lang="scss">
@@ -58,6 +77,7 @@ import MediaBox from 'components/MediaBox.vue';
 .game-capture {
     aspect-ratio: 16 / 9;
     width: 100%;
+    position: relative;
 }
 
 .main-layout {

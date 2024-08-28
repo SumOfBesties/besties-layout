@@ -64,8 +64,8 @@ import { computed } from 'vue';
 import { useScheduleStore } from 'client-shared/stores/ScheduleStore';
 import SevenSegmentDigits from 'components/SevenSegmentDigits.vue';
 import { useTimerStore } from 'client-shared/stores/TimerStore';
-import { padNumber } from 'client-shared/helpers/StringHelper';
 import { Duration } from 'luxon';
+import { formatTimer } from 'client-shared/helpers/TimerHelper';
 
 const scheduleStore = useScheduleStore();
 const timerStore = useTimerStore();
@@ -78,24 +78,14 @@ const props = withDefaults(defineProps<{
 
 const speedrunCount = computed(() => scheduleStore.speedrunCount(scheduleStore.activeSpeedrun?.id));
 const formattedTimer = computed(() => {
-    let hours: string | number = timerStore.timer.time.hours;
-    if (hours > 0) {
-        // Hours above 10 become letters until we run out of letters.
-        // These letters aren't really readable, but we don't expect a run to go above 10 hours anyway,
-        // so it's a cute easter egg.
-        if (hours > 9 && hours < 36) {
-            hours = String.fromCharCode(55 + hours);
-        } else if (hours >= 36) {
-            hours = '?';
-        }
-
+    if (timerStore.timer.time.hours > 0) {
         return {
-            timer: `${hours}:${padNumber(timerStore.timer.time.minutes, 2)}:${padNumber(timerStore.timer.time.seconds, 2)} .${String(Math.round(timerStore.timer.time.milliseconds)).padStart(3, '0')[0]}`,
+            timer: formatTimer(timerStore.timer.time, false, true),
             alwaysLitSegment: '!:!!:!! .!'
         };
     } else {
         return {
-            timer: `${padNumber(timerStore.timer.time.minutes, 2)}:${padNumber(timerStore.timer.time.seconds, 2)} .${String(Math.round(timerStore.timer.time.milliseconds)).padStart(3, '0')[0]}`,
+            timer: formatTimer(timerStore.timer.time, true, true),
             alwaysLitSegment: '!!:!! .!'
         };
     }

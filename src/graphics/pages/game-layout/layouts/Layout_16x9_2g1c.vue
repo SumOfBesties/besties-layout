@@ -4,12 +4,24 @@
             <div
                 class="game-capture"
                 data-capture-index="0"
-            />
+            >
+                <team-result-display
+                    :nameplate-index="0"
+                    x-position="left"
+                    y-position="bottom"
+                />
+            </div>
             <large-separator direction="vertical" />
             <div
                 class="game-capture"
                 data-capture-index="1"
-            />
+            >
+                <team-result-display
+                    :nameplate-index="1"
+                    x-position="right"
+                    y-position="bottom"
+                />
+            </div>
         </div>
         <div class="other-content-row">
             <div class="column">
@@ -49,6 +61,7 @@ import SpeedrunDetails from '../SpeedrunDetails.vue';
 import SpeedrunTimer from '../SpeedrunTimer.vue';
 import OtherNameplateGrid from '../OtherNameplateGrid.vue';
 import MediaBox from 'components/MediaBox.vue';
+import TeamResultDisplay from '../TeamResultDisplay.vue';
 </script>
 
 <style scoped lang="scss">
@@ -57,6 +70,8 @@ import MediaBox from 'components/MediaBox.vue';
 .game-capture {
     aspect-ratio: 16 / 9;
     width: 100%;
+    position: relative;
+    overflow: hidden;
 }
 
 .other-content-row {

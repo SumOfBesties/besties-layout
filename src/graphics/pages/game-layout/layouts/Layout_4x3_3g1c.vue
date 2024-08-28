@@ -4,17 +4,35 @@
             <div
                 class="game-capture"
                 data-capture-index="0"
-            />
+            >
+                <team-result-display
+                    :nameplate-index="0"
+                    x-position="center"
+                    y-position="bottom"
+                />
+            </div>
             <div class="layout-gap" />
             <div
                 class="game-capture"
                 data-capture-index="1"
-            />
+            >
+                <team-result-display
+                    :nameplate-index="1"
+                    x-position="center"
+                    y-position="bottom"
+                />
+            </div>
             <div class="layout-gap" />
             <div
                 class="game-capture"
                 data-capture-index="2"
-            />
+            >
+                <team-result-display
+                    :nameplate-index="2"
+                    x-position="center"
+                    y-position="bottom"
+                />
+            </div>
             <player-nameplate :index="0" fixed-height />
             <div class="layout-gap" />
             <player-nameplate :index="1" class="layout-gap-right layout-gap-left" fixed-height />
@@ -54,6 +72,7 @@ import SpeedrunDetails from '../SpeedrunDetails.vue';
 import SpeedrunTimer from '../SpeedrunTimer.vue';
 import OtherNameplateGrid from '../OtherNameplateGrid.vue';
 import MediaBox from 'components/MediaBox.vue';
+import TeamResultDisplay from '../TeamResultDisplay.vue';
 </script>
 
 <style scoped lang="scss">
@@ -62,6 +81,7 @@ import MediaBox from 'components/MediaBox.vue';
 .game-capture {
     aspect-ratio: 4 / 3;
     width: 100%;
+    position: relative;
 }
 
 .game-captures-row {
