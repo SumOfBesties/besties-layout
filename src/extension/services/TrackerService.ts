@@ -6,7 +6,8 @@ import type {
     CurrentBids,
     CurrentPrizes,
     DonationTotal,
-    Milestones, TrackerState
+    Milestones,
+    TrackerState
 } from 'types/schemas';
 import { TrackerClient } from '../clients/TrackerClient';
 import { TrackerSocketClient } from '../clients/TrackerSocketClient';
