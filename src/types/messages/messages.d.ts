@@ -9,6 +9,8 @@ export interface MessageInputMap {
     'schedule:setInterstitialCompleted': { scheduleItemId: string, completed: boolean }
     'schedule:updateItem': ScheduleItem
 
+    'oengus:login': { username: string, password: string, twoFactorCode?: string }
+
     'speedrun:seekToNextRun': never
     'speedrun:seekToPreviousRun': never
     'speedrun:setActiveSpeedrun': { scheduleItemId: string }

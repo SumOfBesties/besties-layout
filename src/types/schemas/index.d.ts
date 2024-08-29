@@ -38,6 +38,8 @@ export * from './obsVideoInputAssignments';
 // @ts-ignore
 export * from './obsVideoInputPositions';
 // @ts-ignore
+export * from './oengusData';
+// @ts-ignore
 export * from './playerNameplateAssignments';
 // @ts-ignore
 export * from './schedule';

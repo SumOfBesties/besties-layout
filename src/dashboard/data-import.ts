@@ -6,6 +6,7 @@ import { setUpErrorHandler } from './helpers/ErrorHandlerStore';
 import { installCommonHelpers } from 'client-shared/helpers/InstallCommonHelpers';
 import { initInternalStatusStore } from 'client-shared/stores/InternalStatusStore';
 import { initScheduleStore } from 'client-shared/stores/ScheduleStore';
+import { initOengusDataStore } from 'client-shared/stores/OengusDataStore';
 
 (async () => {
     const app = createApp(DataImportPanel);
@@ -14,7 +15,8 @@ import { initScheduleStore } from 'client-shared/stores/ScheduleStore';
     installCommonHelpers(app, false);
     await Promise.all([
         initInternalStatusStore(),
-        initScheduleStore()
+        initScheduleStore(),
+        initOengusDataStore()
     ]);
     app.mount('#app');
 })();

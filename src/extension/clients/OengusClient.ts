@@ -1,11 +1,16 @@
-import { type AxiosInstance } from 'axios';
+import { type AxiosInstance, isAxiosError } from 'axios';
 import axios from 'axios';
-import { type Configschema, OtherScheduleItem, Schedule, Speedrun, Talent } from 'types/schemas';
+import { type Configschema, OengusData, OtherScheduleItem, Schedule, Speedrun, Talent } from 'types/schemas';
 import type NodeCG from '@nodecg/types';
 import { generateUserAgent } from '../helpers/GenerateUserAgent';
 
 type OengusRunType = 'SINGLE' | 'RACE' | 'COOP' | 'COOP_RACE' | 'OTHER' | 'RELAY' | 'RELAY_RACE';
 type OengusSocialPlatform = 'DISCORD' | 'EMAIL' | 'FACEBOOK' | 'INSTAGRAM' | 'NICO' | 'SNAPCHAT' | 'SPEEDRUNCOM' | 'TWITCH' | 'TWITTER' | 'MASTODON' | 'YOUTUBE';
+
+interface OengusLoginResponse {
+    status: 'MFA_REQUIRED' | 'MFA_INVALID' | 'LOGIN_SUCCESS' | 'ACCOUNT_DISABLED' | 'USERNAME_PASSWORD_INCORRECT' | 'OAUTH_ACCOUNT_NOT_FOUND'
+    token: string | null
+}
 
 interface OengusSocialAccount {
     id: number
@@ -108,6 +113,10 @@ interface OengusV2ScheduleLine {
     categoryId: number
 }
 
+interface OengusV2CachelessScheduleResponse {
+    data: OengusV2ScheduleLine[]
+}
+
 interface OengusV2ScheduleResponse {
     name: string
     slug: string
@@ -120,6 +129,7 @@ interface OengusV2ScheduleResponse {
 export class OengusClient {
     private readonly axios: AxiosInstance;
     private readonly logger: NodeCG.Logger;
+    private readonly oengusData: NodeCG.ServerReplicantWithSchemaDefault<OengusData>;
 
     constructor(nodecg: NodeCG.ServerAPI<Configschema>) {
         this.logger = new nodecg.Logger(`${nodecg.bundleName}:OengusClient`);
@@ -130,6 +140,13 @@ export class OengusClient {
                 Accept: 'application/json',
                 'oengus-version': '2'
             }
+        });
+        this.oengusData = nodecg.Replicant('oengusData') as unknown as NodeCG.ServerReplicantWithSchemaDefault<OengusData>;
+        this.axios.interceptors.request.use((config) => {
+            if (config.url !== '/v2/auth/login' && this.oengusData.value.token != null) {
+                config.headers.Authorization = `Bearer ${this.oengusData.value.token}`;
+            }
+            return config;
         });
     }
 
@@ -301,10 +318,30 @@ export class OengusClient {
         };
     }
 
-    private async getScheduleV2(marathonId: string, scheduleSlug: string): Promise<{ schedule: Schedule, talent: Talent }> {
-        const scheduleResponse = await this.axios.get<OengusV2ScheduleResponse>(`/v2/marathons/${marathonId}/schedules/for-slug/${scheduleSlug}?withCustomData=true`);
+    private async getScheduleLinesV2(marathonId: string, scheduleSlug: string, scheduleId: number): Promise<OengusV2ScheduleLine[]> {
+        if (this.oengusData.value.token != null) {
+            try {
+                const privateScheduleResponse = await this.axios.get<OengusV2CachelessScheduleResponse>(`/v2/marathons/${marathonId}/schedules/${scheduleId}/lines`);
+                this.logger.debug('Got Oengus schedule without cache');
+                return privateScheduleResponse.data.data;
+            } catch (e) {
+                if (isAxiosError(e) && e.response?.status === 401) {
+                    this.logger.warn('Tried to fetch Oengus schedule without cache, but got a 401 error.');
+                } else {
+                    throw e;
+                }
+            }
+        }
 
-        const scheduleItems: Schedule['items'] = scheduleResponse.data.lines.map(line => {
+        const scheduleResponse = await this.axios.get<OengusV2ScheduleResponse>(`/v2/marathons/${marathonId}/schedules/for-slug/${scheduleSlug}?withCustomData=true`);
+        this.logger.debug('Got Oengus schedule with cache');
+        return scheduleResponse.data.lines;
+    }
+
+    private async getScheduleV2(marathonId: string, scheduleSlug: string, scheduleId: number): Promise<{ schedule: Schedule, talent: Talent }> {
+        const scheduleResponse = await this.getScheduleLinesV2(marathonId, scheduleSlug, scheduleId);
+
+        const scheduleItems: Schedule['items'] = scheduleResponse.map(line => {
             if (line.setupBlock) {
                 return {
                     id: '',
@@ -351,7 +388,7 @@ export class OengusClient {
 
         const existingRunnerIdSet = new Set();
         const talent: Talent = [];
-        scheduleResponse.data.lines.forEach(line => {
+        scheduleResponse.forEach(line => {
             line.runners.forEach((runner, i) => {
                 const externalId = this.getRunnerExternalIdV2(line.id, line.runners, runner, i);
                 if (existingRunnerIdSet.has(externalId)) {
@@ -402,6 +439,45 @@ export class OengusClient {
         if (scheduleListResponse.data.data.length > 1) {
             this.logger.warn(`Oengus marathon has more than one schedule, which is not fully supported. Using schedule "${firstSchedule.name ?? firstSchedule.slug}".`);
         }
-        return this.getScheduleV2(marathonSlug, firstSchedule.slug);
+        return this.getScheduleV2(marathonSlug, firstSchedule.slug, firstSchedule.id);
+    }
+
+    async login(username: string, password: string, twoFactorCode?: string): Promise<string | null> {
+        try {
+            const response = await this.axios.post<OengusLoginResponse>('/v2/auth/login', {
+                username,
+                password,
+                twoFactorCode
+            });
+            if (response.data.token == null) {
+                throw new Error(`Oengus login failed with state ${response.data.status}`);
+            }
+            return response.data.token;
+        } catch (e) {
+            if (isAxiosError(e) && e.response?.data != null && 'status' in e.response.data) {
+                throw new Error(`Oengus login failed with status ${e.response.data.status}`);
+            }
+
+            throw e;
+        }
+    }
+
+    async refreshToken(): Promise<string | null> {
+        if (this.oengusData.value.token == null) {
+            throw new Error('No access token present to refresh');
+        }
+        try {
+            const response = await this.axios.post<OengusLoginResponse>('/v2/auth/refresh-token');
+            if (response.data.token == null) {
+                throw new Error(`Oengus token refresh failed with status ${response.data.status}`);
+            }
+            return response.data.token;
+        } catch (e) {
+            if (isAxiosError(e) && e.response?.data != null && 'status' in e.response.data) {
+                throw new Error(`Oengus token refresh failed with status ${e.response.data.status}`);
+            }
+
+            throw e;
+        }
     }
 }

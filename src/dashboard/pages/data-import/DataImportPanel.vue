@@ -43,6 +43,7 @@
             />
         </template>
     </ipl-space>
+    <oengus-login-space class="m-t-8" />
 </template>
 
 <script setup lang="ts">
@@ -52,6 +53,7 @@ import { useInternalStatusStore } from 'client-shared/stores/InternalStatusStore
 import { sendMessage } from 'client-shared/helpers/NodecgHelper';
 import ErrorDisplay from '../../components/ErrorDisplay.vue';
 import { useScheduleStore } from 'client-shared/stores/ScheduleStore';
+import OengusLoginSpace from './OengusLoginSpace.vue';
 
 const scheduleStore = useScheduleStore();
 const internalStatusStore = useInternalStatusStore();

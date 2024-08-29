@@ -106,6 +106,12 @@ The following suffixes may be added to the end of OBS scene names to modify the 
 
 These suffixes may be combined. For example, a scene named `Test Scene [MG]` will play music and unmute the game audio while it is in the program feed.
 
+### Oengus login
+
+Logging in to Oengus is possible using the Data Import dashboard panel. All Oengus functionality is present without doing 
+so, but schedules will be imported without any cache on Oengus' side if the logged-in user is a moderator of the marathon 
+being imported. This means that updates to the schedule will appear without any delay.
+
 ## npm commands
 
 - `build`: Create a production-ready build.
