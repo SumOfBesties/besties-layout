@@ -89,18 +89,15 @@ const justifyContent = computed(() => {
     }
 });
 
-const useFittedContent = computed(() => props.textContent != null && props.textContent.length - characterCount.value < 4);
+const useFittedContent = computed(() => props.textContent != null && props.textContent.length - characterCount.value < 0);
 let textScrollTimeout: number | undefined = undefined;
 let currentTextPosition = 0;
-let scrollDirection: 'left' | 'right' = 'left';
 const visibleText = ref('');
-const scrollSpeed = 200;
-const midTextPauseDuration = 5000;
+const scrollSpeed = 300;
 const textEndPauseDuration = 7500;
 watch(() => [props.textContent, characterCount.value] as [string | undefined | null, number], ([newText, newCharacterCount]) => {
     currentTextPosition = 0;
     window.clearTimeout(textScrollTimeout);
-    scrollDirection = 'left';
 
     if (newText == null || useFittedContent.value) {
         visibleText.value = '';
@@ -110,42 +107,28 @@ watch(() => [props.textContent, characterCount.value] as [string | undefined | n
     visibleText.value = newText.slice(0, newCharacterCount);
 
     if (newText.length > newCharacterCount) {
+        const formattedText = newText.trim() + ' --- ';
         const scrollText = () => {
-            if (scrollDirection === 'left') {
-                if (newText.length - currentTextPosition > newCharacterCount) {
-                    currentTextPosition++;
-                    visibleText.value = newText.slice(currentTextPosition, newCharacterCount + currentTextPosition);
-                } else {
+            if (formattedText.length - currentTextPosition > newCharacterCount) {
+                currentTextPosition++;
+                visibleText.value = formattedText.slice(currentTextPosition, newCharacterCount + currentTextPosition);
+                // if (currentTextPosition % newCharacterCount === 0) {
+                //     textScrollTimeout = window.setTimeout(scrollText, midTextPauseDuration);
+                //     return;
+                // }
+            } else {
+                currentTextPosition++;
+                const firstHalf = formattedText.slice(currentTextPosition, newCharacterCount + currentTextPosition);
+                visibleText.value = firstHalf + formattedText.slice(0, newCharacterCount - firstHalf.length);
+                if (firstHalf.length === 0) {
                     currentTextPosition = 0;
-                    visibleText.value = newText.slice(0, newCharacterCount);
-                }
-
-                if (newText.length - currentTextPosition <= newCharacterCount) {
-                    scrollDirection = 'right';
                     textScrollTimeout = window.setTimeout(scrollText, textEndPauseDuration);
                     emit('scrollEndReached');
                     return;
                 }
-                if (currentTextPosition % newCharacterCount === 0) {
-                    textScrollTimeout = window.setTimeout(scrollText, midTextPauseDuration);
-                    return;
-                }
-
-                textScrollTimeout = window.setTimeout(scrollText, scrollSpeed * 0.75);
-            } else {
-                if (newText.length + currentTextPosition >= newCharacterCount) {
-                    currentTextPosition--;
-                    visibleText.value = newText.slice(currentTextPosition, newCharacterCount + currentTextPosition);
-                }
-
-                if (currentTextPosition === 0) {
-                    scrollDirection = 'left';
-                    textScrollTimeout = window.setTimeout(scrollText, textEndPauseDuration);
-                    return;
-                }
-
-                textScrollTimeout = window.setTimeout(scrollText, scrollSpeed / 2);
             }
+
+            textScrollTimeout = window.setTimeout(scrollText, scrollSpeed * 0.75);
         };
 
         textScrollTimeout = window.setTimeout(scrollText, textEndPauseDuration);

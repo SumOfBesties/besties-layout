@@ -75,7 +75,7 @@
 <script setup lang="ts">
 import { useScheduleStore } from 'client-shared/stores/ScheduleStore';
 import { useCurrentTrackerDataStore } from 'client-shared/stores/CurrentTrackerDataStore';
-import { computed, ComputedRef, MaybeRefOrGetter, ref, Ref, toValue, UnwrapRef, watch } from 'vue';
+import { computed, ComputedRef, MaybeRefOrGetter, ref, Ref, toValue, UnwrapRef } from 'vue';
 import { getNextIndex } from '../../helpers/ArrayHelper';
 import { useSlides } from '../../helpers/useSlides';
 import { Configschema } from 'types/schemas';
@@ -201,7 +201,7 @@ function onSlideSwitchReady() {
         manualSlideAdvanceTimeout = window.setTimeout(() => {
             manualSlideAdvanceTimeout = undefined;
             slides.advanceSlide();
-        }, 29 * 1000);
+        }, 10 * 1000);
     }
 }
 
