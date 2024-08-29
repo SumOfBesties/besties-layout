@@ -111,21 +111,23 @@ async function connect() {
 </script>
 
 <style lang="scss" scoped>
+@use '../../styles/dashboard-colors';
+
 .status-display {
     border-radius: 5px !important;
     font-weight: 600;
 }
 
 .obs-status_CONNECTING {
-    background-color: #ffc700 !important;
+    background-color: dashboard-colors.$state-yellow !important;
     color: #222;
 }
 
 .obs-status_NOT_CONNECTED {
-    background-color: #e74e36 !important;
+    background-color: dashboard-colors.$state-red !important;
 }
 
 .obs-status_CONNECTED {
-    background-color: #00A651 !important;
+    background-color: dashboard-colors.$state-green !important;
 }
 </style>

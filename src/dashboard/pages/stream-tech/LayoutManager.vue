@@ -172,6 +172,8 @@ const allowCropping = computed(() => {
 </script>
 
 <style scoped lang="scss">
+@use '../../styles/dashboard-colors';
+
 .layout-manager {
     overflow-y: hidden;
     display: grid;
@@ -224,7 +226,7 @@ const allowCropping = computed(() => {
         }
 
         &.unassigned {
-            color: #e74e36;
+            color: dashboard-colors.$state-red;
         }
 
         .capture-index {

@@ -78,6 +78,8 @@ const timerColor = computed(() => {
 </script>
 
 <style scoped lang="scss">
+@use '../../styles/dashboard-colors';
+
 .host-active-run-display {
     padding: 8px 0 0 !important;
 }
@@ -109,11 +111,11 @@ const timerColor = computed(() => {
     justify-self: end;
 
     &.finished {
-        color: #06D669;
+        color: dashboard-colors.$state-green;
     }
 
     &.forfeited {
-        color: #e74e36;
+        color: dashboard-colors.$state-red;
     }
 }
 </style>

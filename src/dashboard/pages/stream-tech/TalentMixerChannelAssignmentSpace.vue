@@ -93,10 +93,12 @@ function updateSpeakingThreshold(threshold: string) {
 </script>
 
 <style scoped lang="scss">
+@use '../../styles/dashboard-colors';
+
 .channel-volume-display {
     width: 100%;
     height: 8px;
-    background-color: #00A651;
+    background-color: dashboard-colors.$state-green;
     margin-top: 4px;
     transform-origin: left 0;
     transition: transform 100ms;
@@ -115,7 +117,7 @@ function updateSpeakingThreshold(threshold: string) {
     transition-duration: 150ms;
 
     &.speaking {
-        background-color: #00A651;
+        background-color: dashboard-colors.$state-green;
         color: white;
     }
 }

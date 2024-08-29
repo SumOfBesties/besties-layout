@@ -215,6 +215,8 @@ const mixerStatus = computed(() => {
 </script>
 
 <style scoped lang="scss">
+@use '../../styles/dashboard-colors';
+
 .system-status-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -226,14 +228,14 @@ const mixerStatus = computed(() => {
 }
 
 .state-color-green {
-    color: #00A651;
+    color: dashboard-colors.$state-green;
 }
 .state-color-yellow {
-    color: #ffc700;
+    color: dashboard-colors.$state-yellow;
     font-weight: 700;
 }
 .state-color-red {
-    color: #e74e36;
+    color: dashboard-colors.$state-red;
     font-weight: 700;
 }
 </style>

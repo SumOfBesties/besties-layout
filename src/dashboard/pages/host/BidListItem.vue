@@ -49,6 +49,7 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 import { faCircleInfo } from '@fortawesome/free-solid-svg-icons/faCircleInfo';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { formatCurrencyAmount } from 'client-shared/helpers/StringHelper';
+import { colors } from '../../styles/colors';
 
 library.add(faCircleInfo);
 
@@ -79,7 +80,7 @@ function updateEndTimeInfo() {
     const diffNow = parsedSpeedrunEndTime.value.diffNow(['hours']);
     const relativeDate = parsedSpeedrunEndTime.value.toRelative({ locale: 'en-US' });
     endTimeText.value = diffNow.hours > 0 ? `Ends ${relativeDate}` : `Ended ${relativeDate}`;
-    endTimeColor.value = diffNow.hours > 1 || diffNow.hours < 0 ? null : '#e74e36';
+    endTimeColor.value = diffNow.hours > 1 || diffNow.hours < 0 ? null : colors.stateRed;
 }
 
 let endTimeUpdateInterval: number | undefined = undefined;

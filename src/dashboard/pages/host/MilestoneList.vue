@@ -54,16 +54,18 @@ const visibleMilestones = computed(() => {
 </script>
 
 <style scoped lang="scss">
+@use '../../styles/dashboard-colors';
+
 .milestone-name {
     font-size: 1.25em;
     font-weight: 700;
 }
 
 .is-completed {
-    color: #00A651;
+    color: dashboard-colors.$state-green;
 }
 
 .is-future {
-    color: #ffc700;
+    color: dashboard-colors.$state-yellow;
 }
 </style>
