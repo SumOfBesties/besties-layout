@@ -50,9 +50,13 @@
                     />
                     <ipl-data-row
                         label="Twitch category"
-                        :value="scheduleStore.activeSpeedrun?.twitchCategory?.name ?? 'N/A'"
                         style="grid-column: span 2"
-                    />
+                    >
+                        <span :class="{ 'missing-value': scheduleStore.activeSpeedrun?.twitchCategory?.name == null }">
+                            {{ scheduleStore.activeSpeedrun?.twitchCategory?.name ?? 'N/A' }}
+                            <font-awesome-icon class="warning-icon" icon="triangle-exclamation" fixed-width />
+                        </span>
+                    </ipl-data-row>
                 </div>
                 <div class="m-t-8 text-center">
                     <ipl-button
@@ -102,8 +106,9 @@ import { useTimerStore } from 'client-shared/stores/TimerStore';
 import { faHeadset } from '@fortawesome/free-solid-svg-icons/faHeadset';
 import TalentMixerChannelAssignmentDialog from './TalentMixerChannelAssignmentDialog.vue';
 import { useMixerStore } from 'client-shared/stores/MixerStore';
+import { faTriangleExclamation } from '@fortawesome/free-solid-svg-icons/faTriangleExclamation';
 
-library.add(faChevronRight, faChevronLeft, faSearch, faPenToSquare, faHeadset);
+library.add(faChevronRight, faChevronLeft, faSearch, faPenToSquare, faHeadset, faTriangleExclamation);
 
 const talentMixerChannelAssignmentDialog = ref<InstanceType<typeof TalentMixerChannelAssignmentDialog>>();
 const scheduleItemSearchDialog = ref<InstanceType<typeof ScheduleItemSearchDialog>>();
@@ -157,6 +162,8 @@ async function seekToPreviousRun() {
 </script>
 
 <style scoped lang="scss">
+@use '../../styles/dashboard-colors';
+
 .run-selector-space {
     display: grid;
     grid-template-columns: 1fr 2fr 1fr;
@@ -172,5 +179,17 @@ async function seekToPreviousRun() {
     display: grid;
     column-gap: 8px;
     grid-template-columns: repeat(2, 1fr);
+}
+
+.warning-icon {
+    display: none;
+}
+
+.missing-value {
+    color: dashboard-colors.$state-yellow;
+
+    .warning-icon {
+        display: unset;
+    }
 }
 </style>
