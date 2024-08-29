@@ -7,7 +7,7 @@ import { generateUserAgent } from '../helpers/GenerateUserAgent';
 type OengusRunType = 'SINGLE' | 'RACE' | 'COOP' | 'COOP_RACE' | 'OTHER' | 'RELAY' | 'RELAY_RACE';
 type OengusSocialPlatform = 'DISCORD' | 'EMAIL' | 'FACEBOOK' | 'INSTAGRAM' | 'NICO' | 'SNAPCHAT' | 'SPEEDRUNCOM' | 'TWITCH' | 'TWITTER' | 'MASTODON' | 'YOUTUBE';
 
-interface OengusV1SocialAccount {
+interface OengusSocialAccount {
     id: number
     username: string
     platform: OengusSocialPlatform
@@ -19,7 +19,7 @@ interface OengusV1UserProfile {
     username: string
     displayName: string
     enabled: boolean
-    connections: OengusV1SocialAccount[]
+    connections: OengusSocialAccount[]
     history: unknown[]
     moderatedMarathons: unknown[]
     volunteeringHistory: unknown[]
@@ -61,12 +61,68 @@ interface OengusV1ScheduleResponse {
     lines: OengusV1ScheduleLine[]
 }
 
+interface OengusV2ScheduleListResponse {
+    data: {
+        id: number
+        marathonId: string
+        name: string | null
+        slug: string | null
+        published: boolean
+    }[]
+}
+
+interface OengusV2BasicUserInfo {
+    id: number
+    username: string
+    displayName: string
+    enabled: boolean
+    pronouns: string[]
+    languagesSpoken: string[]
+    banned: boolean
+    country: string
+    connections: OengusSocialAccount[]
+}
+
+interface OengusV2LineRunner {
+    runnerName?: string
+    profile?: OengusV2BasicUserInfo
+}
+
+interface OengusV2ScheduleLine {
+    id: number
+    game: string
+    console: string
+    emulated: boolean
+    ratio: string
+    type: OengusRunType
+    runners: OengusV2LineRunner[]
+    category: string
+    estimate: string
+    setupTime: string
+    position: number
+    customRun: boolean
+    setupBlock: boolean
+    setupBlockText: string
+    customData: string
+    date: string
+    categoryId: number
+}
+
+interface OengusV2ScheduleResponse {
+    name: string
+    slug: string
+    id: number
+    marathonId: string
+    published: boolean
+    lines: OengusV2ScheduleLine[]
+}
+
 export class OengusClient {
     private readonly axios: AxiosInstance;
     private readonly logger: NodeCG.Logger;
 
     constructor(nodecg: NodeCG.ServerAPI<Configschema>) {
-        this.logger = new nodecg.Logger('OengusClient');
+        this.logger = new nodecg.Logger(`${nodecg.bundleName}:OengusClient`);
         this.axios = axios.create({
             baseURL: (nodecg.bundleConfig.oengus?.useSandbox ?? false) ? 'https://sandbox.oengus.io/api' : 'https://oengus.io/api',
             headers: {
@@ -77,8 +133,20 @@ export class OengusClient {
         });
     }
 
-    private generateRunnerIdV1(scheduleLineId: number, runner: OengusV1UserProfile): string {
-        return `runner-${scheduleLineId}-${runner.displayName}`;
+    private getRunnerExternalIdV1(scheduleLineId: number, runnerName: string | undefined, runnerIndex: number): string {
+        return `runner-${scheduleLineId}-${runnerName || runnerIndex}`;
+    }
+
+    private getRunnerExternalIdV2(scheduleLineId: number, runners: OengusV2LineRunner[], lineRunner: OengusV2LineRunner, runnerIndex: number): string {
+        if (lineRunner.profile == null) {
+            if (runners.filter(runner => runner.runnerName != null && runner.runnerName === lineRunner.runnerName).length > 1) {
+                return `runner-${scheduleLineId}-${lineRunner.runnerName}-${runnerIndex}`;
+            } else {
+                return `runner-${scheduleLineId}-${lineRunner.runnerName}`;
+            }
+        } else {
+            return String(lineRunner.profile.id);
+        }
     }
 
     // Place every player on the same team for co-op and relay runs
@@ -88,30 +156,52 @@ export class OengusClient {
             return [
                 {
                     id: '',
-                    playerIds: scheduleLine.runners.map(runner => ({
-                        externalId: runner.id === -1 ? this.generateRunnerIdV1(scheduleLine.id, runner) : String(runner.id),
+                    playerIds: scheduleLine.runners.map((runner, i) => ({
+                        externalId: runner.id === -1 ? this.getRunnerExternalIdV1(scheduleLine.id, runner.displayName, i) : String(runner.id),
                         id: ''
                     }))
                 }
             ];
         } else {
-            return scheduleLine.runners.map(runner => ({
+            return scheduleLine.runners.map((runner, i) => ({
                 id: '',
                 playerIds: [{
-                    externalId: runner.id === -1 ? this.generateRunnerIdV1(scheduleLine.id, runner) : String(runner.id),
+                    externalId: runner.id === -1 ? this.getRunnerExternalIdV1(scheduleLine.id, runner.displayName, i) : String(runner.id),
                     id: ''
                 }]
             }))
         }
     }
 
-    private findSocialUsernameV1(runner: OengusV1UserProfile, platform: OengusSocialPlatform): string | null {
-        return runner.connections.find(connection => connection.platform === platform)?.username ?? null;
+    private getTeamListV2(scheduleLine: OengusV2ScheduleLine): Speedrun['teams'] {
+        if (scheduleLine.type === 'RELAY' || scheduleLine.type === 'COOP') {
+            return [
+                {
+                    id: '',
+                    playerIds: scheduleLine.runners.map((runner, i) => ({
+                        externalId: this.getRunnerExternalIdV2(scheduleLine.id, scheduleLine.runners, runner, i),
+                        id: ''
+                    }))
+                }
+            ];
+        } else {
+            return scheduleLine.runners.map((runner, i) => ({
+                id: '',
+                playerIds: [{
+                    externalId: this.getRunnerExternalIdV2(scheduleLine.id, scheduleLine.runners, runner, i),
+                    id: ''
+                }]
+            }))
+        }
+    }
+
+    private findSocialUsername(connections: OengusSocialAccount[] | undefined, platform: OengusSocialPlatform): string | null {
+        return connections == null ? null : connections.find(connection => connection.platform === platform)?.username ?? null;
     }
 
     // ['he/him', 'they/them'] -> 'he/they', etc.
-    private mergePronouns(pronouns: string[]): string | null {
-        if (pronouns.length === 0) return null;
+    private mergePronouns(pronouns?: string[]): string | null {
+        if (pronouns == null || pronouns.length === 0) return null;
         if (pronouns.length === 1) return pronouns[0];
 
         const firstPronouns = [];
@@ -126,8 +216,8 @@ export class OengusClient {
         return firstPronouns.join('/');
     }
 
-    async getScheduleAndTalent(marathonSlug: string): Promise<{ schedule: Schedule, talent: Talent }> {
-        const scheduleResponse = await this.axios.get<OengusV1ScheduleResponse>(`/v1/marathons/${marathonSlug}/schedule?withCustomData=true`);
+    private async getScheduleV1(marathonId: string): Promise<{ schedule: Schedule, talent: Talent }> {
+        const scheduleResponse = await this.axios.get<OengusV1ScheduleResponse>(`/v1/marathons/${marathonId}/schedule?withCustomData=true`);
 
         const scheduleItems: Schedule['items'] = scheduleResponse.data.lines.map(line => {
             if (line.setupBlock) {
@@ -146,13 +236,13 @@ export class OengusClient {
                     id: '',
                     externalId: String(line.id),
                     type: 'OTHER',
-                    title: line.gameName || `#${line.position} - Untitled Schedule Item`,
+                    title: line.gameName || `Item #${line.position} (Untitled)`,
                     estimate: line.estimate,
                     setupTime: line.setupTime,
                     scheduledStartTime: line.date,
-                    talentIds: line.runners.map(runner => ({
+                    talentIds: line.runners.map((runner, i) => ({
                         id: '',
-                        externalId: runner.id === -1 ? this.generateRunnerIdV1(line.id, runner) : String(runner.id)
+                        externalId: runner.id === -1 ? this.getRunnerExternalIdV1(line.id, runner.displayName, i) : String(runner.id)
                     }))
                 } satisfies OtherScheduleItem;
             } else {
@@ -160,7 +250,7 @@ export class OengusClient {
                     id: '',
                     externalId: String(line.id),
                     type: 'SPEEDRUN',
-                    title: line.gameName || `#${line.position} - Untitled Run`,
+                    title: line.gameName || `Run #${line.position} (Untitled)`,
                     estimate: line.estimate,
                     setupTime: line.setupTime,
                     scheduledStartTime: line.date,
@@ -177,22 +267,22 @@ export class OengusClient {
         const existingRunnerIdSet = new Set();
         const talent: Talent = [];
         scheduleResponse.data.lines.forEach(line => {
-            line.runners.forEach(runner => {
+            line.runners.forEach((runner, i) => {
                 if (existingRunnerIdSet.has(String(runner.id))) {
                     return;
                 }
 
                 const talentItem: Talent[number] = {
                     id: '',
-                    externalId: runner.id === -1 ? this.generateRunnerIdV1(line.id, runner) : String(runner.id),
+                    externalId: runner.id === -1 ? this.getRunnerExternalIdV1(line.id, runner.displayName, i) : String(runner.id),
                     name: runner.displayName,
                     pronouns: this.mergePronouns(runner.pronouns),
                     countryCode: runner.country,
                     socials: {
-                        twitch: this.findSocialUsernameV1(runner, 'TWITCH'),
-                        youtube: this.findSocialUsernameV1(runner, 'YOUTUBE'),
-                        twitter: this.findSocialUsernameV1(runner, 'TWITTER'),
-                        speedruncom: this.findSocialUsernameV1(runner, 'SPEEDRUNCOM')
+                        twitch: this.findSocialUsername(runner.connections, 'TWITCH'),
+                        youtube: this.findSocialUsername(runner.connections, 'YOUTUBE'),
+                        twitter: this.findSocialUsername(runner.connections, 'TWITTER'),
+                        speedruncom: this.findSocialUsername(runner.connections, 'SPEEDRUNCOM')
                     }
                 };
 
@@ -203,11 +293,115 @@ export class OengusClient {
 
         return {
             schedule: {
-                id: marathonSlug,
+                id: marathonId,
                 source: 'OENGUS',
                 items: scheduleItems
             },
             talent
         };
+    }
+
+    private async getScheduleV2(marathonId: string, scheduleSlug: string): Promise<{ schedule: Schedule, talent: Talent }> {
+        const scheduleResponse = await this.axios.get<OengusV2ScheduleResponse>(`/v2/marathons/${marathonId}/schedules/for-slug/${scheduleSlug}?withCustomData=true`);
+
+        const scheduleItems: Schedule['items'] = scheduleResponse.data.lines.map(line => {
+            if (line.setupBlock) {
+                return {
+                    id: '',
+                    externalId: String(line.id),
+                    title: line.setupBlockText || 'Setup Block',
+                    type: 'SETUP',
+                    estimate: line.estimate,
+                    setupTime: line.setupTime,
+                    scheduledStartTime: line.date,
+                    talentIds: []
+                } satisfies OtherScheduleItem;
+            } else if (line.type === 'OTHER') {
+                return {
+                    id: '',
+                    externalId: String(line.id),
+                    type: 'OTHER',
+                    title: line.game || `Item #${line.position} (Untitled)`,
+                    estimate: line.estimate,
+                    setupTime: line.setupTime,
+                    scheduledStartTime: line.date,
+                    talentIds: line.runners.map((runner, i) => ({
+                        id: '',
+                        externalId: this.getRunnerExternalIdV2(line.id, line.runners, runner, i)
+                    }))
+                } satisfies OtherScheduleItem;
+            } else {
+                return {
+                    id: '',
+                    externalId: String(line.id),
+                    type: 'SPEEDRUN',
+                    title: line.game || `Run #${line.position} (Untitled)`,
+                    estimate: line.estimate,
+                    setupTime: line.setupTime,
+                    scheduledStartTime: line.date,
+                    system: line.console,
+                    category: line.category,
+                    relay: line.type.includes('RELAY'),
+                    teams: this.getTeamListV2(line),
+                    commentatorIds: [],
+                    emulated: line.emulated
+                } satisfies Speedrun;
+            }
+        });
+
+        const existingRunnerIdSet = new Set();
+        const talent: Talent = [];
+        scheduleResponse.data.lines.forEach(line => {
+            line.runners.forEach((runner, i) => {
+                const externalId = this.getRunnerExternalIdV2(line.id, line.runners, runner, i);
+                if (existingRunnerIdSet.has(externalId)) {
+                    return;
+                }
+
+                const talentItem: Talent[number] = {
+                    id: '',
+                    externalId,
+                    name: runner.profile?.displayName ?? runner.runnerName ?? 'Unnamed Runner',
+                    pronouns: this.mergePronouns(runner.profile?.pronouns),
+                    countryCode: runner.profile?.country,
+                    socials: {
+                        twitch: this.findSocialUsername(runner.profile?.connections, 'TWITCH'),
+                        youtube: this.findSocialUsername(runner.profile?.connections, 'YOUTUBE'),
+                        twitter: this.findSocialUsername(runner.profile?.connections, 'TWITTER'),
+                        speedruncom: this.findSocialUsername(runner.profile?.connections, 'SPEEDRUNCOM')
+                    }
+                };
+
+                existingRunnerIdSet.add(talentItem.externalId);
+                talent.push(talentItem);
+            });
+        });
+
+        return {
+            schedule: {
+                id: marathonId,
+                source: 'OENGUS',
+                items: scheduleItems
+            },
+            talent
+        };
+    }
+
+    async getScheduleAndTalent(marathonSlug: string): Promise<{ schedule: Schedule, talent: Talent }> {
+        const scheduleListResponse = await this.axios.get<OengusV2ScheduleListResponse>(`/v2/marathons/${marathonSlug}/schedules`);
+
+        if (scheduleListResponse.data.data.length === 0) {
+            throw new Error('Oengus marathon has no schedules?');
+        }
+
+        const firstSchedule = scheduleListResponse.data.data[0];
+        if (firstSchedule.slug == null) {
+            this.logger.debug('Found Oengus event with legacy schedules');
+            return this.getScheduleV1(marathonSlug);
+        }
+        if (scheduleListResponse.data.data.length > 1) {
+            this.logger.warn(`Oengus marathon has more than one schedule, which is not fully supported. Using schedule "${firstSchedule.name ?? firstSchedule.slug}".`);
+        }
+        return this.getScheduleV2(marathonSlug, firstSchedule.slug);
     }
 }
