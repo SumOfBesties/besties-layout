@@ -72,11 +72,16 @@ export class TalentService {
             if (!talentItem.id) {
                 throw new Error('All provided talent items must have IDs');
             }
+
+            const normalizedTalentItem = cloneDeep(talentItem);
+            normalizedTalentItem.socials = this.convertBlankKeysToNulls(talentItem.socials);
+            normalizedTalentItem.pronouns = isBlank(normalizedTalentItem.pronouns) ? null : normalizedTalentItem.pronouns;
+
             const existingTalentIndex = this.talent.value.findIndex(existingTalent => existingTalent.id === talentItem.id);
             if (existingTalentIndex === -1) {
-                newTalent.push(talentItem);
+                newTalent.push(normalizedTalentItem);
             } else {
-                newTalent[existingTalentIndex] = talentItem;
+                newTalent[existingTalentIndex] = normalizedTalentItem;
             }
         });
         this.talent.value = newTalent;
@@ -114,6 +119,12 @@ export class TalentService {
 
     findTalentItemById(id: string): TalentItem | null {
         return this.talent.value.find(talentItem => talentItem.id === id) ?? null;
+    }
+
+    private convertBlankKeysToNulls<T extends object>(input: T): {[Key in keyof T]: string | null} {
+        return Object.fromEntries(
+            Object.keys(input).map(key =>
+                [key, isBlank(input[key as keyof T]) ? null : input[key as keyof T]])) as {[Key in keyof T]: string | null};
     }
 
     private findTalentIdForScheduleTalentItem(ids: { id: string, externalId?: string | null }, talent: Talent): { id: string, externalId?: string | null } {
