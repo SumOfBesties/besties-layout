@@ -93,8 +93,8 @@ const useFittedContent = computed(() => props.textContent != null && props.textC
 let textScrollTimeout: number | undefined = undefined;
 let currentTextPosition = 0;
 const visibleText = ref('');
-const scrollSpeed = 300;
-const textEndPauseDuration = 7500;
+const scrollSpeed = 150;
+const textEndPauseDuration = 10000;
 watch(() => [props.textContent, characterCount.value] as [string | undefined | null, number], ([newText, newCharacterCount]) => {
     currentTextPosition = 0;
     window.clearTimeout(textScrollTimeout);
