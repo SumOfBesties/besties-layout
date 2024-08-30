@@ -16,33 +16,43 @@
                     :key="talent.id"
                 >
                     <div class="talent-details-anchor">
-                        <div class="talent-details">
-                            <badge
-                                v-if="disableVolumeMeters || useCompactVolumeMeters"
-                                class="talent-index"
+                        <opacity-swap-transition mode="default">
+                            <div
+                                class="talent-details"
+                                :key="getVisibleName(i).type"
                             >
-                                {{ baseIndex + i + 1 + Number(talentListSlides.activeComponent.value) * props.maxConcurrentPlayers }}
-                            </badge>
-                            <compact-player-speaking-indicator
-                                v-if="useCompactVolumeMeters"
-                                :player-id="talent.id"
-                                class="compact-speaking-indicator"
-                            />
-                            <fitted-content align="center">
-                                {{ talent.name }}
-                            </fitted-content>
-                            <badge
-                                v-if="talent.pronouns"
-                                class="talent-pronouns"
-                            >
-                                {{ talent.pronouns }}
-                            </badge>
-                            <country-flag
-                                v-if="talent.countryCode != null"
-                                :country-code="talent.countryCode"
-                                class="talent-country"
-                            />
-                        </div>
+                                <badge
+                                    v-if="disableVolumeMeters || useCompactVolumeMeters"
+                                    class="talent-index"
+                                >
+                                    {{ baseIndex + i + 1 + Number(talentListSlides.activeComponent.value) * props.maxConcurrentPlayers }}
+                                </badge>
+                                <compact-player-speaking-indicator
+                                    v-if="useCompactVolumeMeters"
+                                    :player-id="talent.id"
+                                    class="compact-speaking-indicator"
+                                />
+                                <fitted-content align="center">
+                                    <font-awesome-icon
+                                        v-if="getVisibleName(i).type !== 'name'"
+                                        :icon="getVisibleName(i).type === 'twitch' ? ['fab', 'twitch'] : ['fab', 'youtube']"
+                                        class="name-type-icon"
+                                    />
+                                    {{ getVisibleName(i).visibleName }}
+                                </fitted-content>
+                                <badge
+                                    v-if="talent.pronouns"
+                                    class="talent-pronouns"
+                                >
+                                    {{ talent.pronouns }}
+                                </badge>
+                                <country-flag
+                                    v-if="talent.countryCode != null"
+                                    :country-code="talent.countryCode"
+                                    class="talent-country"
+                                />
+                            </div>
+                        </opacity-swap-transition>
                     </div>
                     <player-volume-meter
                         v-if="!disableVolumeMeters && !useCompactVolumeMeters"
@@ -59,7 +69,7 @@
 
 <script setup lang="ts">
 import { useScheduleStore } from 'client-shared/stores/ScheduleStore';
-import { computed } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useTalentStore } from 'client-shared/stores/TalentStore';
 import { Talent } from 'types/schemas';
 import FittedContent from 'components/FittedContent.vue';
@@ -71,6 +81,14 @@ import OpacitySwapTransition from 'components/OpacitySwapTransition.vue';
 import { disableVolumeMeters } from 'client-shared/stores/MixerStore';
 import PlayerVolumeMeter from './PlayerVolumeMeter.vue';
 import CompactPlayerSpeakingIndicator from './CompactPlayerSpeakingIndicator.vue';
+import { cloneDeep } from 'lodash';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faTwitch } from '@fortawesome/free-brands-svg-icons/faTwitch';
+import { faYoutube } from '@fortawesome/free-brands-svg-icons/faYoutube';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { isBlank } from 'client-shared/helpers/StringHelper';
+
+library.add(faTwitch, faYoutube);
 
 const props = withDefaults(defineProps<{
     index: number
@@ -89,9 +107,47 @@ const talentList = computed<Talent>(() => {
     if (assignments == null) return [];
     return assignments.playerIds.map(playerId => talentStore.findTalentItemById(playerId)).filter(talent => talent != null);
 });
-
 const chunkedTalentList = computed<Talent[]>(() => chunk(talentList.value, props.maxConcurrentPlayers));
-const talentListSlides = useSlides(() => chunkedTalentList.value.map((_, i) => ({ component: String(i), duration: 30 })));
+
+type VisibleTalentName = { talentId: string, visibleName: string, type: 'name' | 'twitch' | 'youtube', isFirstDisplay: boolean };
+const visibleTalentListNames = ref<VisibleTalentName[]>([]);
+function getVisibleName(talentIndex: number): VisibleTalentName {
+    return visibleTalentListNames.value[Number(talentListSlides.activeComponent.value) * props.maxConcurrentPlayers + talentIndex];
+}
+watch(talentList, newValue => {
+    visibleTalentListNames.value = newValue.map(talentItem => {
+        const existingItem = visibleTalentListNames.value.find(existingTalentNameItem => existingTalentNameItem.talentId === talentItem.id);
+        return existingItem ?? { talentId: talentItem.id, visibleName: talentItem.name, type: 'name', isFirstDisplay: true };
+    });
+}, { immediate: true });
+
+function beforeTalentSlideSwap(component: string) {
+    const talentChunkIndex = Number(component);
+    const talentListChunk = chunkedTalentList.value[talentChunkIndex];
+    const newVisibleNames = cloneDeep(visibleTalentListNames.value);
+    talentListChunk.forEach((talentItem, i) => {
+        const visibleName = newVisibleNames[talentChunkIndex * props.maxConcurrentPlayers + i];
+        if (visibleName.isFirstDisplay) {
+            visibleName.isFirstDisplay = false;
+            return;
+        }
+        if (visibleName.type === 'name') {
+            if (!isBlank(talentItem.socials.twitch)) {
+                visibleName.type = 'twitch';
+                visibleName.visibleName = `/${talentItem.socials.twitch}`;
+            } else if (!isBlank(talentItem.socials.youtube)) {
+                visibleName.type = 'youtube';
+                visibleName.visibleName = talentItem.socials.youtube!;
+            }
+        } else {
+            visibleName.type = 'name';
+            visibleName.visibleName = talentItem.name;
+        }
+    });
+    visibleTalentListNames.value = newVisibleNames;
+}
+
+const talentListSlides = useSlides(() => chunkedTalentList.value.map((_, i) => ({ component: String(i), duration: 12, beforeChange: beforeTalentSlideSwap })));
 
 const baseIndex = computed(() => scheduleStore.playerNameplateAssignments
     .slice(0, props.index)
@@ -170,6 +226,11 @@ const useCompactVolumeMeters = computed(() => props.fixedHeight && talentList.va
             height: 25px;
         }
     }
+}
+
+.name-type-icon {
+    font-size: 22px;
+    transform: translate(2px, -2px);
 }
 
 .talent-country, .talent-pronouns {
