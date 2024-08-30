@@ -12,6 +12,7 @@
                 <div
                     v-for="(talent, i) in chunkedTalentList[Number(talentListSlides.activeComponent.value)]"
                     class="talent-item"
+                    :class="{ 'is-compact': useCompactVolumeMeters }"
                     :key="talent.id"
                 >
                     <div class="talent-details-anchor">
@@ -137,6 +138,10 @@ const useCompactVolumeMeters = computed(() => props.fixedHeight && talentList.va
     grid-auto-flow: row;
     grid-auto-rows: 1fr;
     height: 60px;
+
+    &.is-compact {
+        height: 36px;
+    }
 
     > .talent-details-anchor {
         position: relative;
