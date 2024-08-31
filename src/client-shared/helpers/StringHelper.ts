@@ -51,7 +51,7 @@ export function formatDuration(duration: string): string {
 }
 
 export function padNumber(number: unknown, minLength = 2): string {
-    if (typeof number !== 'number') return '';
+    if (typeof number !== 'number' && typeof number !== 'string') return '';
     return String(number).padStart(minLength, '0');
 }
 

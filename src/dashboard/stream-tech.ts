@@ -12,6 +12,7 @@ import { initObsStore } from 'client-shared/stores/ObsStore';
 import { initTwitchDataStore } from 'client-shared/stores/TwitchDataStore';
 import { initMusicStore } from 'client-shared/stores/MusicStore';
 import { initMixerStore } from 'client-shared/stores/MixerStore';
+import { initCountdownStore } from 'client-shared/stores/CountdownStore';
 
 (async () => {
     const app = createApp(StreamTechPanel);
@@ -26,7 +27,8 @@ import { initMixerStore } from 'client-shared/stores/MixerStore';
         initObsStore(),
         initTwitchDataStore(),
         initMusicStore(),
-        initMixerStore()
+        initMixerStore(),
+        initCountdownStore()
     ]);
     app.mount('#app');
 })();

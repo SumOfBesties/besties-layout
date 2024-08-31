@@ -10,6 +10,10 @@ export * from './allBids';
 // @ts-ignore
 export * from './allPrizes';
 // @ts-ignore
+export * from './countdownData';
+// @ts-ignore
+export * from './countdownTimer';
+// @ts-ignore
 export * from './currentBids';
 // @ts-ignore
 export * from './currentHostId';

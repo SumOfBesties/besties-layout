@@ -24,8 +24,9 @@
             </div>
             <system-status-display
                 class="m-t-8"
-                style="max-width: 275px; margin: 8px auto 0;"
+                style="max-width: 285px; margin: 8px auto 0; box-sizing: border-box"
             />
+            <countdown-manager style="max-width: 285px; margin: 8px auto 0;" />
         </div>
         <rundown-display class="rundown-display" />
     </div>
@@ -55,6 +56,7 @@ import { IplMessage } from '@iplsplatoon/vue-components';
 import { useScheduleStore } from 'client-shared/stores/ScheduleStore';
 import SystemStatusDisplay from './SystemStatusDisplay.vue';
 import { useTimerStore } from 'client-shared/stores/TimerStore';
+import CountdownManager from './CountdownManager.vue';
 
 const scheduleItemEditor = ref<InstanceType<typeof ScheduleItemEditor>>();
 provide(ScheduleItemEditorInjectionKey, scheduleItemEditor);
