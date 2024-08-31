@@ -33,7 +33,7 @@ export class CountdownService {
                 this.countdownData.value.running = false;
             }
             this.lastTickTime = currentTime;
-        }, 500);
+        }, 200);
     }
 
     private stopTimer() {
