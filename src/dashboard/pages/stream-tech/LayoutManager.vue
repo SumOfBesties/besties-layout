@@ -1,5 +1,8 @@
 <template>
-    <div class="layout-manager">
+    <div
+        class="layout-manager"
+        ref="wrapper"
+    >
         <div style="position: relative; max-height: 100%; opacity: 1">
             <transition name="capture-select-reveal">
                 <ipl-space
@@ -98,7 +101,7 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 import { faVideo } from '@fortawesome/free-solid-svg-icons/faVideo';
 import { faGamepad } from '@fortawesome/free-solid-svg-icons/faGamepad';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { computed, ref } from 'vue';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { useObsStore } from 'client-shared/stores/ObsStore';
 import cloneDeep from 'lodash/cloneDeep';
 import { updateRefOnValueChange } from 'client-shared/helpers/StoreHelper';
@@ -109,6 +112,8 @@ import { sendMessage } from 'client-shared/helpers/NodecgHelper';
 import { VideoInputAssignment } from 'types/schemas';
 
 library.add(faVideo, faGamepad, faCrop);
+
+const wrapper = ref<HTMLElement>();
 
 const obsStore = useObsStore();
 
@@ -127,6 +132,18 @@ function selectCapture(type: 'camera' | 'game', index: number) {
 
     selectedCapture.value = { type, index };
 }
+
+const captureSelectDismissListener = (event: MouseEvent) => {
+    if (!wrapper.value?.contains(event.target as HTMLElement)) {
+        selectedCapture.value = null;
+    }
+}
+onMounted(() => {
+    window.addEventListener('click', captureSelectDismissListener);
+});
+onUnmounted(() => {
+    window.removeEventListener('click', captureSelectDismissListener);
+});
 
 function isAssignedInput(assignment: VideoInputAssignment | null) {
     return assignment != null
