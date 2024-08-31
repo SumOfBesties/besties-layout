@@ -1,5 +1,6 @@
 import type NodeCG from '@nodecg/types';
 import {
+    ActiveSpeedrun,
     ChannelItem,
     Configschema,
     MixerChannelLevels,
@@ -13,11 +14,13 @@ import debounce from 'lodash/debounce';
 import { ObsConnectorService } from '../ObsConnectorService';
 import { X32Transitions } from './X32Transitions';
 import { dbToFloat, floatToDB } from './X32Util';
+import cloneDeep from 'lodash/cloneDeep';
 
 export class MixerService {
     private readonly logger: NodeCG.Logger;
     private readonly mixerState: NodeCG.ServerReplicantWithSchemaDefault<MixerState>;
     private readonly talentMixerChannelAssignments: NodeCG.ServerReplicantWithSchemaDefault<TalentMixerChannelAssignments>;
+    private readonly activeSpeedrun: NodeCG.ServerReplicantWithSchemaDefault<ActiveSpeedrun>;
     private readonly mixerChannelLevels: NodeCG.ServerReplicantWithSchemaDefault<MixerChannelLevels>;
     private readonly localMixerChannelLevels: Map<string, number> = new Map();
     private readonly mixerAddress?: string;
@@ -38,6 +41,7 @@ export class MixerService {
     private readonly requiredFaders: string[];
 
     constructor(nodecg: NodeCG.ServerAPI<Configschema>, obsConnectorService: ObsConnectorService) {
+        this.activeSpeedrun = nodecg.Replicant('activeSpeedrun') as unknown as NodeCG.ServerReplicantWithSchemaDefault<ActiveSpeedrun>;
         this.mixerState = nodecg.Replicant('mixerState') as unknown as NodeCG.ServerReplicantWithSchemaDefault<MixerState>;
         this.talentMixerChannelAssignments = nodecg.Replicant('talentMixerChannelAssignments') as unknown as NodeCG.ServerReplicantWithSchemaDefault<TalentMixerChannelAssignments>;
         this.mixerChannelLevels = nodecg.Replicant('mixerChannelLevels', { persistent: false }) as unknown as NodeCG.ServerReplicantWithSchemaDefault<MixerChannelLevels>;
@@ -73,6 +77,26 @@ export class MixerService {
         } else {
             this.requiredFaders = [];
         }
+
+        this.activeSpeedrun.on('change', newValue => {
+            if (newValue == null) {
+                this.talentMixerChannelAssignments.value.speedrunTalent = { };
+                return;
+            }
+            const speedrunTalentIds = new Set();
+            newValue.teams.forEach(team => {
+                team.playerIds.forEach(playerId => {
+                    speedrunTalentIds.add(playerId.id);
+                });
+            });
+            const newSpeedrunTalentAssignments = cloneDeep(this.talentMixerChannelAssignments.value.speedrunTalent);
+            Object.keys(newSpeedrunTalentAssignments).forEach(talentId => {
+                if (!speedrunTalentIds.has(talentId)) {
+                    delete newSpeedrunTalentAssignments[talentId];
+                }
+            });
+            this.talentMixerChannelAssignments.value.speedrunTalent = newSpeedrunTalentAssignments;
+        });
     }
 
     private fadeChannels(direction: 'out' | 'in', channels?: readonly ChannelItem[]) {
