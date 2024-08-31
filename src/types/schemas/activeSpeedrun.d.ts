@@ -15,6 +15,7 @@ export interface Speedrun {
 	twitchCategory?: null | {
 		name: string;
 		id: string;
+		igdbUrl?: string;
 	};
 	system?: string | null;
 	releaseYear?: string | null;

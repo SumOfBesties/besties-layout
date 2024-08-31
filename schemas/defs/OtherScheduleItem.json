@@ -17,7 +17,8 @@
                     "additionalProperties": false,
                     "properties": {
                         "name": { "type": "string" },
-                        "id": { "type": "string" }
+                        "id": { "type": "string" },
+                        "igdbUrl": { "type": "string" }
                     },
                     "required": ["name", "id"]
                 }

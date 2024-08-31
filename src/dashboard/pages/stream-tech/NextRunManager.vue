@@ -41,15 +41,10 @@
                 label="Relay?"
                 :value="scheduleStore.nextSpeedrun.relay ? 'Yes' : 'No'"
             />
-            <ipl-data-row
-                label="Twitch category"
+            <twitch-category-data-row
+                :twitch-category="scheduleStore.nextSpeedrun?.twitchCategory"
                 style="grid-column: span 2"
-            >
-                <span :class="{ 'missing-value': scheduleStore.nextSpeedrun?.twitchCategory?.name == null }">
-                    {{ scheduleStore.nextSpeedrun?.twitchCategory?.name ?? 'N/A' }}
-                    <font-awesome-icon class="warning-icon" icon="triangle-exclamation" fixed-width />
-                </span>
-            </ipl-data-row>
+            />
         </div>
         <div class="text-center">
             <ipl-button
@@ -78,6 +73,7 @@ import { ScheduleItemEditorInjectionKey } from '../../helpers/Injections';
 import { formatDuration } from 'client-shared/helpers/StringHelper';
 import { Layout, layouts } from 'types/Layouts';
 import { faTriangleExclamation } from '@fortawesome/free-solid-svg-icons/faTriangleExclamation';
+import TwitchCategoryDataRow from './TwitchCategoryDataRow.vue';
 
 library.add(faPenToSquare, faGamepad, faHeadset, faTriangleExclamation);
 
@@ -101,17 +97,5 @@ const speedrunCount = computed(() => scheduleStore.speedrunCount(scheduleStore.n
     display: grid;
     column-gap: 8px;
     grid-template-columns: repeat(2, 1fr);
-}
-
-.warning-icon {
-    display: none;
-}
-
-.missing-value {
-    color: dashboard-colors.$state-yellow;
-
-    .warning-icon {
-        display: unset;
-    }
 }
 </style>

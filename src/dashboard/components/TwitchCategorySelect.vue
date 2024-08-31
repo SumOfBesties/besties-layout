@@ -44,7 +44,11 @@ const emit = defineEmits<{
 const twitchCategorySelectDialog = inject(TwitchCategorySearchDialogInjectionKey);
 function onClick() {
     twitchCategorySelectDialog?.value?.open(newValue => {
-        emit('update:modelValue', { id: newValue.category!.id, name: newValue.category!.name });
+        emit('update:modelValue', {
+            id: newValue.category.id,
+            name: newValue.category.name,
+            igdbUrl: newValue.igdbUrl
+        });
         if (newValue.releaseYear != null) {
             emit('update:releaseYear', newValue.releaseYear);
         }

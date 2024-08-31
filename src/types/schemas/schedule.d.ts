@@ -24,6 +24,7 @@ export interface Speedrun {
 	twitchCategory?: null | {
 		name: string;
 		id: string;
+		igdbUrl?: string;
 	};
 	system?: string | null;
 	releaseYear?: string | null;
@@ -56,6 +57,7 @@ export interface OtherScheduleItem {
 	twitchCategory?: null | {
 		name: string;
 		id: string;
+		igdbUrl?: string;
 	};
 	estimate: string;
 	setupTime?: string | null;

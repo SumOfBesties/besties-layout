@@ -5,7 +5,7 @@ import { DateTime } from 'luxon';
 
 export type IgdbGameData = {
     twitchGameId: string
-    twitchCategoryUrl: string
+    twitchCategoryUrl?: string
     twitchGameName: string
     name: string
     url: string
@@ -32,10 +32,7 @@ export class IgdbService {
         if (exactMatch != null) {
             this.logger.debug(`Matched Twitch category: ${speedrun.title} -> ${exactMatch.name}`);
             return {
-                category: {
-                    name: exactMatch.twitchGameName || exactMatch.name,
-                    id: exactMatch.twitchGameId
-                },
+                category: this.replicantTwitchCategoryFrom(exactMatch),
                 releaseYear: exactMatch.releaseYear
             };
         }
@@ -48,10 +45,7 @@ export class IgdbService {
         if (matchingSearchResult != null) {
             this.logger.debug(`Matched Twitch category: ${speedrun.title} -> ${matchingSearchResult.name}`);
             return {
-                category: {
-                    name: matchingSearchResult.twitchGameName || matchingSearchResult.name,
-                    id: matchingSearchResult.twitchGameId
-                },
+                category: this.replicantTwitchCategoryFrom(matchingSearchResult),
                 releaseYear: matchingSearchResult.releaseYear
             };
         }
@@ -60,10 +54,7 @@ export class IgdbService {
             const firstResult = searchResult[0];
             this.logger.warn(`Couldn't find an exact Twitch game match for "${speedrun.title}"! Picking "${firstResult.name}".`);
             return {
-                category: {
-                    name: firstResult.twitchGameName || firstResult.name,
-                    id: firstResult.twitchGameId
-                },
+                category: this.replicantTwitchCategoryFrom(firstResult),
                 releaseYear: firstResult.releaseYear
             };
         }
@@ -112,6 +103,14 @@ export class IgdbService {
 
     isLoggedIn(): boolean {
         return this.igdbClient.isLoggedIn();
+    }
+
+    private replicantTwitchCategoryFrom(gameData: IgdbGameData): Speedrun['twitchCategory'] {
+        return {
+            name: gameData.twitchGameName || gameData.name,
+            id: gameData.twitchGameId,
+            igdbUrl: gameData.url
+        };
     }
 
     private getGamesWithTwitchCategories(games: IgdbGameDataResponse[]): IgdbGameDataResponse[] {
