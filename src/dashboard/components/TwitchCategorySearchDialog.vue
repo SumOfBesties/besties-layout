@@ -153,6 +153,7 @@ watch(isOpen, newValue => {
     if (!newValue) {
         selectCallback = null;
         query.value = '';
+        dataSource.value = 'igdb';
     }
 });
 
