@@ -105,7 +105,7 @@ const twitchState = computed(() => {
             color: 'neutral',
             text: 'Not configured'
         };
-    } else if (twitchDataStore.twitchData.syncEnabled) {
+    } else if (!twitchDataStore.twitchData.syncEnabled) {
         return {
             color: 'neutral',
             text: 'Sync disabled'
