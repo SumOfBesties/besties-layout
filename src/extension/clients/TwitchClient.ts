@@ -1,9 +1,8 @@
 import type { AxiosInstance } from 'axios';
 import type NodeCG from '@nodecg/types';
 import type { Configschema, TwitchData } from 'types/schemas';
-import axios from 'axios';
-import axiosRetry from 'axios-retry';
 import { TwitchOauthClient } from './TwitchOauthClient';
+import { createTwitchApiClient } from '../helpers/TwitchApiClientHelper';
 
 interface TwitchCategorySearchResponse {
     data: {
@@ -28,30 +27,7 @@ export class TwitchClient {
 
     constructor(nodecg: NodeCG.ServerAPI<Configschema>, twitchOauthClient: TwitchOauthClient) {
         this.twitchData = nodecg.Replicant('twitchData') as unknown as NodeCG.ServerReplicantWithSchemaDefault<TwitchData>;
-
-        this.axios = axios.create({
-            baseURL: 'https://api.twitch.tv/helix'
-        });
-        this.axios.interceptors.request.use((config) => {
-            if (nodecg.bundleConfig.twitch?.clientId == null) {
-                throw new Error('Twitch client ID is missing');
-            }
-            if (this.twitchData.value.credentials == null) {
-                throw new Error('Not logged in to Twitch');
-            }
-            config.headers.Authorization = `Bearer ${this.twitchData.value.credentials.accessToken}`;
-            config.headers['Client-Id'] = nodecg.bundleConfig.twitch.clientId;
-            return config;
-        });
-        axiosRetry(this.axios, {
-            retries: 1,
-            retryCondition: error => {
-                return error.response?.status === 401 && this.twitchData.value.credentials != null;
-            },
-            onRetry: async () => {
-                await twitchOauthClient.refreshToken();
-            }
-        });
+        this.axios = createTwitchApiClient('https://api.twitch.tv/helix', nodecg.bundleConfig, this.twitchData, twitchOauthClient);
     }
 
     async getGameId(name: string): Promise<string | null> {

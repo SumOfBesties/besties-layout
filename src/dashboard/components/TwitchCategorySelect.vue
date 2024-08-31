@@ -38,11 +38,17 @@ const props = defineProps<{
 
 const emit = defineEmits<{
     'update:modelValue': [newValue: ScheduleItem['twitchCategory']]
+    'update:releaseYear': [newValue: string]
 }>();
 
 const twitchCategorySelectDialog = inject(TwitchCategorySearchDialogInjectionKey);
 function onClick() {
-    twitchCategorySelectDialog?.value?.open(newValue => emit('update:modelValue', newValue));
+    twitchCategorySelectDialog?.value?.open(newValue => {
+        emit('update:modelValue', { id: newValue.category!.id, name: newValue.category!.name });
+        if (newValue.releaseYear != null) {
+            emit('update:releaseYear', newValue.releaseYear);
+        }
+    });
 }
 </script>
 

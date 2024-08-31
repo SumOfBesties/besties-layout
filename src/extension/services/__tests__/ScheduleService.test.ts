@@ -6,12 +6,13 @@ import { OengusClient } from '../../clients/OengusClient';
 import { TalentService } from '../TalentService';
 import { Schedule } from 'types/schemas';
 import { TwitchClient } from '../../clients/TwitchClient';
+import { IgdbService } from '../IgdbService';
 
 describe('ScheduleService', () => {
     let scheduleService: ScheduleService;
 
     beforeEach(() => {
-        scheduleService = new ScheduleService(mockNodecg, mock<OengusClient>(), mock<TalentService>(), mock<TwitchClient>());
+        scheduleService = new ScheduleService(mockNodecg, mock<OengusClient>(), mock<TalentService>(), mock<IgdbService>());
     });
 
     describe('mergeNewScheduleItems', () => {

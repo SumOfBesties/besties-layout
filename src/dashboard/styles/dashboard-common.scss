@@ -30,3 +30,13 @@ hr {
     border-width: 0.5px;
     border-style: solid;
 }
+
+a {
+    color: #0090FF;
+    text-decoration: none;
+    cursor: pointer;
+
+    &:hover {
+        text-decoration: underline;
+    }
+}

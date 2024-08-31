@@ -10,7 +10,10 @@
             Not logged in to Twitch
         </ipl-message>
         <template v-else>
-            <ipl-space color="secondary">
+            <ipl-space
+                color="secondary"
+                class="layout vertical center-horizontal"
+            >
                 <ipl-input
                     v-model="query"
                     name="categoryName"
@@ -18,6 +21,14 @@
                     theme="large"
                     placeholder="Search for a game or category..."
                     type="search"
+                    class="max-width"
+                />
+                <ipl-radio
+                    v-model="dataSource"
+                    :options="dataSourceOptions"
+                    label="Search from..."
+                    name="dataSource"
+                    class="m-t-4"
                 />
             </ipl-space>
             <ipl-space
@@ -26,15 +37,43 @@
             >
                 <ipl-space
                     v-for="result in searchResults"
-                    :key="result.id"
+                    :key="result.category.id"
                     clickable
                     @click="onSelect(result)"
                 >
                     <img
+                        v-if="result.category.boxArtUrl != null"
                         loading="lazy"
-                        :src="result.boxArtUrl"
+                        :src="result.category.boxArtUrl"
                     >
-                    {{ result.name }}
+                    <div v-else />
+                    <div>
+                        {{ result.category.name }}
+                        <span
+                            v-if="result.releaseYear != null"
+                            class="release-year text-low-emphasis"
+                        >
+                            ({{ result.releaseYear }})
+                        </span>
+                        <div>
+                            <a
+                                v-if="result.twitchCategoryUrl != null"
+                                :href="result.twitchCategoryUrl"
+                                target="_blank"
+                                @click.stop
+                            >
+                                Twitch
+                            </a>
+                            <a
+                                v-if="result.igdbUrl != null"
+                                :href="result.igdbUrl"
+                                target="_blank"
+                                @click.stop
+                            >
+                                IGDB
+                            </a>
+                        </div>
+                    </div>
                 </ipl-space>
             </ipl-space>
         </template>
@@ -42,42 +81,73 @@
 </template>
 
 <script setup lang="ts">
-import { IplDialog, IplInput, IplMessage, IplSpace } from '@iplsplatoon/vue-components';
+import { IplDialog, IplInput, IplMessage, IplRadio, IplSpace } from '@iplsplatoon/vue-components';
 import { computed, ref, watch } from 'vue';
 import { isBlank } from 'client-shared/helpers/StringHelper';
-import { ScheduleItem } from 'types/ScheduleHelpers';
 import debounce from 'lodash/debounce';
 import { sendMessage } from 'client-shared/helpers/NodecgHelper';
 import { useTwitchDataStore } from 'client-shared/stores/TwitchDataStore';
 
+type SelectCallbackData = { category: { id: string, name: string, boxArtUrl?: string }, releaseYear?: string, twitchCategoryUrl?: string, igdbUrl?: string };
+
 const twitchDataStore = useTwitchDataStore();
+
+const dataSource = ref('igdb');
+const dataSourceOptions = [
+    { value: 'igdb', name: 'IGDB (Games)' },
+    { value: 'twitch', name: 'Twitch (Anything else)' }
+]
 
 const isOpen = ref(false);
 const query = ref('');
-let selectCallback: ((category: ScheduleItem['twitchCategory']) => void) | null = null;
+let selectCallback: ((game: SelectCallbackData) => void) | null = null;
 
 const twitchIntegrationEnabled = computed(() => twitchDataStore.twitchData.state !== 'NOT_LOGGED_IN');
 
-const searchResults = ref<{ id: string, name: string, boxArtUrl: string }[]>([]);
+const searchResults = ref<SelectCallbackData[]>([]);
 const searchLoading = ref(false);
-async function onQueryChange(newValue: string) {
-    if (isBlank(newValue)) {
+async function onQueryChange(newQuery: string, dataSource: string) {
+    if (isBlank(newQuery)) {
         searchResults.value = [];
         searchLoading.value = false;
         return;
     }
 
     searchLoading.value = true;
-    const newSearchResults = await sendMessage('twitch:findCategory', { name: newValue });
-    if (newSearchResults == null) {
+    try {
+        if (dataSource === 'twitch') {
+            const newSearchResults = await sendMessage('twitch:findCategory', { name: newQuery });
+            if (newSearchResults == null) {
+                searchResults.value = [];
+            } else {
+                searchResults.value = newSearchResults.map(result => ({ category: result }));
+            }
+        } else {
+            const newSearchResults = await sendMessage('igdb:findGame', { name: newQuery });
+            if (newSearchResults == null) {
+                searchResults.value = [];
+            } else {
+                searchResults.value = newSearchResults.map(result => ({
+                    category: {
+                        id: result.twitchGameId,
+                        name: result.twitchGameName || result.name,
+                        boxArtUrl: result.boxArtUrl
+                    },
+                    releaseYear: result.releaseYear,
+                    twitchCategoryUrl: result.twitchCategoryUrl,
+                    igdbUrl: result.url
+                }));
+            }
+        }
+    } catch (e) {
+        console.error('Error searching for Twitch category', e);
         searchResults.value = [];
-    } else {
-        searchResults.value = newSearchResults;
+    } finally {
+        searchLoading.value = false;
     }
-    searchLoading.value = false;
 }
 const debouncedOnQueryChange = debounce(onQueryChange, 500);
-watch(query, debouncedOnQueryChange);
+watch([query, dataSource], newValue => debouncedOnQueryChange(newValue[0], newValue[1]));
 
 watch(isOpen, newValue => {
     if (!newValue) {
@@ -86,14 +156,14 @@ watch(isOpen, newValue => {
     }
 });
 
-function open(onSelect: (category: ScheduleItem['twitchCategory']) => void) {
+function open(onSelect: (game: SelectCallbackData) => void) {
     selectCallback = onSelect;
     isOpen.value = true;
 }
 
-function onSelect(category: { id: string, name: string, boxArtUrl: string }) {
+function onSelect(data: SelectCallbackData) {
     if (selectCallback) {
-        selectCallback({ name: category.name, id: category.id });
+        selectCallback(data);
     }
     isOpen.value = false;
 }

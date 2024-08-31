@@ -372,7 +372,7 @@ export class OengusClient {
                     id: '',
                     externalId: String(line.id),
                     type: 'SPEEDRUN',
-                    title: line.game || `Run #${line.position} (Untitled)`,
+                    title: line.game?.trim() || `Run #${line.position} (Untitled)`,
                     estimate: line.estimate,
                     setupTime: line.setupTime,
                     scheduledStartTime: line.date,

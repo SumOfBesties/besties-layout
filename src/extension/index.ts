@@ -23,6 +23,9 @@ import { MusicService } from './services/MusicService';
 import { MixerService } from './services/mixer/MixerService';
 import { OengusService } from './services/OengusService';
 import { OengusController } from './controllers/OengusController';
+import { IgdbClient } from './clients/IgdbClient';
+import { IgdbService } from './services/IgdbService';
+import { IgdbController } from './controllers/IgdbController';
 
 export = (nodecg: NodeCG.ServerAPI<Configschema>): void => {
     const oengusClient = new OengusClient(nodecg);
@@ -30,10 +33,12 @@ export = (nodecg: NodeCG.ServerAPI<Configschema>): void => {
     const hasTwitchConfig = TwitchOauthClient.hasRequiredConfig(nodecg);
     const twitchOauthClient = hasTwitchConfig ? new TwitchOauthClient(nodecg) : null;
     const twitchClient = twitchOauthClient ? new TwitchClient(nodecg, twitchOauthClient) : null;
+    const igdbClient = twitchOauthClient ? new IgdbClient(nodecg, twitchOauthClient) : null;
 
+    const igdbService = igdbClient ? new IgdbService(nodecg, igdbClient) : null;
     const timerService = new TimerService(nodecg);
     const talentService = new TalentService(nodecg);
-    const scheduleService = new ScheduleService(nodecg, oengusClient, talentService, twitchClient);
+    const scheduleService = new ScheduleService(nodecg, oengusClient, talentService, igdbService);
     const speedrunService = new SpeedrunService(nodecg, scheduleService, timerService);
     scheduleService.init(speedrunService);
     const obsConnectorService = new ObsConnectorService(nodecg);
@@ -53,4 +58,5 @@ export = (nodecg: NodeCG.ServerAPI<Configschema>): void => {
     new NameplateAssignmentController(nodecg);
     new TwitchController(nodecg, twitchService);
     new OengusController(nodecg, oengusService);
+    new IgdbController(nodecg, igdbService);
 };

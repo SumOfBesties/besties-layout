@@ -1,13 +1,5 @@
 import type NodeCG from '@nodecg/types';
-import type {
-    ActiveSpeedrun,
-    Configschema,
-    OtherScheduleItem,
-    Schedule,
-    ScheduleImportStatus,
-    Speedrun,
-    Talent
-} from 'types/schemas';
+import type { ActiveSpeedrun, Configschema, Schedule, ScheduleImportStatus, Speedrun, Talent } from 'types/schemas';
 import { OengusClient } from '../clients/OengusClient';
 import { TalentService } from './TalentService';
 import { v4 as uuidV4 } from 'uuid';
@@ -16,8 +8,8 @@ import cloneDeep from 'lodash/cloneDeep';
 import { ScheduleItem, ScheduleItemType } from 'types/ScheduleHelpers';
 import { DateTime, Duration } from 'luxon';
 import { SpeedrunService } from './SpeedrunService';
-import { TwitchClient } from '../clients/TwitchClient';
 import { findActiveScheduleItem } from '../helpers/ScheduleHelpers';
+import { IgdbService } from './IgdbService';
 
 export class ScheduleService {
     private readonly logger: NodeCG.Logger;
@@ -27,14 +19,14 @@ export class ScheduleService {
     private readonly activeSpeedrun: NodeCG.ServerReplicantWithSchemaDefault<ActiveSpeedrun>;
     private readonly oengusClient: OengusClient;
     private readonly talentService: TalentService;
-    private readonly twitchClient: TwitchClient | null;
+    private readonly igdbService: IgdbService | null;
     private speedrunService?: SpeedrunService;
 
     constructor(
         nodecg: NodeCG.ServerAPI<Configschema>,
         oengusClient: OengusClient,
         talentService: TalentService,
-        twitchClient: TwitchClient | null
+        igdbService: IgdbService | null
     ) {
         this.logger = new nodecg.Logger(`${nodecg.bundleName}:ScheduleService`);
         this.scheduleImportStatus = nodecg.Replicant('scheduleImportStatus', { persistent: false }) as unknown as NodeCG.ServerReplicantWithSchemaDefault<ScheduleImportStatus>;
@@ -43,7 +35,7 @@ export class ScheduleService {
         this.activeSpeedrun = nodecg.Replicant('activeSpeedrun') as unknown as NodeCG.ServerReplicantWithSchemaDefault<ActiveSpeedrun>;
         this.oengusClient = oengusClient;
         this.talentService = talentService;
-        this.twitchClient = twitchClient;
+        this.igdbService = igdbService;
     }
 
     init(speedrunService: SpeedrunService) {
@@ -55,16 +47,17 @@ export class ScheduleService {
 
         const newTalentList = this.talentService.mergeNewTalentList(scheduleAndTalent.talent);
         const scheduleWithTalentIds = this.talentService.getScheduleWithTalentIds(scheduleAndTalent.schedule.items, newTalentList);
-        const scheduleWithTwitchCategories = await this.getScheduleWithTwitchGames(scheduleWithTalentIds);
         if (this.schedule.value.id === slug) {
-            const mergedSchedule = this.mergeNewScheduleItems(scheduleWithTwitchCategories);
+            const mergedSchedule = this.mergeNewScheduleItems(scheduleWithTalentIds);
+            const scheduleWithTwitchCategories = await this.getScheduleWithTwitchGames(mergedSchedule);
             this.talent.value = newTalentList;
             this.schedule.value = {
                 source: 'OENGUS',
                 id: slug,
-                items: mergedSchedule
+                items: scheduleWithTwitchCategories
             };
         } else {
+            const scheduleWithTwitchCategories = await this.getScheduleWithTwitchGames(scheduleWithTalentIds);
             this.talent.value = newTalentList;
             this.schedule.value = {
                 source: 'OENGUS',
@@ -186,61 +179,25 @@ export class ScheduleService {
     }
 
     private async getScheduleWithTwitchGames(schedule: Schedule['items']): Promise<Schedule['items']> {
-        if (this.twitchClient == null || !this.twitchClient.isLoggedIn()) {
+        if (this.igdbService == null || !this.igdbService.isLoggedIn()) {
             this.logger.warn('Twitch integration is disabled. Schedule will be imported without Twitch category data.');
             return schedule;
         }
 
         const newSchedule = cloneDeep(schedule);
-        const gameNameToTwitchCategoryMap = newSchedule.reduce((result, scheduleItem) => {
-            if (scheduleItem.type !== 'SPEEDRUN') {
-                return result;
-            }
-            result[scheduleItem.title] = undefined;
-            return result;
-        }, {} as Record<string, ScheduleItem['twitchCategory']>);
-
-        const gameSearchResult = await Promise.allSettled(Object.keys(gameNameToTwitchCategoryMap).map(async (gameName) => {
-            let categorySearchResult = await this.twitchClient!.searchForCategory(gameName);
-            let normalizedGameName = gameName;
-            if (categorySearchResult != null && categorySearchResult.length === 0) {
-                // Finds a few additional games
-                // e.g. DmC: Devil May Cry (Vergil's Downfall) or Resident Evil 2 (2019)
-                const gameNameWithoutParentheses = gameName.replaceAll(/ \(.*\)$/g, '');
-                if (gameNameWithoutParentheses !== gameName) {
-                    normalizedGameName = gameNameWithoutParentheses;
-                    categorySearchResult = await this.twitchClient!.searchForCategory(gameNameWithoutParentheses);
-                }
-            }
-
-            if (categorySearchResult != null && categorySearchResult.length > 0) {
-                const twitchCategory = categorySearchResult.length === 1
-                    ? categorySearchResult[0]
-                    : categorySearchResult.find(category => category.name.toLowerCase() === normalizedGameName.toLowerCase()) ?? categorySearchResult[0];
-                this.logger.debug(`Found Twitch Category: ${gameName} -> ${twitchCategory.name} (${twitchCategory.id})`);
-                gameNameToTwitchCategoryMap[gameName] = { id: twitchCategory.id, name: twitchCategory.name };
-            } else {
-                this.logger.warn(`Could not find Twitch category for game "${gameName}"`);
-            }
+        const gameSearchResult = await Promise.allSettled(newSchedule.map(async (scheduleItem) => {
+            if (scheduleItem.type !== 'SPEEDRUN' || scheduleItem.twitchCategory != null) return;
+            const gameData = await this.igdbService!.findGameForScheduleItem(scheduleItem);
+            scheduleItem.twitchCategory = gameData?.category;
+            scheduleItem.releaseYear = gameData?.releaseYear;
         }));
+
         const rejectedResults = gameSearchResult.filter(result => result.status === 'rejected')
         if (rejectedResults.length > 0) {
             this.logger.warn('Encountered one or more errors searching for Twitch categories for schedule games');
             this.logger.debug('Encountered one or more errors searching for Twitch categories for schedule games', rejectedResults);
         }
-
-        return newSchedule.map(scheduleItem => {
-            if (scheduleItem.type !== 'SPEEDRUN') return scheduleItem;
-            const foundTwitchCategory = gameNameToTwitchCategoryMap[scheduleItem.title];
-            if (foundTwitchCategory != null) {
-                return {
-                    ...scheduleItem,
-                    twitchCategory: foundTwitchCategory
-                }
-            } else {
-                return scheduleItem;
-            }
-        });
+        return newSchedule;
     }
 
     private mergeNewScheduleItems(schedule: Schedule['items']): Schedule['items'] {
@@ -259,7 +216,7 @@ export class ScheduleService {
                 });
             } else {
                 updatedScheduleItemCount++;
-                newItems.push(mergeWith(cloneDeep(existingScheduleItem), newScheduleItem, (objValue, srcValue, key) => {
+                newItems.push(mergeWith(cloneDeep(existingScheduleItem), newScheduleItem, (objValue, srcValue, key, obj, src) => {
                     if (srcValue == null || key === 'id') {
                         return objValue;
                     }
@@ -311,6 +268,15 @@ export class ScheduleService {
                     if (key === 'commentatorIds') {
                         // todo: atm no schedule importer knows commentator IDs, but this needs improved if that becomes possible
                         return objValue;
+                    }
+                    // If the schedule item title hasn't changed, assume any existing Twitch categories are still valid.
+                    // This way we can avoid refreshing Twitch categories too much
+                    if (key === 'twitchCategory') {
+                        if (obj.title === src.title) {
+                            return objValue;
+                        } else {
+                            return null;
+                        }
                     }
                     // The default method of merging arrays creates bad results
                     if (Array.isArray(srcValue) && Array.isArray(objValue)) {

@@ -42,6 +42,7 @@
                         v-model="selectedScheduleItem.twitchCategory"
                         color="primary"
                         class="max-width"
+                        @update:release-year="selectedScheduleItem.releaseYear = $event"
                     />
                     <ipl-input
                         v-model="selectedScheduleItem.releaseYear"
@@ -392,7 +393,3 @@ defineExpose({
     openForNextSpeedrun
 });
 </script>
-
-<style scoped lang="scss">
-
-</style>

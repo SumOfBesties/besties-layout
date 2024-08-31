@@ -1,6 +1,7 @@
 import { ObsConfig, ObsConnectionInfo, Talent, VideoInputAssignment } from '../schemas';
 import { ScheduleItem } from '../ScheduleHelpers';
 import { ObsSceneItemTransform } from '../../extension/services/ObsConnectorService';
+import { IgdbGameData } from '../../extension/services/IgdbService';
 
 export interface MessageInputMap {
     'log:warning': string
@@ -40,12 +41,17 @@ export interface MessageInputMap {
 
     'twitch:logout': never
     'twitch:findCategory': { name: string }
+
+    'igdb:findGame': { name: string }
 }
 
 type MessagesWithoutReturnValues = Exclude<keyof MessageInputMap, keyof InnerMessageResultMap>;
 
 interface InnerMessageResultMap {
     'twitch:findCategory': { id: string, name: string, boxArtUrl: string }[] | undefined
+
+    'igdb:findGame': IgdbGameData[] | undefined
+
     'obs:getSourceScreenshot': string
     'obs:getSceneItemTransform': ObsSceneItemTransform
 }
