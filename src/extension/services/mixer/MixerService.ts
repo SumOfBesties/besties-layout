@@ -234,6 +234,9 @@ export class MixerService {
         Object.values(this.talentMixerChannelAssignments.value.speedrunTalent).forEach(assignment => {
             assignedChannels.add(assignment.channelId);
         });
+        Object.values(this.talentMixerChannelAssignments.value.speedrunTeams).forEach(assignment => {
+            assignedChannels.add(assignment.channelId);
+        });
         if (this.talentMixerChannelAssignments.value.host != null) {
             assignedChannels.add(this.talentMixerChannelAssignments.value.host.channelId);
         }
