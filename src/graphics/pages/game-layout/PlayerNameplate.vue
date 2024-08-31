@@ -3,7 +3,7 @@
         class="player-nameplate"
         :data-nameplate-index="props.index"
         :style="{
-            minHeight: props.fixedHeight ? undefined : `${Math.max(80, Math.min(props.maxConcurrentPlayers, talentList.length) * 60 + 16)}px`,
+            minHeight: props.fixedHeight ? undefined : `${Math.max(80, Math.min(props.maxConcurrentPlayers, assignmentData?.talent.length ?? 0) * 60 + 16)}px`,
             height: props.fixedHeight ? '80px' : undefined
         }"
     >
@@ -30,6 +30,7 @@
                                 <compact-player-speaking-indicator
                                     v-if="useCompactVolumeMeters"
                                     :player-id="talent.id"
+                                    :team-id="assignmentData?.teamId"
                                     class="compact-speaking-indicator"
                                 />
                                 <fitted-content align="center">
@@ -59,6 +60,7 @@
                         :talent-id="talent.id"
                         :index="baseIndex + i + 1 + Number(talentListSlides.activeComponent.value) * props.maxConcurrentPlayers"
                         :compact="useCompactVolumeMeters"
+                        :team-id="assignmentData?.teamId"
                         class="volume-meter"
                     />
                 </div>
@@ -102,20 +104,27 @@ const props = withDefaults(defineProps<{
 const scheduleStore = useScheduleStore();
 const talentStore = useTalentStore();
 
-const talentList = computed<Talent>(() => {
+const assignmentData = computed<{ teamId?: string, talent: Talent } | null>(() => {
     const assignments = scheduleStore.playerNameplateAssignments[props.index];
-    if (assignments == null) return [];
-    return assignments.playerIds.map(playerId => talentStore.findTalentItemById(playerId)).filter(talent => talent != null);
+    if (assignments == null) return null;
+    return {
+        teamId: assignments.teamId,
+        talent: assignments.playerIds.map(playerId => talentStore.findTalentItemById(playerId)).filter(talent => talent != null)
+    };
 });
-const chunkedTalentList = computed<Talent[]>(() => chunk(talentList.value, props.maxConcurrentPlayers));
+const chunkedTalentList = computed<Talent[]>(() => assignmentData.value == null ? [] : chunk(assignmentData.value.talent, props.maxConcurrentPlayers));
 
 type VisibleTalentName = { talentId: string, visibleName: string, type: 'name' | 'twitch' | 'youtube', isFirstDisplay: boolean };
 const visibleTalentListNames = ref<VisibleTalentName[]>([]);
 function getVisibleName(talentIndex: number): VisibleTalentName {
     return visibleTalentListNames.value[Number(talentListSlides.activeComponent.value) * props.maxConcurrentPlayers + talentIndex];
 }
-watch(talentList, newValue => {
-    visibleTalentListNames.value = newValue.map(talentItem => {
+watch(assignmentData, newValue => {
+    if (newValue == null) {
+        visibleTalentListNames.value = [];
+        return;
+    }
+    visibleTalentListNames.value = newValue.talent.map(talentItem => {
         const existingItem = visibleTalentListNames.value.find(existingTalentNameItem => existingTalentNameItem.talentId === talentItem.id);
         return existingItem ?? { talentId: talentItem.id, visibleName: talentItem.name, type: 'name', isFirstDisplay: true };
     });
@@ -156,7 +165,7 @@ const baseIndex = computed(() => scheduleStore.playerNameplateAssignments
         return result;
     }, 0));
 
-const useCompactVolumeMeters = computed(() => props.fixedHeight && talentList.value.length > 1);
+const useCompactVolumeMeters = computed(() => props.fixedHeight && (assignmentData.value?.talent.length ?? 0) > 1);
 </script>
 
 <style scoped lang="scss">

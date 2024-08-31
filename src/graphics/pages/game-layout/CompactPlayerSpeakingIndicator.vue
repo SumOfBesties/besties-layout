@@ -1,7 +1,7 @@
 <template>
     <span
         class="compact-player-speaking-indicator"
-        :class="{ speaking: mixerStore.isSpeaking(props.playerId) }"
+        :class="{ speaking: mixerStore.isSpeaking(props.playerId, props.teamId) }"
     >
         <font-awesome-icon icon="volume-high" />
     </span>
@@ -19,6 +19,7 @@ library.add(faVolumeHigh);
 
 const props = defineProps<{
     playerId: string
+    teamId?: string
 }>();
 </script>
 

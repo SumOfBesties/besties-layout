@@ -9,7 +9,7 @@
                     <td
                         v-for="(talent, j) in talentRow"
                         :key="talent?.id ?? j"
-                        :class="{ speaking: mixerStore.isSpeaking(talent?.id) }"
+                        :class="{ speaking: mixerStore.isSpeaking(talent?.id, null) }"
                     >
                         <template v-if="talent != null">
                             <fitted-content

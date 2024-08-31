@@ -18,6 +18,7 @@ const mixerStore = useMixerStore();
 
 const props = defineProps<{
     talentId: string
+    teamId?: string
     index: number
 }>();
 
@@ -62,7 +63,7 @@ onMounted(() => {
     let targetLevel = 0;
 
     watch(() => {
-        const assignment = mixerStore.talentMixerChannelAssignments.speedrunTalent[props.talentId];
+        const assignment = mixerStore.talentMixerChannelAssignments.speedrunTalent[props.talentId] ?? props.teamId == null ? null : mixerStore.talentMixerChannelAssignments.speedrunTeams[props.teamId];
         if (assignment == null) return [-90, defaultSpeakingThreshold];
         return [mixerStore.mixerChannelLevels[assignment.channelId] ?? -90, assignment.speakingThresholdDB ?? defaultSpeakingThreshold];
     }, ([channelLevel, speakingThreshold]) => {

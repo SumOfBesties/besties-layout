@@ -43,25 +43,37 @@ import { IplInput, IplSelect, IplSpace } from '@iplsplatoon/vue-components';
 import { useTalentStore } from 'client-shared/stores/TalentStore';
 import { defaultSpeakingThreshold, useMixerStore } from 'client-shared/stores/MixerStore';
 import { computed, ref, watch } from 'vue';
+import { useScheduleStore } from 'client-shared/stores/ScheduleStore';
 
 const talentStore = useTalentStore();
 const mixerStore = useMixerStore();
+const scheduleStore = useScheduleStore();
 
 const talentName = computed(() => {
-    const talentItem = talentStore.findTalentItemById(props.talentId);
-    if (talentItem == null) {
-        return props.fallbackTalentName;
+    if (props.teamId != null) {
+        const team = scheduleStore.activeSpeedrun?.teams.find(team => team.id === props.teamId);
+        if (team == null) {
+            return props.fallbackLabel;
+        } else {
+            return team.name || talentStore.formatTalentIdList(team.playerIds, 4);
+        }
     } else {
-        return `${talentItem.name} ${props.talentNameSuffix ?? ''}`;
+        const talentItem = talentStore.findTalentItemById(props.talentId);
+        if (talentItem == null) {
+            return props.fallbackLabel;
+        } else {
+            return `${talentItem.name} ${props.talentNameSuffix ?? ''}`;
+        }
     }
 });
 
 const props = defineProps<{
     assignedChannel: number | undefined
     speakingThreshold: number | undefined
-    talentId: string | null
+    talentId?: string | null
+    teamId?: string
     visible: boolean
-    fallbackTalentName: string
+    fallbackLabel: string
     talentNameSuffix?: string
 }>();
 

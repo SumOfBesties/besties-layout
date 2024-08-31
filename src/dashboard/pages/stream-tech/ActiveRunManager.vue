@@ -116,8 +116,10 @@ const scheduleItemEditor = inject(ScheduleItemEditorInjectionKey);
 
 const someMixerAssignmentsMissing = computed(() => {
     if (mixerStore.talentMixerChannelAssignments.host == null) return true;
-    const activeSpeedrunTalentIds = scheduleStore.activeSpeedrunTalentIds;
-    return activeSpeedrunTalentIds.some(talentId => mixerStore.talentMixerChannelAssignments.speedrunTalent[talentId] == null);
+    return scheduleStore.activeSpeedrun?.teams.some(team => {
+        if (mixerStore.talentMixerChannelAssignments.speedrunTeams[team.id] != null) return false;
+        return team.playerIds.some(talentId => mixerStore.talentMixerChannelAssignments.speedrunTalent[talentId.id] == null);
+    });
 });
 
 const canSeekBackwards = computed(() => {

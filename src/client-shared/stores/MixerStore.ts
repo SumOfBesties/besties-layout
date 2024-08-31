@@ -76,11 +76,11 @@ export const useMixerStore = defineStore('mixer', {
         },
         isSpeaking(state) {
             const talentStore = useTalentStore();
-            return (talentId?: string | null) => {
+            return (talentId: string | null | undefined, teamId: string | null | undefined) => {
                 if (disableVolumeMeters || talentId == null) return false;
                 const assignment = talentId === talentStore.currentHostId
                     ? state.talentMixerChannelAssignments.host
-                    : state.talentMixerChannelAssignments.speedrunTalent[talentId];
+                    : state.talentMixerChannelAssignments.speedrunTalent[talentId] ?? teamId == null ? null : state.talentMixerChannelAssignments.speedrunTeams[teamId];
                 return assignment == null
                     ? false
                     : (state.mixerChannelLevels[assignment.channelId] ?? -90) > (assignment.speakingThresholdDB ?? defaultSpeakingThreshold);

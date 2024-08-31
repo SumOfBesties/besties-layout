@@ -9,6 +9,23 @@
             @close="isOpen = false"
         />
 
+        <template v-if="scheduleStore.activeSpeedrun?.relay">
+            <div class="m-t-8">Teams</div>
+            <hr class="m-y-2">
+            <talent-mixer-channel-assignment-space
+                v-for="(team, i) in scheduleStore.activeSpeedrun.teams"
+                :speaking-threshold="teamChannels[team.id]?.speakingThresholdDB"
+                :team-id="team.id"
+                :assigned-channel="teamChannels[team.id]?.channelId"
+                :visible="isOpen"
+                class="m-t-8"
+                :fallback-label="`Team ${i + 1}`"
+                @update:assigned-channel="selectChannel('team', team.id, $event)"
+                @update:speaking-threshold="updateSpeakingThreshold('team', team.id, $event)"
+            />
+            <div class="m-t-8">Players</div>
+            <hr class="m-y-2">
+        </template>
         <talent-mixer-channel-assignment-space
             v-for="talentId in scheduleStore.activeSpeedrunTalentIds"
             :speaking-threshold="talentChannels[talentId]?.speakingThresholdDB"
@@ -16,16 +33,16 @@
             :assigned-channel="talentChannels[talentId]?.channelId"
             :visible="isOpen"
             class="m-t-8"
-            :fallback-talent-name="`Unknown talent ${talentId}`"
-            @update:assigned-channel="selectChannel(talentId, $event)"
-            @update:speaking-threshold="updateSpeakingThreshold(talentId, $event)"
+            :fallback-label="`Unknown talent ${talentId}`"
+            @update:assigned-channel="selectChannel('talent', talentId, $event)"
+            @update:speaking-threshold="updateSpeakingThreshold('talent', talentId, $event)"
         />
         <talent-mixer-channel-assignment-space
             :speaking-threshold="hostChannel.speakingThresholdDB"
             :talent-id="talentStore.currentHostId"
             :assigned-channel="hostChannel.channelId"
             class="m-t-8"
-            fallback-talent-name="Host (None currently assigned)"
+            fallback-label="Host (None currently assigned)"
             talent-name-suffix="(Host)"
             :visible="isOpen"
             @update:assigned-channel="hostChannel.channelId = $event"
@@ -66,28 +83,31 @@ const talentStore = useTalentStore();
 
 const hostChannel = ref<{ channelId?: number, speakingThresholdDB?: number }>({ });
 const talentChannels = ref<Record<string, { channelId?: number, speakingThresholdDB?: number }>>({});
+const teamChannels = ref<Record<string, { channelId?: number, speakingThresholdDB?: number }>>({});
 
-function selectChannel(talentId: string, channelId?: number) {
-    const existingEntry = talentChannels.value[talentId];
+function selectChannel(dataType: 'team' | 'talent', id: string, channelId?: number) {
+    const currentValue = dataType === 'team' ? teamChannels : talentChannels;
+    const existingEntry = currentValue.value[id];
     if (existingEntry == null) {
-        talentChannels.value[talentId] = { channelId };
+        currentValue.value[id] = { channelId };
     } else {
         existingEntry.channelId = channelId;
     }
 }
 
-function updateSpeakingThreshold(talentId: string, threshold?: number) {
-    const existingEntry = talentChannels.value[talentId];
+function updateSpeakingThreshold(dataType: 'team' | 'talent', id: string, threshold?: number) {
+    const currentValue = dataType === 'team' ? teamChannels : talentChannels;
+    const existingEntry = currentValue.value[id];
     if (existingEntry == null) {
-        talentChannels.value[talentId] = { speakingThresholdDB: threshold };
+        currentValue.value[id] = { speakingThresholdDB: threshold };
     } else {
         existingEntry.speakingThresholdDB = threshold;
     }
 }
 
 function save() {
-    mixerStore.updateTalentChannelAssignments({
-        speedrunTalent: Object.entries(talentChannels.value).reduce((result, [talentId, assignment]) => {
+    const channelMapToReplicant = (channelMap: Record<string, { channelId?: number, speakingThresholdDB?: number }>) =>
+        Object.entries(channelMap).reduce((result, [talentId, assignment]) => {
             if (assignment.channelId != null) {
                 result[talentId] = {
                     channelId: Number(assignment.channelId),
@@ -95,7 +115,11 @@ function save() {
                 };
             }
             return result;
-        }, {} as Record<string, MixerChannelAssignment>),
+        }, {} as Record<string, MixerChannelAssignment>)
+
+    mixerStore.updateTalentChannelAssignments({
+        speedrunTeams: channelMapToReplicant(teamChannels.value),
+        speedrunTalent: channelMapToReplicant(talentChannels.value),
         host: hostChannel.value.channelId == null ? undefined : (hostChannel.value as { channelId: number, speakingThresholdDB?: number })
     });
 }

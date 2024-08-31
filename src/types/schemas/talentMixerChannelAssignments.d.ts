@@ -6,6 +6,9 @@
  */
 
 export interface TalentMixerChannelAssignments {
+	speedrunTeams: {
+		[k: string]: MixerChannelAssignment;
+	};
 	speedrunTalent: {
 		[k: string]: MixerChannelAssignment;
 	};

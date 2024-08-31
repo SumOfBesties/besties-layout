@@ -78,24 +78,39 @@ export class MixerService {
             this.requiredFaders = [];
         }
 
-        this.activeSpeedrun.on('change', newValue => {
+        this.activeSpeedrun.on('change', (newValue, oldValue) => {
             if (newValue == null) {
                 this.talentMixerChannelAssignments.value.speedrunTalent = { };
                 return;
             }
-            const speedrunTalentIds = new Set();
+            if (oldValue != null && newValue.id !== oldValue.id) {
+                this.talentMixerChannelAssignments.value = {
+                    speedrunTeams: { },
+                    speedrunTalent: { },
+                    host: this.talentMixerChannelAssignments.value.host
+                };
+                return;
+            }
+            const speedrunTalentIds = new Set<string>();
+            const speedrunTeamIds = new Set<string>();
             newValue.teams.forEach(team => {
+                speedrunTeamIds.add(team.id);
                 team.playerIds.forEach(playerId => {
                     speedrunTalentIds.add(playerId.id);
                 });
             });
-            const newSpeedrunTalentAssignments = cloneDeep(this.talentMixerChannelAssignments.value.speedrunTalent);
-            Object.keys(newSpeedrunTalentAssignments).forEach(talentId => {
+            const newChannelAssignments = cloneDeep(this.talentMixerChannelAssignments.value);
+            Object.keys(newChannelAssignments.speedrunTalent).forEach(talentId => {
                 if (!speedrunTalentIds.has(talentId)) {
-                    delete newSpeedrunTalentAssignments[talentId];
+                    delete newChannelAssignments.speedrunTalent[talentId];
                 }
             });
-            this.talentMixerChannelAssignments.value.speedrunTalent = newSpeedrunTalentAssignments;
+            Object.keys(newChannelAssignments.speedrunTeams).forEach(teamId => {
+                if (!speedrunTeamIds.has(teamId)) {
+                    delete newChannelAssignments.speedrunTeams[teamId];
+                }
+            });
+            this.talentMixerChannelAssignments.value = newChannelAssignments;
         });
     }
 
