@@ -41,6 +41,7 @@ export interface MessageInputMap {
 
     'twitch:logout': never
     'twitch:findCategory': { name: string }
+    'twitch:startCommercial': { length: number }
 
     'igdb:findGame': { name: string }
 }

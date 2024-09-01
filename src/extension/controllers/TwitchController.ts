@@ -18,5 +18,9 @@ export class TwitchController extends BaseController {
             }
             return twitchService.findCategory(data.name);
         });
+
+        this.listen('twitch:startCommercial', async (data) => {
+            await twitchService.startCommercial(data.length);
+        });
     }
 }

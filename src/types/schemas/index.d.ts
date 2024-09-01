@@ -58,4 +58,6 @@ export * from './timer';
 // @ts-ignore
 export * from './trackerState';
 // @ts-ignore
+export * from './twitchCommercialState';
+// @ts-ignore
 export * from './twitchData';

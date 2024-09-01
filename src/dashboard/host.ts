@@ -11,6 +11,7 @@ import HostPanel from './pages/host/HostPanel.vue';
 import { initObsStore } from 'client-shared/stores/ObsStore';
 import { initAllTrackerDataStore } from 'client-shared/stores/AllTrackerDataStore';
 import { initCurrentTrackerDataStore } from 'client-shared/stores/CurrentTrackerDataStore';
+import { initTwitchDataStore } from 'client-shared/stores/TwitchDataStore';
 
 (async () => {
     const app = createApp(HostPanel);
@@ -24,7 +25,8 @@ import { initCurrentTrackerDataStore } from 'client-shared/stores/CurrentTracker
         initDonationStore(),
         initObsStore(),
         initAllTrackerDataStore(),
-        initCurrentTrackerDataStore()
+        initCurrentTrackerDataStore(),
+        initTwitchDataStore()
     ]);
     app.mount('#app');
 })();

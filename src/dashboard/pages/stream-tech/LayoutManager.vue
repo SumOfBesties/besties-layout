@@ -88,6 +88,7 @@
             </div>
         </ipl-space>
         <scene-switcher />
+        <twitch-commercial-player />
         <source-cropping-dialog
             ref="sourceCroppingDialog"
         />
@@ -110,6 +111,7 @@ import { faCrop } from '@fortawesome/free-solid-svg-icons/faCrop';
 import SourceCroppingDialog from './SourceCroppingDialog.vue';
 import { sendMessage } from 'client-shared/helpers/NodecgHelper';
 import { VideoInputAssignment } from 'types/schemas';
+import TwitchCommercialPlayer from '../../components/TwitchCommercialPlayer.vue';
 
 library.add(faVideo, faGamepad, faCrop);
 

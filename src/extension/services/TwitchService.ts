@@ -1,5 +1,5 @@
 import type NodeCG from '@nodecg/types';
-import type { ActiveSpeedrun, Configschema, Schedule, Talent, TwitchData } from 'types/schemas';
+import type { ActiveSpeedrun, Configschema, Schedule, Talent, TwitchCommercialState, TwitchData } from 'types/schemas';
 import { TwitchOauthClient } from '../clients/TwitchOauthClient';
 import { TwitchClient } from '../clients/TwitchClient';
 import { TalentService } from './TalentService';
@@ -7,11 +7,13 @@ import { ScheduleItem, TalentItem } from 'types/ScheduleHelpers';
 import { ScheduleService } from './ScheduleService';
 import { findActiveScheduleItem } from '../helpers/ScheduleHelpers';
 import isEqual from 'lodash/isEqual';
+import { DateTime } from 'luxon';
 
 const TWITCH_STREAM_TITLE_LENGTH_CAP = 140;
 const DEFAULT_TWITCH_CATEGORY = 'Special Events';
 
 export class TwitchService {
+    private readonly twitchCommercialState: NodeCG.ServerReplicantWithSchemaDefault<TwitchCommercialState>;
     private readonly twitchData: NodeCG.ServerReplicantWithSchemaDefault<TwitchData>;
     private readonly activeSpeedrun: NodeCG.ServerReplicantWithSchemaDefault<ActiveSpeedrun>;
     private readonly schedule: NodeCG.ServerReplicantWithSchemaDefault<Schedule>;
@@ -34,6 +36,7 @@ export class TwitchService {
         const router = nodecg.Router();
         this.nodecg = nodecg;
         this.logger = new nodecg.Logger(`${nodecg.bundleName}:TwitchService`);
+        this.twitchCommercialState = nodecg.Replicant('twitchCommercialState') as unknown as NodeCG.ServerReplicantWithSchemaDefault<TwitchCommercialState>;
         this.twitchData = nodecg.Replicant('twitchData') as unknown as NodeCG.ServerReplicantWithSchemaDefault<TwitchData>;
         this.activeSpeedrun = nodecg.Replicant('activeSpeedrun') as unknown as NodeCG.ServerReplicantWithSchemaDefault<ActiveSpeedrun>;
         this.schedule = nodecg.Replicant('schedule') as unknown as NodeCG.ServerReplicantWithSchemaDefault<Schedule>;
@@ -249,5 +252,16 @@ export class TwitchService {
 
     async findCategory(name: string): Promise<{ id: string, name: string, boxArtUrl: string }[] | undefined> {
         return this.twitchClient?.searchForCategory(name);
+    }
+
+    async startCommercial(length: number) {
+        if (this.twitchClient == null) return;
+
+        const result = await this.twitchClient.startCommercial(length);
+
+        this.twitchCommercialState.value = {
+            endTime: DateTime.now().plus({ seconds: length }).toISO(),
+            retryTime: DateTime.now().plus({ seconds: result.retryAfter }).toISO()
+        };
     }
 }

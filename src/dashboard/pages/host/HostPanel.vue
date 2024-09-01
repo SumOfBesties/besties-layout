@@ -3,6 +3,7 @@
         <div>
             <current-host-manager />
             <scene-switcher class="m-t-8" />
+            <twitch-commercial-player class="m-t-8" />
         </div>
         <div style="overflow-y: auto">
             <bid-list />
@@ -38,6 +39,7 @@ import { useDonationStore } from 'client-shared/stores/DonationStore';
 import PrizeList from './PrizeList.vue';
 import { formatCurrencyAmount } from 'client-shared/helpers/StringHelper';
 import HostActiveRunDisplay from './HostActiveRunDisplay.vue';
+import TwitchCommercialPlayer from '../../components/TwitchCommercialPlayer.vue';
 
 const donationStore = useDonationStore();
 

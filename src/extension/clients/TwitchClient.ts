@@ -1,4 +1,4 @@
-import type { AxiosInstance } from 'axios';
+import { AxiosInstance, isAxiosError } from 'axios';
 import type NodeCG from '@nodecg/types';
 import type { Configschema, TwitchData } from 'types/schemas';
 import { TwitchOauthClient } from './TwitchOauthClient';
@@ -18,6 +18,14 @@ interface TwitchGetGameResponse {
         name: string
         box_art_url: string
         igdb_id: string
+    }[]
+}
+
+interface TwitchStartCommercialResponse {
+    data: {
+        length: number
+        message: string
+        retry_after: number
     }[]
 }
 
@@ -66,6 +74,34 @@ export class TwitchClient {
                 broadcaster_id: this.twitchData.value.loggedInUser.id
             }
         });
+    }
+
+    async startCommercial(length: number): Promise<{ length: number, message: string, retryAfter: number }> {
+        if (!this.isLoggedIn() || this.twitchData.value.loggedInUser == null) {
+            throw new Error('Cannot start commercial: Not logged in to Twitch');
+        }
+        try {
+            const response = await this.axios.post<TwitchStartCommercialResponse>('/channels/commercial', {
+                broadcaster_id: this.twitchData.value.loggedInUser.id,
+                length
+            });
+            console.log(JSON.stringify(response.data));
+            if (response.data.data.length !== 1) {
+                throw new Error(`Twitch returned ${response.data.data.length} objects after starting commercial? (Expected 1)`);
+            }
+            const result = response.data.data[0];
+            return {
+                length: result.length,
+                message: result.message,
+                retryAfter: result.retry_after
+            };
+        } catch (e) {
+            if (isAxiosError(e) && e.response?.data != null && 'message' in e.response.data) {
+                throw new Error(e.response.data.message);
+            }
+
+            throw e;
+        }
     }
 
     isLoggedIn(): boolean {
