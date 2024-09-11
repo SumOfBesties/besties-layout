@@ -76,7 +76,7 @@ function onClick() {
 }
 
 .ipl-button {
-    font-size: 0.6em;
+    font-size: 0.6em !important;
     margin-left: 4px;
 }
 </style>
