@@ -140,6 +140,21 @@ onUnmounted(() => {
     window.clearTimeout(textScrollTimeout);
 });
 
+function getCharacterForRemainingPixels(pixels: number) {
+    switch (pixels) {
+        case 1:
+            return '▏';
+        case 2:
+            return '▎';
+        case 3:
+            return '▍';
+        case 4:
+            return '▌';
+        default:
+            return '';
+    }
+}
+
 const progressBarInfo = computed(() => {
     if (props.progressBar == null) return null;
 
@@ -151,13 +166,16 @@ const progressBarInfo = computed(() => {
     const percentage = Math.min(1, (current - start) / (end - start));
     const fullPercentage = current / end;
     const formattedFullPercentage = `${Math.round(fullPercentage * 100)}%`;
+    const characterPixelCount = 5;
     if (props.progressBar.showStartEnd) {
-        const progressBarCharacterCount = Math.max(
+        const progressBarPixelCount = Math.max(
             6 + formattedStart.length + formattedEnd.length,
-            characterCount.value - formattedStart.length - formattedEnd.length);
-        const litCharacterCount = Math.max(1, Math.floor(percentage * progressBarCharacterCount));
-        const unlitCharacterCount = Math.max(0, progressBarCharacterCount - litCharacterCount);
-        const formattedText = `${formattedStart}${'▓'.repeat(litCharacterCount)}${' '.repeat(unlitCharacterCount)}${formattedEnd}`;
+            characterCount.value - formattedStart.length - formattedEnd.length) * characterPixelCount;
+        const litPixelCount = Math.max(1, Math.floor(percentage * progressBarPixelCount));
+        const fullyLitCharacterCount = Math.floor(litPixelCount / characterPixelCount);
+        const unlitCharacterCount = Math.max(0, Math.ceil((1 - percentage) * progressBarPixelCount) / characterPixelCount);
+        const remainingLitPixelCount = litPixelCount % characterPixelCount;
+        const formattedText = `${formattedStart}${'▓'.repeat(fullyLitCharacterCount)}${getCharacterForRemainingPixels(remainingLitPixelCount)}${' '.repeat(unlitCharacterCount)}${formattedEnd}`;
         const percentageStartPosition = Math.floor(formattedText.length / 2) - Math.floor(formattedFullPercentage.length / 2);
 
         // Centers the percentage on the resulting string
@@ -165,18 +183,24 @@ const progressBarInfo = computed(() => {
             formattedText: formattedText.substring(0, percentageStartPosition) + formattedFullPercentage + formattedText.substring(percentageStartPosition + formattedFullPercentage.length)
         };
     } else {
-        const progressBarCharacterCount = Math.max(6, characterCount.value);
-        let litCharacterCount = Math.max(1, Math.floor(percentage * progressBarCharacterCount));
-        let unlitCharacterCount = progressBarCharacterCount - litCharacterCount;
+        const progressBarPixelCount = Math.max(6, characterCount.value) * characterPixelCount;
+        let litPixelCount = Math.max(1, Math.floor(percentage * progressBarPixelCount));
+        let fullyLitCharacterCount = Math.floor(litPixelCount / characterPixelCount);
+        let unlitCharacterCount = Math.max(0, Math.ceil((1 - percentage) * progressBarPixelCount) / characterPixelCount);
+        let remainingLitPixelCount = litPixelCount % characterPixelCount;
         if (unlitCharacterCount <= formattedFullPercentage.length) {
-            litCharacterCount -= formattedFullPercentage.length - unlitCharacterCount;
+            fullyLitCharacterCount -= (formattedFullPercentage.length - unlitCharacterCount);
+            if (remainingLitPixelCount !== 0) {
+                remainingLitPixelCount = 0;
+                fullyLitCharacterCount++;
+            }
             unlitCharacterCount = 0;
         } else {
             unlitCharacterCount -= formattedFullPercentage.length;
         }
 
         return {
-            formattedText: `${'▓'.repeat(litCharacterCount)}${formattedFullPercentage}${' '.repeat(unlitCharacterCount)}`
+            formattedText: `${'▓'.repeat(fullyLitCharacterCount)}${getCharacterForRemainingPixels(remainingLitPixelCount)}${formattedFullPercentage}${' '.repeat(unlitCharacterCount)}`
         };
     }
 });
