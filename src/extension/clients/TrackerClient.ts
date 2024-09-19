@@ -31,7 +31,7 @@ interface TrackerMilestoneSearchResponseItem {
     pk: number
     fields: {
         event: number
-        start?: number
+        start?: number | string
         amount: number
         name: string
         visible: boolean
@@ -314,7 +314,7 @@ export class TrackerClient {
         const response = await this.axios.get<TrackerMilestoneSearchResponseItem[]>(`/tracker/search?type=milestone&event=${this.eventId}`);
         return response.data.map(milestone => ({
             id: milestone.pk,
-            start: milestone.fields.start ?? 0,
+            start: Number(milestone.fields.start ?? 0),
             amount: milestone.fields.amount,
             name: milestone.fields.name,
             description: milestone.fields.description,
