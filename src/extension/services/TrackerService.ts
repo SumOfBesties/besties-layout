@@ -92,10 +92,6 @@ export class TrackerService {
             amount,
             displayName
         });
-        if (this.donationTotalApiUpdateTimeout) {
-            clearTimeout(this.donationTotalApiUpdateTimeout);
-        }
-        this.donationTotalApiUpdateTimeout = setTimeout(this.updateDonationTotal.bind(this), 60 * 1000);
     }
 
     private async doLoginLoop() {
@@ -124,6 +120,7 @@ export class TrackerService {
     private async updateDonationTotal(force = false) {
         try {
             if (this.trackerClient == null) return;
+            this.logger.debug('Requesting donation total from API');
             const newTotal = await this.trackerClient.getDonationTotal();
             if (force || this.donationTotal.value < newTotal) {
                 this.donationTotal.value = newTotal;
