@@ -6,7 +6,7 @@ import { IgdbGameData } from '../../extension/services/IgdbService';
 export interface MessageInputMap {
     'log:warning': string
 
-    'schedule:import': { slug: string }
+    'schedule:import': { slug: string, mergeExisting: boolean }
     'schedule:setInterstitialCompleted': { scheduleItemId: string, completed: boolean }
     'schedule:updateItem': ScheduleItem
 

@@ -42,12 +42,12 @@ export class ScheduleService {
         this.speedrunService = speedrunService;
     }
 
-    async importSchedule(slug: string): Promise<void> {
+    async importSchedule(slug: string, mergeExisting: boolean): Promise<void> {
         const scheduleAndTalent = await this.oengusClient.getScheduleAndTalent(slug);
 
         const newTalentList = this.talentService.mergeNewTalentList(scheduleAndTalent.talent);
         const scheduleWithTalentIds = this.talentService.getScheduleWithTalentIds(scheduleAndTalent.schedule.items, newTalentList);
-        if (this.schedule.value.id === slug) {
+        if (this.schedule.value.id === slug && mergeExisting) {
             const mergedSchedule = this.mergeNewScheduleItems(scheduleWithTalentIds);
             const scheduleWithTwitchCategories = await this.getScheduleWithTwitchGames(mergedSchedule);
             this.talent.value = newTalentList;

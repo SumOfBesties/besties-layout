@@ -13,11 +13,18 @@
             name="marathon-slug"
             label="Marathon slug"
         />
+        <div class="layout horizontal center-horizontal m-t-4">
+            <ipl-checkbox
+                v-model="mergeExisting"
+                small
+                label="Merge with existing schedule"
+            />
+        </div>
         <ipl-button
             label="Import"
             async
             :disabled="internalStatusStore.scheduleImportStatus.inProgress"
-            class="m-t-8"
+            class="m-t-4"
             @click="onImport"
         />
     </ipl-space>
@@ -47,7 +54,7 @@
 </template>
 
 <script setup lang="ts">
-import { IplButton, IplDataRow, IplInput, IplMessage, IplSpace } from '@iplsplatoon/vue-components';
+import { IplButton, IplCheckbox, IplDataRow, IplInput, IplMessage, IplSpace } from '@iplsplatoon/vue-components';
 import { ref } from 'vue';
 import { useInternalStatusStore } from 'client-shared/stores/InternalStatusStore';
 import { sendMessage } from 'client-shared/helpers/NodecgHelper';
@@ -59,8 +66,9 @@ const scheduleStore = useScheduleStore();
 const internalStatusStore = useInternalStatusStore();
 
 const marathonSlug = ref('');
+const mergeExisting = ref(true);
 
 async function onImport() {
-    await sendMessage('schedule:import', { slug: marathonSlug.value });
+    await sendMessage('schedule:import', { slug: marathonSlug.value, mergeExisting: mergeExisting.value });
 }
 </script>

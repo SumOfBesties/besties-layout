@@ -8,7 +8,7 @@ export class ScheduleController extends BaseController {
         super(nodecg);
 
         this.listen('schedule:import', async (data) => {
-            await scheduleService.importSchedule(data.slug);
+            await scheduleService.importSchedule(data.slug, data.mergeExisting);
         });
 
         this.listen('schedule:setInterstitialCompleted', data => {
