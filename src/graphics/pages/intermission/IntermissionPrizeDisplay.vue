@@ -58,7 +58,7 @@ const currentTrackerDataStore = useCurrentTrackerDataStore();
 const useBackupImageForSlide = ref<Record<number, boolean>>({});
 const prizeSlides = useSlides(() => currentTrackerDataStore.currentPrizes.map((prize, i) => ({
     component: String(i),
-    duration: 5,
+    duration: 30,
     beforeChange: async () => {
         if (prize.image) {
             if (!await loadAndCheckIfImageExists(prize.image)) {
