@@ -15,7 +15,9 @@
             v-if="props.bidWar.options?.length === 0 && props.bidWar.userOptionsAllowed"
             class="no-options-message layout horizontal center-vertical center-horizontal"
         >
-            <span>No options submitted. Donate now to add your own!</span>
+            <fitted-content>
+                <span>No options submitted. Donate now to add your own!</span>
+            </fitted-content>
         </div>
         <div
             v-else-if="props.bidWar.options?.length === 2"
@@ -95,8 +97,10 @@ const maxTitleWidth = inject(MaxOmnibarBidWarTitleWidthInjectionKey, 275);
     font-size: 25px;
     color: colors.$vfd-teal;
     font-weight: 700;
+    overflow: hidden;
+    width: 100%;
 
-    > span {
+    > * {
         border: 2px solid colors.$vfd-teal;
         padding: 6px 16px;
     }
@@ -168,7 +172,6 @@ const maxTitleWidth = inject(MaxOmnibarBidWarTitleWidthInjectionKey, 275);
 
 .bid-war-options {
     display: grid;
-    margin-right: 8px;
 }
 
 .bid-war-option {

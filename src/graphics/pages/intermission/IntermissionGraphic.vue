@@ -24,7 +24,6 @@
                     :slide-title-width="150"
                     without-donation-reminder
                     without-schedule-items
-                    style="width: 845px"
                 />
             </div>
             <div class="bg-inset m-t-16 layout vertical">
