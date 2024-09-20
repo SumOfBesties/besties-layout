@@ -32,7 +32,7 @@
                 :key="option.id"
                 class="m-t-2"
             >
-                <div style="float: right">{{ formatCurrencyAmount(option.total) }}kr ({{ Math.round((option.total / props.bid.total) * 100) }}%)</div>
+                <div style="float: right">{{ formatCurrencyAmount(option.total) }}kr ({{ props.bid.total === 0 ? 0 : Math.round((option.total / props.bid.total) * 100) }}%)</div>
                 <div>{{ option.name }}</div>
                 <div>{{ option.description }}</div>
             </div>
