@@ -27,7 +27,7 @@
                 :class="{ 'is-winning': highestOptionTotal !== 0 && option.total === highestOptionTotal }"
             >
                 <div class="option-numbers">
-                    <div class="percentage">{{ Math.round((option.total / props.bidWar.total) * 100) }}%</div>
+                    <div class="percentage">{{ props.bidWar.total === 0 ? 0 : Math.round((option.total / props.bidWar.total) * 100) }}%</div>
                     <div class="total">{{ formatNumber(option.total) }}kr</div>
                 </div>
                 <fitted-content align="center" class="option-name">{{ option.name }}</fitted-content>
