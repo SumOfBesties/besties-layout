@@ -18,7 +18,7 @@
                     <div
                         :key="slideTitle"
                         class="slide-title"
-                        :style="{ width: `${props.slideTitleWidth}px` }"
+                        :style="{ minWidth: `${props.slideTitleWidth}px`, width: `${props.slideTitleWidth}px` }"
                     >
                         <fitted-content class="slide-title-text">{{ slideTitle }}</fitted-content>
                         <div class="slide-title-icon">»</div>
@@ -237,6 +237,7 @@ const slideTitle = computed(() => {
     display: flex;
     align-items: center;
     transform: rotate3d(1, 0, 0, 0deg) translateZ(40px) scale(0.98);
+    box-sizing: border-box;
 }
 
 .omnibar-main-content {
@@ -249,6 +250,7 @@ const slideTitle = computed(() => {
     transform-style: preserve-3d;
     background-color: colors.$vfd-background;
     padding: 0 8px;
+    box-sizing: border-box;
 }
 
 .slide-title {
