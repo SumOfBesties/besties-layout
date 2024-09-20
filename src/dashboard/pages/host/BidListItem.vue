@@ -12,9 +12,9 @@
             </template>
         </div>
         <div class="bid-name">{{ props.bid.name }}</div>
-        <div>{{ props.bid.description }}</div>
-        <div>{{ props.bid.speedrunName }}</div>
-        <div :style="{ color: endTimeColor ?? undefined }">{{ endTimeText }}</div>
+        <div class="m-t-2">{{ props.bid.description }}</div>
+        <div v-if="!$helpers.isBlank(props.bid.speedrunName)" class="m-t-4 m-b-2"><span class="text-bold">Game: </span>{{ props.bid.speedrunName }}</div>
+        <div class="m-t-4 m-b-2" :style="{ color: endTimeColor ?? undefined }">{{ endTimeText }}</div>
         <ipl-expanding-space
             v-if="props.bid.options != null"
             title="Options"
