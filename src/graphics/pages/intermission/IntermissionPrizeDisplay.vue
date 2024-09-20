@@ -5,15 +5,15 @@
                 <div
                     v-if="activePrize != null"
                     :key="activePrize?.id"
-                    class="layout horizontal max-height center-horizontal"
+                    class="layout horizontal max-height center-horizontal max-width"
                 >
                     <div
                         class="prize-image"
                         :style="{ backgroundImage: `url('${useBackupImageForSlide[activePrize.id] === true ? prizeImagePlaceholder : activePrize.image}')` }"
                     />
-                    <div class="layout vertical center-vertical max-width prize-details">
+                    <div class="layout vertical center-vertical prize-details">
                         <div class="prize-label">Prize</div>
-                        <div class="prize-name">{{ activePrize.name }}</div>
+                        <fitted-content class="prize-name">{{ activePrize.name }}</fitted-content>
                         <div v-if="activePrize.provider" class="provider">Provided by {{ activePrize.provider }}</div>
                         <div class="layout horizontal prize-donation-amount">
                             <seven-segment-digits
@@ -51,13 +51,14 @@ import { computed, ref } from 'vue';
 import prizeImagePlaceholder from '../../assets/img/prize-image-placeholder.png';
 import SevenSegmentDigits from 'components/SevenSegmentDigits.vue';
 import OpacitySwapTransition from 'components/OpacitySwapTransition.vue';
+import FittedContent from 'components/FittedContent.vue';
 
 const currentTrackerDataStore = useCurrentTrackerDataStore();
 
 const useBackupImageForSlide = ref<Record<number, boolean>>({});
 const prizeSlides = useSlides(() => currentTrackerDataStore.currentPrizes.map((prize, i) => ({
     component: String(i),
-    duration: 30,
+    duration: 5,
     beforeChange: async () => {
         if (prize.image) {
             if (!await loadAndCheckIfImageExists(prize.image)) {
@@ -75,13 +76,17 @@ const activePrize = computed(() => prizeSlides.activeComponent.value == null ? n
 <style scoped lang="scss">
 @use '../../styles/colors';
 
-.prize-display > div {
-    position: relative;
+.prize-display {
+    overflow: hidden;
+
+    > div {
+        position: relative;
+    }
 }
 
 .prize-image {
     height: 100%;
-    width: 400px;
+    min-width: 260px;
     margin: 0 16px;
     background-size: contain;
     background-repeat: no-repeat;
@@ -91,6 +96,9 @@ const activePrize = computed(() => prizeSlides.activeComponent.value == null ? n
 .prize-details {
     align-items: flex-start;
     color: colors.$vfd-teal;
+    flex-shrink: 1;
+    width: 100%;
+    overflow: hidden;
 }
 
 .prize-label {
@@ -106,10 +114,13 @@ const activePrize = computed(() => prizeSlides.activeComponent.value == null ? n
 .prize-name {
     font-weight: 700;
     font-size: 50px;
+    overflow: hidden;
+    width: 100%;
 }
 
 .provider {
     margin-top: 6px;
+    margin-right: 12px;
     font-size: 26px;
     font-weight: 600;
 }

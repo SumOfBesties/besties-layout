@@ -31,7 +31,7 @@ export default defineComponent({
                 gsap.set(elem, { opacity: 0 });
             },
             enter: (elem: HTMLElement, done: gsap.Callback) => {
-                gsap.to(elem, { opacity: 1, onComplete: done, duration: 0.35 });
+                gsap.to(elem, { opacity: 1, onComplete: done, duration: 0.35, ease: 'none' });
             },
             beforeLeave: (elem: HTMLElement) => {
                 if (props.mode === 'default') {
@@ -39,7 +39,7 @@ export default defineComponent({
                 }
             },
             leave: (elem: HTMLElement, done: gsap.Callback) => {
-                gsap.to(elem, { opacity: 0, onComplete: done, duration: 0.35 });
+                gsap.to(elem, { opacity: 0, onComplete: done, duration: 0.35, ease: 'none' });
             }
         };
     }
