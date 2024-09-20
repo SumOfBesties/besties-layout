@@ -2,7 +2,7 @@
     <div class="omnibar-milestone-display">
         <div class="first-row">
             <fitted-content class="incentive-name m-r-8">
-                {{ props.incentive.name }}
+                <span v-if="!$helpers.isBlank(props.incentive.speedrunName)" class="speedrun-name">{{ props.incentive.speedrunName }} - </span>{{ props.incentive.name }}
             </fitted-content>
             <div>{{ formatNumber(props.incentive.total) }}/<span class="incentive-total">{{ props.incentive.goal == null ? '-' : formatNumber(props.incentive.goal) }}kr</span></div>
         </div>
@@ -27,6 +27,10 @@ const props = defineProps<{
 
 <style scoped lang="scss">
 @use '../../styles/colors';
+
+.speedrun-name {
+    font-weight: 400;
+}
 
 .omnibar-milestone-display {
     width: 98%;
