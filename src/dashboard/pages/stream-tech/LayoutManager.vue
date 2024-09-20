@@ -10,6 +10,14 @@
                     class="capture-select"
                 >
                     <div class="title">Video input for {{ selectedCapture.type }} capture #{{ selectedCapture.index + 1 }}</div>
+                    <ipl-button
+                        class="m-t-8"
+                        :disabled="!allowCropping"
+                        @click="sourceCroppingDialog?.open(obsStore.obsVideoInputAssignments[selectedCapture.type === 'game' ? 'gameCaptures' : 'cameraCaptures'][selectedCapture.index]!, selectedCapture!)"
+                    >
+                        <font-awesome-icon icon="crop" />
+                        Adjust crop
+                    </ipl-button>
                     <ipl-space
                         v-for="input in obsStore.obsState.videoInputs ?? []"
                         :key="input.sourceName"
@@ -20,14 +28,6 @@
                     >
                         {{ input.sourceName }}
                     </ipl-space>
-                    <ipl-button
-                        class="m-t-16"
-                        :disabled="!allowCropping"
-                        @click="sourceCroppingDialog?.open(obsStore.obsVideoInputAssignments[selectedCapture.type === 'game' ? 'gameCaptures' : 'cameraCaptures'][selectedCapture.index]!, selectedCapture!)"
-                    >
-                        <font-awesome-icon icon="crop" />
-                        Adjust crop
-                    </ipl-button>
                 </ipl-space>
             </transition>
 
