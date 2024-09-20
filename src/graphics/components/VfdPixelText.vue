@@ -161,7 +161,7 @@ const progressBarInfo = computed(() => {
     const current = Math.floor(props.progressBar.current);
     const end = Math.floor(props.progressBar.end);
     const start = Math.floor(props.progressBar.start);
-    const formattedStart = start === 0 ? '' : shortenLargeNumber(start);
+    const formattedStart = shortenLargeNumber(start);
     const formattedEnd = shortenLargeNumber(end);
     const percentage = Math.min(1, (current - start) / (end - start));
     const fullPercentage = current / end;
