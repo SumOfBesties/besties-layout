@@ -40,7 +40,8 @@
                 :key="result.id"
             >
                 <template #title>
-                    <schedule-item-type-badge :schedule-item="result" />
+                    <span class="item-index">#{{ result.index + 1 }}: </span>
+                    <schedule-item-type-badge :schedule-item="result" class="m-l-4" />
                     {{ result.title }}
                     <span class="text-low-emphasis">
                         – est. {{ formatScheduleItemEstimate(result) }}
@@ -66,27 +67,33 @@
                         {{ talentStore.formatTalentIdList(result.talentIds, 4) }}
                     </div>
                 </template>
-                <div class="layout horizontal">
-                    <ipl-button
-                        v-if="result.type === 'SPEEDRUN'"
-                        color="transparent"
-                        inline
-                        class="m-r-8"
-                        :disabled="result.id === scheduleStore.activeSpeedrun?.id || timerStore.timerActive"
-                        @click="setActiveSpeedrun(result.id)"
-                    >
-                        <font-awesome-icon icon="circle" size="sm" />
-                        Set as active run
-                    </ipl-button>
-                    <ipl-button
-                        color="transparent"
-                        inline
-                        class="m-r-8"
-                        @click="editScheduleItem(result.id)"
-                    >
-                        <font-awesome-icon icon="pen-to-square" size="sm" />
-                        Edit
-                    </ipl-button>
+                <div>
+                    <div class="m-b-2" :key="minutes">
+                        <font-awesome-icon icon="clock" size="sm" fixed-width />
+                        {{ formatScheduledStartTime(result.scheduledStartTime) }}
+                    </div>
+                    <div class="layout horizontal">
+                        <ipl-button
+                            v-if="result.type === 'SPEEDRUN'"
+                            color="transparent"
+                            inline
+                            class="m-r-8"
+                            :disabled="result.id === scheduleStore.activeSpeedrun?.id || timerStore.timerActive"
+                            @click="setActiveSpeedrun(result.id)"
+                        >
+                            <font-awesome-icon icon="circle" size="sm" />
+                            Set as active run
+                        </ipl-button>
+                        <ipl-button
+                            color="transparent"
+                            inline
+                            class="m-r-8"
+                            @click="editScheduleItem(result.id)"
+                        >
+                            <font-awesome-icon icon="pen-to-square" size="sm" />
+                            Edit
+                        </ipl-button>
+                    </div>
                 </div>
             </ipl-expanding-space>
         </ipl-space>
@@ -102,7 +109,7 @@ import {
     IplInput,
     IplSpace
 } from '@iplsplatoon/vue-components';
-import { computed, inject, ref, watch } from 'vue';
+import { computed, inject, onMounted, onUnmounted, ref, watch } from 'vue';
 import { formatScheduleItemEstimate, isBlank } from 'client-shared/helpers/StringHelper';
 import { useScheduleStore } from 'client-shared/stores/ScheduleStore';
 import { library } from '@fortawesome/fontawesome-svg-core';
@@ -117,12 +124,16 @@ import {
 } from 'types/ScheduleHelpers';
 import { faCircle } from '@fortawesome/free-solid-svg-icons/faCircle';
 import { faPenToSquare } from '@fortawesome/free-solid-svg-icons';
+import { faClock } from '@fortawesome/free-solid-svg-icons/faClock';
 import { sendMessage } from 'client-shared/helpers/NodecgHelper';
 import ScheduleItemTypeBadge from '../../components/ScheduleItemTypeBadge.vue';
 import { ScheduleItemEditorInjectionKey } from '../../helpers/Injections';
 import { useTimerStore } from 'client-shared/stores/TimerStore';
+import { DateTime } from 'luxon';
 
-library.add(faGamepad, faHeadset, faCircle, faPenToSquare);
+library.add(faGamepad, faHeadset, faCircle, faPenToSquare, faClock);
+
+type ScheduleItemWithIndexAndTalentInfo = ScheduleItemWithTalentInfo & { index: number };
 
 const scheduleStore = useScheduleStore();
 const talentStore = useTalentStore();
@@ -135,9 +146,21 @@ const searchByTitle = ref(true);
 
 const scheduleItemEditor = inject(ScheduleItemEditorInjectionKey);
 
+const minutes = ref(0);
+let minuteUpdateInterval: number | undefined = undefined;
+onUnmounted(() => {
+    window.clearInterval(minuteUpdateInterval);
+});
+
 watch(isOpen, newValue => {
     if (!newValue) {
         query.value = '';
+        window.clearInterval(minuteUpdateInterval);
+    } else {
+        minutes.value = DateTime.now().minute;
+        minuteUpdateInterval = window.setInterval(() => {
+            minutes.value = DateTime.now().minute;
+        }, 30 * 1000);
     }
 });
 
@@ -145,8 +168,14 @@ function open() {
     isOpen.value = true;
 }
 
-const scheduleItemsWithTalentInfo = computed<ScheduleItemWithTalentInfo[]>(() => {
-    return scheduleStore.schedule.items.map(scheduleItem => {
+function formatScheduledStartTime(scheduledStartTime: string): string {
+    const parsedTime = DateTime.fromISO(scheduledStartTime);
+
+    return `${parsedTime.setLocale('en-GB').toLocaleString(DateTime.DATETIME_SHORT)} (${parsedTime.toRelative({ unit: ['days', 'hours', 'minutes'] })})`;
+}
+
+const scheduleItemsWithTalentInfo = computed<ScheduleItemWithIndexAndTalentInfo[]>(() => {
+    return scheduleStore.schedule.items.map((scheduleItem, i) => {
         if (scheduleItem.type === 'SPEEDRUN') {
             return {
                 ...scheduleItem,
@@ -154,12 +183,14 @@ const scheduleItemsWithTalentInfo = computed<ScheduleItemWithTalentInfo[]>(() =>
                 teams: scheduleItem.teams.map(team => ({
                     ...team,
                     players: team.playerIds.map(playerId => talentStore.findTalentItemById(playerId.id))
-                }))
+                })),
+                index: i
             } satisfies SpeedrunWithTalentInfo;
         } else {
             return {
                 ...scheduleItem,
-                talent: scheduleItem.talentIds.map(talentId => talentStore.findTalentItemById(talentId.id))
+                talent: scheduleItem.talentIds.map(talentId => talentStore.findTalentItemById(talentId.id)),
+                index: i
             } satisfies OtherScheduleItemWithTalentInfo;
         }
     });
@@ -214,5 +245,9 @@ defineExpose({
 .title-additional-details {
     font-weight: 400;
     margin-top: 2px;
+}
+
+.item-index {
+    font-weight: 400;
 }
 </style>
