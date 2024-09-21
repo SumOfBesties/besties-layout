@@ -72,7 +72,7 @@ const exponent = computed({
 
 const volumeDisplayScale = computed(() => {
     if (props.visible) {
-        return ((((props.assignedChannel != null ? mixerStore.mixerChannelLevels[props.assignedChannel] : undefined) ?? -90) + 90) / 100) ** (props.channelLevelExponent ?? 1);
+        return ((((props.assignedChannel != null ? mixerStore.mixerChannelLevels[props.assignedChannel] : undefined) ?? -90) + 90) / 100) ** (1 / (props.channelLevelExponent ?? 1));
     }
 
     return '0';

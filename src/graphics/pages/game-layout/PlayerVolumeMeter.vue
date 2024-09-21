@@ -67,7 +67,7 @@ onMounted(() => {
         if (assignment == null) return [-90, defaultSpeakingThreshold];
         return [mixerStore.mixerChannelLevels[assignment.channelId] ?? -90, assignment.speakingThresholdDB ?? defaultSpeakingThreshold, assignment.channelLevelExponent ?? 1];
     }, ([channelLevel, speakingThreshold, channelLevelExponent]) => {
-        targetLevel = channelLevel > speakingThreshold ? ((channelLevel + 90) / 100) ** channelLevelExponent : 0;
+        targetLevel = channelLevel > speakingThreshold ? ((channelLevel + 90) / 100) ** (1 / channelLevelExponent) : 0;
     });
 
     const redraw = (time: number) => {
