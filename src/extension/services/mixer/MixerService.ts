@@ -99,6 +99,9 @@ export class MixerService {
                     speedrunTalentIds.add(playerId.id);
                 });
             });
+            newValue.commentatorIds.forEach(commentatorId => {
+                speedrunTalentIds.add(commentatorId.id);
+            });
             const newChannelAssignments = cloneDeep(this.talentMixerChannelAssignments.value);
             Object.keys(newChannelAssignments.speedrunTalent).forEach(talentId => {
                 if (!speedrunTalentIds.has(talentId)) {
