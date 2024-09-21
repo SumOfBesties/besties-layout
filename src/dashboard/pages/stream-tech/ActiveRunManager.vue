@@ -119,7 +119,8 @@ const someMixerAssignmentsMissing = computed(() => {
     return scheduleStore.activeSpeedrun?.teams.some(team => {
         if (mixerStore.talentMixerChannelAssignments.speedrunTeams[team.id] != null) return false;
         return team.playerIds.some(talentId => mixerStore.talentMixerChannelAssignments.speedrunTalent[talentId.id] == null);
-    });
+    }) || scheduleStore.activeSpeedrun?.commentatorIds.some(commentatorId =>
+        mixerStore.talentMixerChannelAssignments.speedrunTalent[commentatorId.id] == null);
 });
 
 const canSeekBackwards = computed(() => {
