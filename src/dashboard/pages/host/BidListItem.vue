@@ -11,6 +11,14 @@
                 {{ formatCurrencyAmount(props.bid.total) }}kr
             </template>
         </div>
+        <ipl-badge
+            v-if="props.bid.pinned"
+            :color="colors.activeSpeedrun"
+            class="pinned-bid-badge m-b-2"
+        >
+            <font-awesome-icon icon="thumbtack" size="xs" />
+            Pinned
+        </ipl-badge>
         <div class="bid-name">{{ props.bid.name }}</div>
         <div class="m-t-2">{{ props.bid.description }}</div>
         <div v-if="!$helpers.isBlank(props.bid.speedrunName)" class="m-t-4 m-b-2"><span class="text-bold">Game: </span>{{ props.bid.speedrunName }}</div>
@@ -44,14 +52,15 @@
 import { AllBids } from 'types/schemas';
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import { DateTime } from 'luxon';
-import { IplExpandingSpace, IplSpace } from '@iplsplatoon/vue-components';
+import { IplBadge, IplExpandingSpace, IplSpace } from '@iplsplatoon/vue-components';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faCircleInfo } from '@fortawesome/free-solid-svg-icons/faCircleInfo';
+import { faThumbtack } from '@fortawesome/free-solid-svg-icons/faThumbtack';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { formatCurrencyAmount } from 'client-shared/helpers/StringHelper';
 import { colors } from '../../styles/colors';
 
-library.add(faCircleInfo);
+library.add(faCircleInfo, faThumbtack);
 
 const props = defineProps<{
     bid: AllBids[number]
@@ -96,8 +105,10 @@ watch(parsedSpeedrunEndTime, updateEndTimeInfo, { immediate: true });
 </script>
 
 <style scoped lang="scss">
+@use '../../styles/dashboard-colors';
+
 .goal-met {
-    color: #00A651
+    color: dashboard-colors.$state-green;
 }
 
 .bid-name {
