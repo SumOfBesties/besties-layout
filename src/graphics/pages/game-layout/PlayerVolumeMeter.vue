@@ -78,9 +78,9 @@ onMounted(() => {
         const deltaTime = time - lastTime;
         lastTime = time;
         if (currentLevel > targetLevel) {
-            currentLevel = Math.max(targetLevel, currentLevel - deltaTime / 250);
+            currentLevel = Math.max(targetLevel, currentLevel - deltaTime / 100);
         } else if (currentLevel < targetLevel) {
-            currentLevel = Math.min(targetLevel, currentLevel + deltaTime / 250);
+            currentLevel = Math.min(targetLevel, currentLevel + deltaTime / 100);
         }
 
         ctx.fillStyle = colors.vfdTealUnlit;
