@@ -209,7 +209,8 @@ export class TrackerClient {
                     total: typeof bidItem.fields.total === 'string' ? parseFloat(bidItem.fields.total) : bidItem.fields.total ?? 0,
                     state: bidItem.fields.state,
                     speedrunEndTime: bidItem.fields.speedrun__endtime,
-                    speedrunName: bidItem.fields.speedrun__name
+                    speedrunName: bidItem.fields.speedrun__name,
+                    pinned: bidItem.fields.pinned ?? false
                 };
                 if (bidItem.fields.istarget === false) {
                     formattedBid.options = [];

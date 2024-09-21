@@ -15,6 +15,7 @@ export type AllBids = {
 	speedrunEndTime?: string | null;
 	speedrunName?: string | null;
 	userOptionsAllowed?: boolean;
+	pinned?: boolean;
 	options?: {
 		id: number;
 		name: string;
