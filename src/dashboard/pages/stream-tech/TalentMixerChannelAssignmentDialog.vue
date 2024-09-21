@@ -23,7 +23,7 @@
                 :fallback-label="`Team ${i + 1}`"
                 @update:assigned-channel="selectChannel('team', team.id, $event)"
                 @update:speaking-threshold="updateSpeakingThreshold('team', team.id, $event)"
-                @update:channel-level-exponent="updateChannelLevelExponent('team', talentId, $event)"
+                @update:channel-level-exponent="updateChannelLevelExponent('team', team.id, $event)"
             />
             <div class="m-t-8">Players</div>
             <hr class="m-y-2">

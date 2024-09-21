@@ -33,6 +33,7 @@
                 v-model="exponent"
                 :options="levelExponentOptions"
                 label="Channel level exponent"
+                name="exponent"
             />
         </div>
         <div
