@@ -65,9 +65,9 @@ onMounted(() => {
     watch(() => {
         const assignment = mixerStore.talentMixerChannelAssignments.speedrunTalent[props.talentId] ?? (props.teamId == null ? null : mixerStore.talentMixerChannelAssignments.speedrunTeams[props.teamId]);
         if (assignment == null) return [-90, defaultSpeakingThreshold];
-        return [mixerStore.mixerChannelLevels[assignment.channelId] ?? -90, assignment.speakingThresholdDB ?? defaultSpeakingThreshold];
-    }, ([channelLevel, speakingThreshold]) => {
-        targetLevel = channelLevel > speakingThreshold ? (channelLevel + 90) / 100 : 0;
+        return [mixerStore.mixerChannelLevels[assignment.channelId] ?? -90, assignment.speakingThresholdDB ?? defaultSpeakingThreshold, assignment.channelLevelExponent ?? 1];
+    }, ([channelLevel, speakingThreshold, channelLevelExponent]) => {
+        targetLevel = channelLevel > speakingThreshold ? ((channelLevel + 90) / 100) ** channelLevelExponent : 0;
     });
 
     const redraw = (time: number) => {

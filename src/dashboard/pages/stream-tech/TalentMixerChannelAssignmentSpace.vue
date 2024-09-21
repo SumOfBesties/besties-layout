@@ -1,22 +1,15 @@
 <template>
     <ipl-space color="secondary">
-        <ipl-select
-            :model-value="props.assignedChannel == null ? 'none' : String(props.assignedChannel)"
-            :label="talentName"
-            :option-groups="mixerStore.mixerChannelOptions"
-            class="talent-channel-select"
-            @update:model-value="selectTalentChannel($event)"
-        />
         <div
-            class="m-t-4 layout horizontal"
+            class="layout horizontal"
             style="align-items: flex-end"
         >
-            <ipl-input
-                :model-value="internalSpeakingThreshold"
-                label="Speaking threshold (dB)"
-                name="speakingThreshold"
-                class="max-width"
-                @update:model-value="updateSpeakingThreshold($event)"
+            <ipl-select
+                :model-value="props.assignedChannel == null ? 'none' : String(props.assignedChannel)"
+                :label="talentName"
+                :option-groups="mixerStore.mixerChannelOptions"
+                class="talent-channel-select max-width"
+                @update:model-value="selectTalentChannel($event)"
             />
             <div
                 class="speaking-indicator"
@@ -26,28 +19,64 @@
             </div>
         </div>
         <div
-            v-if="visible"
-            class="channel-volume-display"
-            :style="{ transform: `scaleX(${(((props.assignedChannel != null ? mixerStore.mixerChannelLevels[props.assignedChannel] : undefined) ?? -90) + 90) / 100})` }"
-        />
+            class="m-t-4 layout horizontal"
+            style="align-items: flex-end"
+        >
+            <ipl-input
+                :model-value="internalSpeakingThreshold"
+                label="Speaking threshold (dB)"
+                name="speakingThreshold"
+                class="m-r-8 grow"
+                @update:model-value="updateSpeakingThreshold($event)"
+            />
+            <ipl-radio
+                v-model="exponent"
+                :options="levelExponentOptions"
+                label="Channel level exponent"
+            />
+        </div>
         <div
-            v-else
             class="channel-volume-display"
-            style="transform: scaleX(0)"
+            :style="{ transform: `scaleX(${volumeDisplayScale})` }"
         />
     </ipl-space>
 </template>
 
 <script setup lang="ts">
-import { IplInput, IplSelect, IplSpace } from '@iplsplatoon/vue-components';
+import { IplInput, IplRadio, IplSelect, IplSpace } from '@iplsplatoon/vue-components';
 import { useTalentStore } from 'client-shared/stores/TalentStore';
 import { defaultSpeakingThreshold, useMixerStore } from 'client-shared/stores/MixerStore';
 import { computed, ref, watch } from 'vue';
 import { useScheduleStore } from 'client-shared/stores/ScheduleStore';
+import { Option } from '@iplsplatoon/vue-components/dist/types/select';
 
 const talentStore = useTalentStore();
 const mixerStore = useMixerStore();
 const scheduleStore = useScheduleStore();
+
+const levelExponentOptions: Option[] = [
+    { name: '1', value: '1' },
+    { name: '1.5', value: '1.5' },
+    { name: '2', value: '2' },
+    { name: '3', value: '3' }
+]
+
+const exponent = computed({
+    get() {
+        return props.channelLevelExponent == null ? '1' : String(props.channelLevelExponent);
+    },
+    set(value: string) {
+        emit('update:channelLevelExponent', Number(value));
+    }
+});
+
+const volumeDisplayScale = computed(() => {
+    if (props.visible) {
+        return ((((props.assignedChannel != null ? mixerStore.mixerChannelLevels[props.assignedChannel] : undefined) ?? -90) + 90) / 100) ** (props.channelLevelExponent ?? 1);
+    }
+
+    return '0';
+});
 
 const talentName = computed(() => {
     if (props.teamId != null) {
@@ -70,6 +99,7 @@ const talentName = computed(() => {
 const props = defineProps<{
     assignedChannel: number | undefined
     speakingThreshold: number | undefined
+    channelLevelExponent: number | undefined
     talentId?: string | null
     teamId?: string
     visible: boolean
@@ -80,6 +110,7 @@ const props = defineProps<{
 const emit = defineEmits<{
     'update:assignedChannel': [newValue: number | undefined]
     'update:speakingThreshold': [newValue: number | undefined]
+    'update:channelLevelExponent': [newValue: number | undefined]
 }>();
 
 function selectTalentChannel(channelId: string) {
