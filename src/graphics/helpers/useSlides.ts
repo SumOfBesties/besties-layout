@@ -1,7 +1,7 @@
 import { ComputedRef, MaybeRefOrGetter, onUnmounted, Ref, ref, toValue, watch } from 'vue';
 import { getNextIndex } from './ArrayHelper';
 
-interface Slide {
+export interface Slide {
     component: string
     enabled?: ComputedRef<boolean> | undefined
     duration?: number | null

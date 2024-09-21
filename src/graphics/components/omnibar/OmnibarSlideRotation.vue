@@ -77,7 +77,7 @@ import { useScheduleStore } from 'client-shared/stores/ScheduleStore';
 import { useCurrentTrackerDataStore } from 'client-shared/stores/CurrentTrackerDataStore';
 import { computed, ComputedRef, MaybeRefOrGetter, ref, Ref, toValue, UnwrapRef } from 'vue';
 import { getNextIndex } from '../../helpers/ArrayHelper';
-import { useSlides } from '../../helpers/useSlides';
+import { Slide, useSlides } from '../../helpers/useSlides';
 import { Configschema } from 'types/schemas';
 import { useDonationStore } from 'client-shared/stores/DonationStore';
 import OpacitySwapTransition from 'components/OpacitySwapTransition.vue';
@@ -174,26 +174,55 @@ const {
     visibleItem: visibleIncentive,
     enabled: incentivesEnabled,
     beforeShow: beforeIncentiveShow
-} = useRotatingList(() => currentTrackerDataStore.currentBids.filter(bid => (bid.options == null || bid.options.length === 0) && bid.goal != null));
+} = useRotatingList(() => {
+    const allIncentives = currentTrackerDataStore.currentBids.filter(bid => (bid.options == null || bid.options.length === 0) && bid.goal != null);
+    const pinnedIncentives = allIncentives.filter(incentive => incentive.pinned);
+    if (pinnedIncentives.length > 0 || anyBidsPinned.value) {
+        return pinnedIncentives;
+    }
+    return allIncentives;
+});
 
 const {
     visibleItem: visibleBidWar,
     enabled: bidWarsEnabled,
     beforeShow: beforeBidWarShow
-} = useRotatingList(() => currentTrackerDataStore.currentBids.filter(bid => bid.options != null && (bid.userOptionsAllowed || bid.options.length > 0)));
+} = useRotatingList(() => {
+    const allBids = currentTrackerDataStore.currentBids.filter(bid => bid.options != null && (bid.userOptionsAllowed || bid.options.length > 0));
+    const pinnedBids = allBids.filter(bid => bid.pinned);
+    if (pinnedBids.length > 0 || anyBidsPinned.value) {
+        return pinnedBids;
+    }
+    return allBids;
+});
 
-const slides = useSlides([
-    // This'll only show up if every other slide is disabled.
-    { component: 'fallback', enabled: computed(() => false), duration: 10 },
-    { component: 'nextUp', enabled: computed(() => nextScheduleItem.value != null), duration: null },
-    { component: 'later', enabled: computed(() => scheduleItemAfterNext.value != null), duration: null },
-    { component: 'nextSpeedrun', enabled: computed(() => nextSpeedrun.value != null), duration: null },
-    { component: 'milestone', enabled: milestonesEnabled, beforeChange: beforeMilestoneShow, duration: 30 },
-    { component: 'incentive', enabled: incentivesEnabled, beforeChange: beforeIncentiveShow, duration: 30 },
-    { component: 'bidwar', enabled: bidWarsEnabled, beforeChange: beforeBidWarShow, duration: 30 },
-    { component: 'donationReminder1', enabled: showDonationReminder, duration: 10 },
-    { component: 'donationReminder2', enabled: showDonationReminder, duration: 10 }
-]);
+const anyBidsPinned = computed(() => currentTrackerDataStore.currentBids.some(bid => bid.pinned === true));
+
+const slides = useSlides(() => {
+    const result: Slide[] = [
+        { component: 'fallback', enabled: computed(() => false), duration: 10 }
+    ];
+
+    if (anyBidsPinned.value) {
+        result.push(
+            { component: 'incentive', enabled: incentivesEnabled, beforeChange: beforeIncentiveShow, duration: 120 },
+            { component: 'bidwar', enabled: bidWarsEnabled, beforeChange: beforeBidWarShow, duration: 120 },
+            { component: 'donationReminder1', enabled: showDonationReminder, duration: 10 },
+            { component: 'donationReminder2', enabled: showDonationReminder, duration: 10 });
+    } else {
+        result.push(
+            { component: 'nextUp', enabled: computed(() => nextScheduleItem.value != null), duration: null },
+            { component: 'later', enabled: computed(() => scheduleItemAfterNext.value != null), duration: null },
+            { component: 'nextSpeedrun', enabled: computed(() => nextSpeedrun.value != null), duration: null },
+            { component: 'milestone', enabled: milestonesEnabled, beforeChange: beforeMilestoneShow, duration: 30 },
+            { component: 'incentive', enabled: incentivesEnabled, beforeChange: beforeIncentiveShow, duration: 30 },
+            { component: 'bidwar', enabled: bidWarsEnabled, beforeChange: beforeBidWarShow, duration: 30 },
+            { component: 'donationReminder1', enabled: showDonationReminder, duration: 10 },
+            { component: 'donationReminder2', enabled: showDonationReminder, duration: 10 });
+    }
+
+    return result;
+});
 
 let manualSlideAdvanceTimeout: number | undefined = undefined;
 function onSlideSwitchReady() {
