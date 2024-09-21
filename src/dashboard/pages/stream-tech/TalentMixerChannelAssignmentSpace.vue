@@ -33,7 +33,7 @@
                 v-model="exponent"
                 :options="levelExponentOptions"
                 label="Channel level exponent"
-                name="exponent"
+                :name="`${exponent}_${props.talentId ?? props.teamId}`"
             />
         </div>
         <div
