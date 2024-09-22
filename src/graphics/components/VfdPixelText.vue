@@ -43,9 +43,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
+import { computed, inject, onMounted, onUnmounted, ref, watch } from 'vue';
 import FittedContent from 'components/FittedContent.vue';
 import { shortenLargeNumber } from 'client-shared/helpers/StringHelper';
+import { TextScrollEventBusInjectionKey } from '../helpers/TextScrollEventBus';
+
+const textScrollEventBus = inject(TextScrollEventBusInjectionKey)!;
 
 const props = withDefaults(defineProps<{
     fontSize: number
@@ -90,54 +93,52 @@ const justifyContent = computed(() => {
 });
 
 const useFittedContent = computed(() => props.textContent != null && props.textContent.length - characterCount.value < 0);
-let textScrollTimeout: number | undefined = undefined;
+let textScrollUnpauseTimeout: number | undefined = undefined;
 let currentTextPosition = 0;
+let formattedText: string = '';
 const visibleText = ref('');
-const scrollSpeed = 200;
 const textEndPauseDuration = 10000;
+const scrollText = () => {
+    if (formattedText.length - currentTextPosition > characterCount.value) {
+        currentTextPosition++;
+        visibleText.value = formattedText.slice(currentTextPosition, characterCount.value + currentTextPosition);
+    } else {
+        currentTextPosition++;
+        const firstHalf = formattedText.slice(currentTextPosition, characterCount.value + currentTextPosition);
+        visibleText.value = firstHalf + formattedText.slice(0, characterCount.value - firstHalf.length);
+        if (firstHalf.length === 0) {
+            currentTextPosition = 0;
+            textScrollEventBus.off('scroll', scrollText);
+            clearTimeout(textScrollUnpauseTimeout);
+            textScrollUnpauseTimeout = window.setTimeout(() => textScrollEventBus.on('scroll', scrollText), textEndPauseDuration);
+            emit('scrollEndReached');
+            return;
+        }
+    }
+};
 watch(() => [props.textContent, characterCount.value] as [string | undefined | null, number], ([newText, newCharacterCount]) => {
     currentTextPosition = 0;
-    window.clearTimeout(textScrollTimeout);
+    textScrollEventBus.off('scroll', scrollText);
+    clearTimeout(textScrollUnpauseTimeout);
 
     if (newText == null || useFittedContent.value) {
         visibleText.value = '';
+        textScrollEventBus.off('scroll', scrollText);
         return;
     }
 
     visibleText.value = newText.slice(0, newCharacterCount);
 
     if (newText.length > newCharacterCount) {
-        const formattedText = newText.trim() + ' --- ';
-        const scrollText = () => {
-            if (formattedText.length - currentTextPosition > newCharacterCount) {
-                currentTextPosition++;
-                visibleText.value = formattedText.slice(currentTextPosition, newCharacterCount + currentTextPosition);
-                // if (currentTextPosition % newCharacterCount === 0) {
-                //     textScrollTimeout = window.setTimeout(scrollText, midTextPauseDuration);
-                //     return;
-                // }
-            } else {
-                currentTextPosition++;
-                const firstHalf = formattedText.slice(currentTextPosition, newCharacterCount + currentTextPosition);
-                visibleText.value = firstHalf + formattedText.slice(0, newCharacterCount - firstHalf.length);
-                if (firstHalf.length === 0) {
-                    currentTextPosition = 0;
-                    textScrollTimeout = window.setTimeout(scrollText, textEndPauseDuration);
-                    emit('scrollEndReached');
-                    return;
-                }
-            }
-
-            textScrollTimeout = window.setTimeout(scrollText, scrollSpeed * 0.75);
-        };
-
-        textScrollTimeout = window.setTimeout(scrollText, textEndPauseDuration);
+        formattedText = newText.trim() + ' --- ';
+        textScrollUnpauseTimeout = window.setTimeout(() => textScrollEventBus.on('scroll', scrollText), textEndPauseDuration);
         emit('scrollStarted');
     }
 });
 
 onUnmounted(() => {
-    window.clearTimeout(textScrollTimeout);
+    window.clearTimeout(textScrollUnpauseTimeout);
+    textScrollEventBus.off('scroll', scrollText);
 });
 
 function getCharacterForRemainingPixels(pixels: number) {

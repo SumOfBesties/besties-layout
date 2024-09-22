@@ -106,8 +106,8 @@
     "repository": "https://github.com/nodecg/nodecg.git",
     "devDependencies": {
         "@fortawesome/fontawesome-svg-core": "^6.4.0",
-        "@fortawesome/free-solid-svg-icons": "^6.4.0",
         "@fortawesome/free-brands-svg-icons": "^6.4.0",
+        "@fortawesome/free-solid-svg-icons": "^6.4.0",
         "@fortawesome/vue-fontawesome": "^3.0.0-4",
         "@iplsplatoon/vue-components": "3.6.0",
         "@jest/globals": "^29.7.0",
@@ -149,6 +149,7 @@
         "cookie": "^0.6.0",
         "livesplit-core": "^0.10.2",
         "luxon": "^3.4.4",
+        "mitt": "^3.0.1",
         "obs-websocket-js": "^5.0.6",
         "osc": "^2.4.5",
         "p-queue": "^8.0.1",

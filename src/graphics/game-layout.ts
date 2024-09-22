@@ -10,6 +10,7 @@ import { initTalentStore } from 'client-shared/stores/TalentStore';
 import { initTimerStore } from 'client-shared/stores/TimerStore';
 import { initAssetStore } from 'client-shared/stores/AssetStore';
 import { initMixerStore } from 'client-shared/stores/MixerStore';
+import { initTextScrollEventBus } from './helpers/TextScrollEventBus';
 
 (async () => {
     const app = createApp(GameLayoutGraphic);
@@ -23,5 +24,6 @@ import { initMixerStore } from 'client-shared/stores/MixerStore';
         initAssetStore(),
         initMixerStore()
     ]);
+    initTextScrollEventBus(app);
     app.mount('#app');
 })();

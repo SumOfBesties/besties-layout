@@ -12,6 +12,7 @@ import { initTimerStore } from 'client-shared/stores/TimerStore';
 import { initAssetStore } from 'client-shared/stores/AssetStore';
 import { initMusicStore } from 'client-shared/stores/MusicStore';
 import { initMixerStore } from 'client-shared/stores/MixerStore';
+import { initTextScrollEventBus } from './helpers/TextScrollEventBus';
 
 (async () => {
     const app = createApp(IntermissionGraphic);
@@ -27,5 +28,6 @@ import { initMixerStore } from 'client-shared/stores/MixerStore';
         initMusicStore(),
         initMixerStore()
     ]);
+    initTextScrollEventBus(app);
     app.mount('#app');
 })();
