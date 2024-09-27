@@ -139,7 +139,7 @@ being imported. This means that updates to the schedule will appear without any 
 
 ## License & Acknowledgements
 
-- The source code for the `nsg2-layouts` is licensed under the MIT license
+- The source code for the `nsg2-layouts` project is licensed under the MIT license
 - [Norges Blindeforbund's](https://www.blindeforbundet.no/) logo may only be used with their prior permission. View more information [here (in Norwegian)](https://www.blindeforbundet.no/designmanual/logo)
 - Any other image assets in this repository may only be used with prior permission from the Norway Speedrunner Gathering
 - The [DSEG font family](https://github.com/keshikan/DSEG) by [keshikan](https://github.com/keshikan) is licensed under the [SIL Open Font License, version 1.1](https://openfontlicense.org/)
