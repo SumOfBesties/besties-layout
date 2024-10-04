@@ -1,6 +1,6 @@
-# nsg2-layouts
+# besties-layout
 
-Broadcast graphics for speedrun marathon events from the [Norway Speedrunner Gathering](https://nsgmarathon.com/), informally known as "Norskontrol" or "inkontrol".
+Broadcast graphics for speedrun marathon events from Sum of Besties based on nsg-layout
 
 ## Preamble
 
@@ -13,13 +13,13 @@ The use of Norway Speedrunner Gathering's logos or other image assets is forbidd
 
 ## Setup
 
-- Clone this repository to `[nodecg]/bundles/nsg2-layouts`
+- Clone this repository to `[nodecg]/bundles/besties-layout`
 - Install dependencies: `npm i`
 - Run build: `npm run build`
 
 ### Configuration
 
-To configure this bundle, create the file `[nodecg]/cfg/nsg2-layouts.json` with the following contents:
+To configure this bundle, create the file `[nodecg]/cfg/besties-layout.json` with the following contents:
 
 ```json
 {
@@ -47,7 +47,7 @@ To configure this bundle, create the file `[nodecg]/cfg/nsg2-layouts.json` with 
   "twitch": {
     "clientId": "twitch_client_id",
     "clientSecret": "twitch_client_secret",
-    "redirectUri": "http://localhost:9090/nsg2-layouts/twitch-auth",
+    "redirectUri": "http://localhost:9090/besties-layout/twitch-auth",
     "titleTemplates": {
       "speedrun": "NSG Fall 2024: {{title}} [{{category}}] by {{talent}}",
       "race": "NSG Fall 2024: {{title}} [{{category}}] - {{talent}}",
@@ -139,7 +139,7 @@ being imported. This means that updates to the schedule will appear without any 
 
 ## License & Acknowledgements
 
-- The source code for the `nsg2-layouts` project is licensed under the MIT license
+- The source code for the `besties-layout` project is licensed under the MIT license
 - [Norges Blindeforbund's](https://www.blindeforbundet.no/) logo may only be used with their prior permission. View more information [here (in Norwegian)](https://www.blindeforbundet.no/designmanual/logo)
 - Any other image assets in this repository may only be used with prior permission from the Norway Speedrunner Gathering
 - The [DSEG font family](https://github.com/keshikan/DSEG) by [keshikan](https://github.com/keshikan) is licensed under the [SIL Open Font License, version 1.1](https://openfontlicense.org/)
