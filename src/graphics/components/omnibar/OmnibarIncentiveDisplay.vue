@@ -40,7 +40,7 @@ const props = defineProps<{
     width: 100%;
     display: flex;
     justify-content: space-between;
-    color: colors.$vfd-teal;
+    color: colors.$vfd-light;
     font-size: 25px;
 }
 

@@ -147,7 +147,7 @@ const scheduleItemTimeDeltas = computed(() => {
 
     span {
         color: colors.$vfd-background;
-        background-color: colors.$vfd-red;
+        background-color: colors.$vfd-dark;
         font-weight: 700;
         text-transform: uppercase;
         font-size: 25px;
@@ -158,7 +158,7 @@ const scheduleItemTimeDeltas = computed(() => {
 .separator {
     width: 80%;
     height: 2px;
-    background-color: colors.$vfd-teal;
+    background-color: colors.$vfd-light;
     margin: 16px 0 16px 10%;
 }
 
@@ -171,7 +171,7 @@ const scheduleItemTimeDeltas = computed(() => {
 }
 
 .schedule-notes {
-    color: colors.$vfd-teal;
+    color: colors.$vfd-light;
     font-size: 28px;
     font-weight: 500;
     margin-top: -4px;
@@ -186,7 +186,7 @@ const scheduleItemTimeDeltas = computed(() => {
 
 .full-schedule-label {
     color: colors.$vfd-background;
-    background-color: colors.$vfd-teal;
+    background-color: colors.$vfd-light;
     font-weight: 700;
     padding: 1px 12px;
     text-transform: uppercase;
@@ -205,23 +205,23 @@ const scheduleItemTimeDeltas = computed(() => {
     }
 
     .in {
-        color: colors.$vfd-teal;
+        color: colors.$vfd-light;
         margin-bottom: -2px;
         margin-right: 2px;
     }
 
     .unit {
-        color: colors.$vfd-teal-unlit;
+        color: colors.$vfd-light-unlit;
         transform: translateY(3.5px);
         font-size: 24px;
         line-height: 26px;
 
         &.lit {
-            color: colors.$vfd-teal;
+            color: colors.$vfd-light;
         }
 
         > .unlit {
-            color: colors.$vfd-teal-unlit;
+            color: colors.$vfd-light-unlit;
         }
     }
 }

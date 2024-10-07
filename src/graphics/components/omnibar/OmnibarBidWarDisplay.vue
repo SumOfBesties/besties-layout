@@ -88,26 +88,26 @@ const maxTitleWidth = inject(MaxOmnibarBidWarTitleWidthInjectionKey, 275);
 }
 
 .bid-war-title {
-    color: colors.$vfd-teal;
+    color: colors.$vfd-light;
     font-size: 25px;
     font-weight: 700;
 }
 
 .no-options-message {
     font-size: 25px;
-    color: colors.$vfd-teal;
+    color: colors.$vfd-light;
     font-weight: 700;
     overflow: hidden;
     width: 100%;
 
     > * {
-        border: 2px solid colors.$vfd-teal;
+        border: 2px solid colors.$vfd-light;
         padding: 6px 16px;
     }
 }
 
 .bid-war-option, .bid-war-duel-option {
-    --option-color: #{colors.$vfd-teal};
+    --option-color: #{colors.$vfd-light};
 
     border: 2px solid var(--option-color);
     color: var(--option-color);
@@ -197,7 +197,7 @@ const maxTitleWidth = inject(MaxOmnibarBidWarTitleWidthInjectionKey, 275);
 }
 
 .extra-option-box {
-    background-color: colors.$vfd-teal;
+    background-color: colors.$vfd-light;
     color: colors.$vfd-background;
     text-align: center;
     padding: 0 8px;

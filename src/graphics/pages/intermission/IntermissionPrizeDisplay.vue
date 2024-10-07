@@ -95,7 +95,7 @@ const activePrize = computed(() => prizeSlides.activeComponent.value == null ? n
 
 .prize-details {
     align-items: flex-start;
-    color: colors.$vfd-teal;
+    color: colors.$vfd-light;
     flex-shrink: 1;
     width: 100%;
     overflow: hidden;
@@ -103,7 +103,7 @@ const activePrize = computed(() => prizeSlides.activeComponent.value == null ? n
 
 .prize-label {
     color: colors.$vfd-background;
-    background-color: colors.$vfd-red;
+    background-color: colors.$vfd-dark;
     padding: 2px 16px;
     font-size: 25px;
     font-weight: 700;
@@ -132,13 +132,13 @@ const activePrize = computed(() => prizeSlides.activeComponent.value == null ? n
     .currency-label {
         font-size: 24px;
         font-weight: 700;
-        color: colors.$vfd-red;
+        color: colors.$vfd-dark;
         line-height: 24px;
         margin-bottom: -3px;
         margin-left: 2px;
 
         > .unlit {
-            color: colors.$vfd-red-unlit;
+            color: colors.$vfd-dark-unlit;
         }
     }
 }
@@ -156,7 +156,7 @@ const activePrize = computed(() => prizeSlides.activeComponent.value == null ? n
     text-transform: uppercase;
 
     > .unlit {
-        color: colors.$vfd-teal-unlit;
+        color: colors.$vfd-light-unlit;
     }
 }
 </style>

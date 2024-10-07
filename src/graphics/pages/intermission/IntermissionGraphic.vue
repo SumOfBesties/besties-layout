@@ -200,7 +200,7 @@ const hostSpeaking = computed(() => {
 }
 
 .pointer-icon {
-    color: colors.$vfd-teal;
+    color: colors.$vfd-light;
     font-size: 3em;
     margin: 0 16px;
 }
@@ -211,9 +211,9 @@ const hostSpeaking = computed(() => {
 }
 
 .host-name-display {
-    border: 2px solid colors.$vfd-teal;
+    border: 2px solid colors.$vfd-light;
     font-size: 30px;
-    color: colors.$vfd-teal;
+    color: colors.$vfd-light;
     font-weight: 700;
     position: relative;
     width: 250px;
@@ -223,13 +223,13 @@ const hostSpeaking = computed(() => {
     transition: background-color 150ms;
 
     &.speaking {
-        background-color: color.adjust(colors.$vfd-teal, $alpha: -0.8);
+        background-color: color.adjust(colors.$vfd-light, $alpha: -0.8);
     }
 
     > .host-name-label {
         font-family: 'Roboto Condensed', sans-serif;
         font-size: 20px;
-        background-color: colors.$vfd-teal;
+        background-color: colors.$vfd-light;
         color: colors.$vfd-background;
         position: absolute;
         bottom: 0;
@@ -265,7 +265,7 @@ const hostSpeaking = computed(() => {
 
 .music-icon {
     font-size: 40px;
-    color: colors.$vfd-teal;
+    color: colors.$vfd-light;
     margin: -4px 12px 0;
 }
 </style>

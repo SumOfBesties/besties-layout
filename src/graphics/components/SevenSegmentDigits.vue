@@ -40,21 +40,21 @@ const props = withDefaults(defineProps<{
 
     &.color-teal {
         .digits, .always-lit-segment {
-            color: colors.$vfd-teal;
+            color: colors.$vfd-light;
         }
 
         .unlit {
-            color: colors.$vfd-teal-unlit;
+            color: colors.$vfd-light-unlit;
         }
     }
 
     &.color-red {
         .digits, .always-lit-segment {
-            color: colors.$vfd-red;
+            color: colors.$vfd-dark;
         }
 
         .unlit {
-            color: colors.$vfd-red-unlit;
+            color: colors.$vfd-dark-unlit;
         }
     }
 }

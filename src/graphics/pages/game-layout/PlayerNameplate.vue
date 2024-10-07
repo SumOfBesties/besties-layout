@@ -172,7 +172,7 @@ const useCompactVolumeMeters = computed(() => props.fixedHeight && (assignmentDa
 @use '../../styles/colors';
 
 .player-nameplate {
-    color: colors.$vfd-teal;
+    color: colors.$vfd-light;
     background-color: colors.$vfd-background;
     text-align: center;
     font-size: 30px;

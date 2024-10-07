@@ -88,7 +88,7 @@ const talent = computed(() => {
     @include decorations.inset-container;
 
     padding: 8px;
-    color: colors.$vfd-teal;
+    color: colors.$vfd-light;
 }
 
 table {
@@ -98,7 +98,7 @@ table {
     table-layout: fixed;
 
     td {
-        border: 2px solid colors.$vfd-teal;
+        border: 2px solid colors.$vfd-light;
         height: 60px;
         text-align: center;
         position: relative;
@@ -107,7 +107,7 @@ table {
         transition: background-color 150ms;
 
         &.speaking {
-            background-color: color.adjust(colors.$vfd-teal, $alpha: -0.8);
+            background-color: color.adjust(colors.$vfd-light, $alpha: -0.8);
         }
     }
 }
@@ -116,7 +116,7 @@ table {
     position: absolute;
     bottom: -2px;
     left: -2px;
-    background-color: colors.$vfd-teal;
+    background-color: colors.$vfd-light;
     font-family: 'Roboto Condensed';
     font-weight: 600;
     font-size: 20px;

@@ -291,14 +291,14 @@ const slideTitle = computed(() => {
     margin: -2px 8px 0;
 
     .slide-title-text {
-        background-color: colors.$vfd-teal;
+        background-color: colors.$vfd-light;
         color: colors.$vfd-background;
         padding: 2px 12px;
         text-transform: uppercase;
     }
 
     .slide-title-icon {
-        color: colors.$vfd-teal;
+        color: colors.$vfd-light;
         font-size: 40px;
         margin-top: -4px;
         margin-left: 8px;
@@ -337,13 +337,13 @@ const slideTitle = computed(() => {
     border-style: solid;
 
     .emphasis {
-        color: colors.$vfd-red;
+        color: colors.$vfd-dark;
         font-weight: 700;
     }
 }
 
 .no-slide-placeholder {
-    color: colors.$vfd-teal;
+    color: colors.$vfd-light;
     font-weight: 700;
     text-align: center;
     width: 100%;

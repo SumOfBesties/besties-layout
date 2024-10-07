@@ -39,11 +39,11 @@ const tweenedTotal = useTweenedNumber(() => Math.floor(donationStore.donationTot
     line-height: 1.1em;
 
     > *:first-child {
-        color: colors.$vfd-red-unlit;
+        color: colors.$vfd-dark-unlit;
     }
 
     > *:last-child {
-        color: colors.$vfd-red;
+        color: colors.$vfd-dark;
     }
 }
 </style>

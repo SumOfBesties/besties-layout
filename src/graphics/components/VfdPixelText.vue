@@ -215,7 +215,7 @@ const progressBarInfo = computed(() => {
 
 .vfd-pixel-text {
     font-family: 'HD44780A00 5x8';
-    color: colors.$vfd-teal;
+    color: colors.$vfd-light;
     display: flex;
     text-rendering: geometricPrecision;
     position: relative;
@@ -226,7 +226,7 @@ const progressBarInfo = computed(() => {
 }
 
 .background {
-    color: colors.$vfd-teal-unlit;
+    color: colors.$vfd-light-unlit;
     position: absolute;
 }
 </style>

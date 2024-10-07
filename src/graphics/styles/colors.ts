@@ -1,6 +1,6 @@
 export const colors = {
-    vfdTeal: '#99FBF9',
-    vfdTealUnlit: '#182727',
-    vfdRed: '#EF3532',
-    vfdRedUnlit: '#3F020E'
+    vfdLight: '#99FBF9',
+    vfdLightUnlit: '#182727',
+    vfdDark: '#EF3532',
+    vfdDarkUnlit: '#3F020E'
 };

@@ -101,7 +101,7 @@ const result = computed(() => {
 }
 
 .forfeit-indicator {
-    color: colors.$vfd-red;
+    color: colors.$vfd-dark;
     text-transform: uppercase;
     font-weight: 700;
     font-size: 14px;
@@ -112,7 +112,7 @@ const result = computed(() => {
 
 .finish-icon {
     margin-right: 6px;
-    color: colors.$vfd-teal;
+    color: colors.$vfd-light;
     font-size: 22px;
 }
 

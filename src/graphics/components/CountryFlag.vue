@@ -23,6 +23,6 @@ const bundleName = nodecg.bundleName;
 img {
     display: inline-block;
     height: 0.85em;
-    border: 2px solid colors.$vfd-teal;
+    border: 2px solid colors.$vfd-light;
 }
 </style>

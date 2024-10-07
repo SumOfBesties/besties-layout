@@ -124,13 +124,13 @@ const isOverEstimate = computed(() => {
 
 fieldset {
     border-left: 0;
-    border-color: colors.$vfd-red;
+    border-color: colors.$vfd-dark;
     height: 100%;
     padding: 4px 4px 4px 0;
     margin: 0 8px 0 -4px;
 
     > legend {
-        color: colors.$vfd-red;
+        color: colors.$vfd-dark;
         font-weight: 700;
     }
 
@@ -144,7 +144,7 @@ fieldset {
 }
 
 .run-info-text-segments {
-    color: colors.$vfd-teal-unlit;
+    color: colors.$vfd-light-unlit;
     margin-top: -5px;
     display: flex;
     justify-content: space-between;
@@ -159,14 +159,14 @@ fieldset {
 
     span {
         &.lit {
-            color: colors.$vfd-teal;
+            color: colors.$vfd-light;
         }
 
         &.segment-red {
-            color: colors.$vfd-red-unlit;
+            color: colors.$vfd-dark-unlit;
 
             &.lit {
-                color: colors.$vfd-red;
+                color: colors.$vfd-dark;
             }
         }
     }
@@ -175,14 +175,14 @@ fieldset {
 .play-pause-section {
     span {
         font-weight: 700;
-        color: colors.$vfd-teal-unlit;
+        color: colors.$vfd-light-unlit;
         transition: color 100ms;
 
         &.lit {
-            color: colors.$vfd-teal;
+            color: colors.$vfd-light;
 
             path {
-                fill: colors.$vfd-teal;
+                fill: colors.$vfd-light;
             }
         }
 
@@ -199,7 +199,7 @@ fieldset {
 
     path {
         transition: fill 100ms;
-        fill: colors.$vfd-teal-unlit;
+        fill: colors.$vfd-light-unlit;
     }
 }
 
@@ -207,7 +207,7 @@ fieldset {
     width: 100%;
     text-align: center;
     color: colors.$vfd-background;
-    background-color: colors.$vfd-red-unlit;
+    background-color: colors.$vfd-dark-unlit;
     margin-top: 2px;
 
     &.lit {
@@ -217,23 +217,23 @@ fieldset {
 
 @keyframes alarm-flash {
     0% {
-        background-color: colors.$vfd-red;
+        background-color: colors.$vfd-dark;
     }
 
     45% {
-        background-color: colors.$vfd-red;
+        background-color: colors.$vfd-dark;
     }
 
     50% {
-        background-color: colors.$vfd-red-unlit;
+        background-color: colors.$vfd-dark-unlit;
     }
 
     95% {
-        background-color: colors.$vfd-red-unlit;
+        background-color: colors.$vfd-dark-unlit;
     }
 
     100% {
-        background-color: colors.$vfd-red;
+        background-color: colors.$vfd-dark;
     }
 }
 </style>

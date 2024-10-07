@@ -50,14 +50,14 @@ const parsedEstimate = computed(() =>
 }
 
 .estimate-label {
-    color: colors.$vfd-red;
+    color: colors.$vfd-dark;
 }
 
 .estimate-digit-label {
-    color: colors.$vfd-teal;
+    color: colors.$vfd-light;
 
     &.unlit {
-        color: colors.$vfd-teal-unlit;
+        color: colors.$vfd-light-unlit;
     }
 }
 
