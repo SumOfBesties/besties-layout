@@ -5,8 +5,8 @@
             :value="time"
             class="time-display"
         />
-        <vfd-pixel-text
-            :font-size="17"
+        <flip-flap-text
+            :font-size="15"
             :text-content="date"
             align="center"
         />
@@ -19,6 +19,7 @@ import { Configschema } from 'types/schemas';
 import { onMounted, onUnmounted, ref } from 'vue';
 import { DateTime } from 'luxon';
 import VfdPixelText from 'components/VfdPixelText.vue';
+import FlipFlapText from "components/FlipFlapText.vue";
 
 const zone = (nodecg.bundleConfig as Configschema)?.event?.timezone ?? 'Etc/GMT';
 const time = ref('--:--');

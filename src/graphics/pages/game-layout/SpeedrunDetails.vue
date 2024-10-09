@@ -1,6 +1,6 @@
 <template>
     <div class="speedrun-details">
-        <vfd-pixel-text
+        <flip-flap-text
             :font-size="25"
             :text-content="scheduleStore.activeSpeedrun?.title"
             class="speedrun-title"
@@ -10,12 +10,12 @@
             style="align-items: flex-end"
         >
             <div class="max-width">
-                <vfd-pixel-text
+                <flip-flap-text
                     :font-size="20"
                     :text-content="systemAndReleaseYear"
                     align="left"
                 />
-                <vfd-pixel-text
+                <flip-flap-text
                     :font-size="20"
                     :text-content="scheduleStore.activeSpeedrun?.category"
                     align="left"
@@ -32,6 +32,7 @@ import { useScheduleStore } from 'client-shared/stores/ScheduleStore';
 import { computed } from 'vue';
 import { isBlank } from 'client-shared/helpers/StringHelper';
 import SpeedrunEstimateDisplay from 'components/SpeedrunEstimateDisplay.vue';
+import FlipFlapText from "components/FlipFlapText.vue";
 
 const scheduleStore = useScheduleStore();
 

@@ -10,7 +10,7 @@
                 />
             </fieldset>
             <div style="margin-left: -2px;">
-                <div class="run-info-text-segments">
+                <!--<div class="run-info-text-segments">
                     <div>
                         <span :class="{ lit: isCoop }">CO-OP</span>
                         <span :class="{ lit: scheduleStore.activeSpeedrun?.relay }">RELAY</span>
@@ -21,7 +21,7 @@
                         <span class="lit">FAST</span>
                         <span class="segment-red"><span>FASTER</span><span>!!!</span></span>
                     </div>
-                </div>
+                </div>-->
                 <div class="layout horizontal center-vertical">
                     <seven-segment-digits
                         unlit-segment="8:88:88 .8"

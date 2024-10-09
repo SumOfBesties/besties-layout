@@ -22,7 +22,7 @@
         "start": "node ../..",
         "watch": "run-p watch:*",
         "watch:browser": "vite --config vite.config.browser.mjs",
-        "watch:extension": "vite --config vite.config.extension.ts",
+        "watch:extension": "vite --config vite.config.extension.mts",
         "schema-types": "nodecg schema-types",
         "test": "jest"
     },

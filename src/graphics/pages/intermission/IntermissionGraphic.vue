@@ -65,13 +65,13 @@
                     </div>
                     <div class="music-icon">♫</div>
                     <div class="grow" style="margin-top: -4px">
-                        <vfd-pixel-text
+                        <flip-flap-text
                             :font-size="24"
                             :text-content="musicStore.musicState.track?.artist ?? 'Unknown Artist'"
                             align="left"
                             text-align="left"
                         />
-                        <vfd-pixel-text
+                        <flip-flap-text
                             :font-size="24"
                             :text-content="musicStore.musicState.track?.song ?? 'Unknown Song'"
                             align="left"
@@ -114,6 +114,7 @@ import CountryFlag from 'components/CountryFlag.vue';
 import { useMusicStore } from 'client-shared/stores/MusicStore';
 import { defaultSpeakingThreshold, disableVolumeMeters, useMixerStore } from 'client-shared/stores/MixerStore';
 import { Configschema } from 'types/schemas';
+import FlipFlapText from "components/FlipFlapText.vue";
 
 const addVisualizerSpace = (nodecg.bundleConfig as Configschema).intermission?.addVisualizerSpace ?? false;
 

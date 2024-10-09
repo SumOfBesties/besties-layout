@@ -1,14 +1,14 @@
 <template>
     <div class="omnibar-schedule-item-display">
-        <vfd-pixel-text
-            :font-size="24"
+        <flip-flap-text
+            :font-size="26"
             :text-content="props.scheduleItem?.title ?? 'Nothing!'"
             text-align="left"
             @scroll-started="onScrollStart(0)"
             @scroll-end-reached="onScrollEnd(0)"
         />
-        <vfd-pixel-text
-            :font-size="24"
+        <flip-flap-text
+            :font-size="26"
             :text-content="secondLine"
             text-align="left"
             @scroll-started="onScrollStart(1)"
@@ -22,6 +22,7 @@ import VfdPixelText from 'components/VfdPixelText.vue';
 import { ScheduleItem } from 'types/ScheduleHelpers';
 import { computed, onMounted } from 'vue';
 import { useTalentStore } from 'client-shared/stores/TalentStore';
+import FlipFlapText from "components/FlipFlapText.vue";
 
 const talentStore = useTalentStore();
 
