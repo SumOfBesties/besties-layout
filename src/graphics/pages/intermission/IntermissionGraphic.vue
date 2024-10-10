@@ -86,9 +86,8 @@
             </div>
         </div>
         <large-separator direction="vertical" />
-        <div class="bg-panel right-panel">
+        <div class="bg-panel">
             <intermission-schedule />
-            <div class="bg-inset camera-border" />
         </div>
     </div>
 </template>
@@ -151,7 +150,7 @@ const hostSpeaking = computed(() => {
         &.right-panel {
             $schedule-height: 723px;
             // Will explode if the schedule's height changes, but I don't foresee that.
-            clip-path: polygon(0% 0%, 0% 100%, 53px 100%, 53px $schedule-height, calc(100% - 53px) $schedule-height, calc(100% - 53px) calc(100% - 53px), 50px calc(100% - 53px), 53px 100%, 100% 100%, 100% 0%);
+            //clip-path: polygon(0% 0%, 0% 100%, 53px 100%, 53px $schedule-height, calc(100% - 53px) $schedule-height, calc(100% - 53px) calc(100% - 53px), 50px calc(100% - 53px), 53px 100%, 100% 100%, 100% 0%);
 
             > .camera-border {
                 margin-top: 40px;

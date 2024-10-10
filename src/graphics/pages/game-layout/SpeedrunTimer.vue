@@ -1,14 +1,14 @@
 <template>
     <div class="speedrun-timer">
         <div class="layout horizontal center-vertical center-horizontal">
-            <fieldset v-if="!props.hideRunNumber">
+            <!--<fieldset v-if="!props.hideRunNumber">
                 <legend>RUN NO.</legend>
-                <seven-segment-digits
+                <flip-flap-digits
                     :digit-count="3"
                     class="run-counter"
                     :value="speedrunCount.current"
                 />
-            </fieldset>
+            </fieldset>-->
             <div style="margin-left: -2px;">
                 <!--<div class="run-info-text-segments">
                     <div>
@@ -23,8 +23,8 @@
                     </div>
                 </div>-->
                 <div class="layout horizontal center-vertical">
-                    <seven-segment-digits
-                        unlit-segment="8:88:88 .8"
+                    <flip-flap-digits
+                        unlit-segment="00:00:00.0"
                         :always-lit-segment="formattedTimer.alwaysLitSegment"
                         class="run-timer"
                         style="width: max-content"
@@ -66,6 +66,7 @@ import SevenSegmentDigits from 'components/SevenSegmentDigits.vue';
 import { useTimerStore } from 'client-shared/stores/TimerStore';
 import { Duration } from 'luxon';
 import { formatTimer } from 'client-shared/helpers/TimerHelper';
+import FlipFlapDigits from "components/FlipFlapDigits.vue";
 
 const scheduleStore = useScheduleStore();
 const timerStore = useTimerStore();
@@ -80,13 +81,13 @@ const speedrunCount = computed(() => scheduleStore.speedrunCount(scheduleStore.a
 const formattedTimer = computed(() => {
     if (timerStore.timer.time.hours > 0) {
         return {
-            timer: formatTimer(timerStore.timer.time, false, true),
-            alwaysLitSegment: '!:!!:!! .!'
+            timer: formatTimer(timerStore.timer.time, false, false),
+            alwaysLitSegment: '!:!!:!!.!'
         };
     } else {
         return {
-            timer: formatTimer(timerStore.timer.time, true, true),
-            alwaysLitSegment: '!!:!! .!'
+            timer: formatTimer(timerStore.timer.time, true, false),
+            alwaysLitSegment: '!!:!!.!'
         };
     }
 });
@@ -114,7 +115,7 @@ const isOverEstimate = computed(() => {
 @use '../../styles/decorations';
 
 .speedrun-timer {
-    font-size: 20px;
+    font-size: 8px;
     font-weight: 700;
     display: flex;
     align-items: center;

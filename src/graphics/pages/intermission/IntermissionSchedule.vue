@@ -9,7 +9,7 @@
             <template v-if="item != null">
 				<div class="schedule-item layout vertical">
 					<flip-flap-text
-						:font-size="27"
+						:font-size="30"
 						:text-content="item.title"
 					/>
 					<div class="layout horizontal center-vertical">
@@ -18,7 +18,7 @@
 							class="schedule-item-time-delta layout horizontal"
 						>
 							<div class="in">IN</div>
-							<seven-segment-digits
+							<flip-flap-digits
 								:digit-count="2"
 								:value="scheduleItemTimeDeltas[i - 1] >= 60 ? Math.round(scheduleItemTimeDeltas[i - 1] / 60) : scheduleItemTimeDeltas[i - 1]"
 								class="delta-digits"
@@ -36,11 +36,11 @@
 								<template v-if="item.type === 'SPEEDRUN'">
 									<div class="max-width m-t-4">
 										<flip-flap-text
-											:font-size="22"
+											:font-size="26"
 											:text-content="talentStore.formatSpeedrunTeamList(item.teams)"
 										/>
 										<flip-flap-text
-											:font-size="22"
+											:font-size="26"
 											:text-content="item.category"
 										/>
 									</div>
@@ -51,7 +51,7 @@
 								</template>
 								<flip-flap-text
 									v-else
-									:font-size="22"
+									:font-size="26"
 									:text-content="talentStore.formatTalentIdList(item.talentIds, 4)"
 									class="max-width m-t-4"
 								/>
@@ -84,8 +84,9 @@ import SpeedrunEstimateDisplay from 'components/SpeedrunEstimateDisplay.vue';
 import { Duration } from 'luxon';
 import SevenSegmentDigits from 'components/SevenSegmentDigits.vue';
 import FlipFlapText from "components/FlipFlapText.vue";
+import FlipFlapDigits from "components/FlipFlapDigits.vue";
 
-const maxScheduleItemCount = 4;
+const maxScheduleItemCount = 6;
 
 const scheduleStore = useScheduleStore();
 const timerStore = useTimerStore();
@@ -204,7 +205,7 @@ const scheduleItemTimeDeltas = computed(() => {
     margin-left: 8px;
 
     .delta-digits {
-        font-size: 44px;
+        font-size: 32px;
     }
 
     .in {

@@ -1,13 +1,12 @@
 <template>
     <div class="donation-total layout horizontal center-vertical">
-        <seven-segment-digits
+        <flip-flap-digits
             :digit-count="6"
             class="donation-total-digits"
             :value="tweenedTotal"
         />
         <div class="currency-label">
-            <div>USD</div>
-            <div>NOK</div>
+            <div>EUR</div>
         </div>
     </div>
 </template>
@@ -16,6 +15,7 @@
 import SevenSegmentDigits from 'components/SevenSegmentDigits.vue';
 import { useTweenedNumber } from '../helpers/useTweenedNumber';
 import { useDonationStore } from 'client-shared/stores/DonationStore';
+import FlipFlapDigits from "components/FlipFlapDigits.vue";
 
 const donationStore = useDonationStore();
 const tweenedTotal = useTweenedNumber(() => Math.floor(donationStore.donationTotal));
@@ -29,7 +29,7 @@ const tweenedTotal = useTweenedNumber(() => Math.floor(donationStore.donationTot
 }
 
 .donation-total-digits {
-    font-size: 2em;
+    font-size: 1.75em;
     margin-right: 4px;
 }
 
