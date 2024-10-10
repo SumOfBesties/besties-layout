@@ -148,7 +148,7 @@ const hostSpeaking = computed(() => {
 
 .intermission-layout {
     display: grid;
-	grid-template-rows: minmax(65%, 75%) 14px minmax(25%, 35%);
+	grid-template-rows: minmax(45%, 75%) 14px minmax(25%, 55%);
     //height: 100%;
 	width: 100%;
 

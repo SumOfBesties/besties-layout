@@ -3,65 +3,130 @@
         <div class="title">
             <span>Next Up</span>
         </div>
-        <template
-            v-for="(item, i) in nextScheduleItems"
-        >
-            <template v-if="item != null">
-				<div class="schedule-item layout vertical">
-					<flip-flap-text
-						:font-size="30"
-						:text-content="item.title"
-					/>
-					<div class="layout horizontal center-vertical">
-						<div
-							v-if="i > 0"
-							class="schedule-item-time-delta layout horizontal"
-						>
-							<div class="in">IN</div>
-							<flip-flap-digits
-								:digit-count="2"
-								:value="scheduleItemTimeDeltas[i - 1] >= 60 ? Math.round(scheduleItemTimeDeltas[i - 1] / 60) : scheduleItemTimeDeltas[i - 1]"
-								class="delta-digits"
+		<div class="layout horizontal">
+			<div class="max-width">
+				<template
+					v-for="(item, i) in nextScheduleItems.filter((_, idx) => idx < maxScheduleItemCount/2)"
+				>
+					<template v-if="item != null">
+						<div class="schedule-item layout vertical">
+							<flip-flap-text
+								:font-size="30"
+								:text-content="item.title"
 							/>
-							<div class="m-l-2">
-								<div class="unit" :class="{ lit: scheduleItemTimeDeltas[i - 1] < 60 }">MIN</div>
-								<div class="unit" :class="{ lit: scheduleItemTimeDeltas[i - 1] >= 60 }">HR<span :class="{ unlit: Math.round(scheduleItemTimeDeltas[i - 1] / 60) === 1 }">S</span></div>
-							</div>
-						</div>
-						<div class="layout vertical center-vertical grow">
-							<div
-								v-if="item.type === 'SPEEDRUN' || item.talentIds.length > 0"
-								class="layout horizontal"
-							>
-								<template v-if="item.type === 'SPEEDRUN'">
-									<div class="max-width m-t-4">
+							<div class="layout horizontal center-vertical">
+								<div
+									v-if="i*2 > 0"
+									class="schedule-item-time-delta layout horizontal"
+								>
+									<div class="in">IN</div>
+									<flip-flap-digits
+										:digit-count="2"
+										:value="scheduleItemTimeDeltas[i] >= 60 ? Math.round(scheduleItemTimeDeltas[i] / 60) : scheduleItemTimeDeltas[i]"
+										class="delta-digits"
+									/>
+									<div class="m-l-2">
+										<div class="unit" :class="{ lit: scheduleItemTimeDeltas[i] < 60 }">MIN</div>
+										<div class="unit" :class="{ lit: scheduleItemTimeDeltas[i] >= 60 }">HR<span :class="{ unlit: Math.round(scheduleItemTimeDeltas[i] / 60) === 1 }">S</span></div>
+									</div>
+								</div>
+								<div class="layout vertical center-vertical grow">
+									<div
+										v-if="item.type === 'SPEEDRUN' || item.talentIds.length > 0"
+										class="layout horizontal"
+									>
+										<template v-if="item.type === 'SPEEDRUN'">
+											<div class="max-width m-t-4">
+												<flip-flap-text
+													:font-size="26"
+													:text-content="talentStore.formatSpeedrunTeamList(item.teams)"
+												/>
+												<flip-flap-text
+													:font-size="26"
+													:text-content="item.category"
+												/>
+											</div>
+											<speedrun-estimate-display
+												:estimate="item.estimate"
+												class="estimate-display"
+											/>
+										</template>
 										<flip-flap-text
+											v-else
 											:font-size="26"
-											:text-content="talentStore.formatSpeedrunTeamList(item.teams)"
-										/>
-										<flip-flap-text
-											:font-size="26"
-											:text-content="item.category"
+											:text-content="talentStore.formatTalentIdList(item.talentIds, 4)"
+											class="max-width m-t-4"
 										/>
 									</div>
-									<speedrun-estimate-display
-										:estimate="item.estimate"
-										class="estimate-display"
-									/>
-								</template>
-								<flip-flap-text
-									v-else
-									:font-size="26"
-									:text-content="talentStore.formatTalentIdList(item.talentIds, 4)"
-									class="max-width m-t-4"
-								/>
+								</div>
 							</div>
 						</div>
-					</div>
-				</div>
-            </template>
-            <div class="separator" />
-        </template>
+					</template>
+					<div class="separator" />
+				</template>
+			</div>
+			<div class="separator-vertical"/>
+			<div class="max-width">
+				<template
+					v-for="(item, i) in nextScheduleItems.filter((_, idx) => idx>=maxScheduleItemCount/2)"
+				>
+					<template v-if="item != null">
+						<div class="schedule-item layout vertical">
+							<flip-flap-text
+								:font-size="30"
+								:text-content="item.title"
+							/>
+							<div class="layout horizontal center-vertical">
+								<div
+									class="schedule-item-time-delta layout horizontal"
+								>
+									<div class="in">IN</div>
+									<flip-flap-digits
+										:digit-count="2"
+										:value="scheduleItemTimeDeltas[(i+maxScheduleItemCount/2) - 1] >= 60 ? Math.round(scheduleItemTimeDeltas[(i+maxScheduleItemCount/2) - 1] / 60) : scheduleItemTimeDeltas[(i+maxScheduleItemCount/2) - 1]"
+										class="delta-digits"
+									/>
+									<div class="m-l-2">
+										<div class="unit" :class="{ lit: scheduleItemTimeDeltas[(i+maxScheduleItemCount/2) - 1] < 60 }">MIN</div>
+										<div class="unit" :class="{ lit: scheduleItemTimeDeltas[(i+maxScheduleItemCount/2) - 1] >= 60 }">HR<span :class="{ unlit: Math.round(scheduleItemTimeDeltas[(i+maxScheduleItemCount/2) - 1] / 60) === 1 }">S</span></div>
+									</div>
+								</div>
+								<div class="layout vertical center-vertical grow">
+									<div
+										v-if="item.type === 'SPEEDRUN' || item.talentIds.length > 0"
+										class="layout horizontal"
+									>
+										<template v-if="item.type === 'SPEEDRUN'">
+											<div class="max-width m-t-4">
+												<flip-flap-text
+													:font-size="26"
+													:text-content="talentStore.formatSpeedrunTeamList(item.teams)"
+												/>
+												<flip-flap-text
+													:font-size="26"
+													:text-content="item.category"
+												/>
+											</div>
+											<speedrun-estimate-display
+												:estimate="item.estimate"
+												class="estimate-display"
+											/>
+										</template>
+										<flip-flap-text
+											v-else
+											:font-size="26"
+											:text-content="talentStore.formatTalentIdList(item.talentIds, 4)"
+											class="max-width m-t-4"
+										/>
+									</div>
+								</div>
+							</div>
+						</div>
+					</template>
+					<div class="separator" />
+				</template>
+			</div>
+		</div>
         <div class="schedule-notes layout vertical center-vertical center-horizontal max-width">
             <div class="m-b-8">Times are approximate.</div>
             <div class="layout horizontal center-vertical">
@@ -86,7 +151,7 @@ import SevenSegmentDigits from 'components/SevenSegmentDigits.vue';
 import FlipFlapText from "components/FlipFlapText.vue";
 import FlipFlapDigits from "components/FlipFlapDigits.vue";
 
-const maxScheduleItemCount = 3;
+const maxScheduleItemCount = 6;
 
 const scheduleStore = useScheduleStore();
 const timerStore = useTimerStore();
@@ -164,6 +229,13 @@ const scheduleItemTimeDeltas = computed(() => {
     height: 2px;
     background-color: colors.$vfd-light;
     margin: 16px 0 16px 10%;
+}
+
+.separator-vertical {
+	height: 100%;
+	width: 2px;
+	background-color: colors.$vfd-light;
+	margin: 0 16px 10% 16px;
 }
 
 .schedule-item {

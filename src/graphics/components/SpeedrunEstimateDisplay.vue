@@ -4,7 +4,6 @@
         <flip-flap-digits
             :digit-count="5"
             :value="parsedEstimate?.hours + ':' + parsedEstimate?.minutes"
-            pad-digits
             class="estimate-digits"
         />
     </div>

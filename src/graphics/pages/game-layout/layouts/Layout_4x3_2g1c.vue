@@ -1,7 +1,7 @@
 <template>
     <div class="layout-wrapper layout vertical">
         <div class="game-captures-row layout-gap-bottom">
-            <div class="bg-panel" />
+            <div class="bg-game-panel" />
             <div
                 class="game-capture"
                 data-capture-index="0"
@@ -23,7 +23,7 @@
                     y-position="bottom"
                 />
             </div>
-            <div class="bg-panel" />
+            <div class="bg-game-panel" />
         </div>
         <div class="other-content-row">
             <div class="column">
@@ -39,7 +39,7 @@
             />
             <div class="column">
                 <player-nameplate :index="1" />
-                <div class="grow bg-panel layout vertical">
+                <div class="grow bg-game-panel layout vertical">
                     <other-nameplate-grid class="m-t-8 m-x-16" />
                     <media-box class="grow m-x-8 m-y-8" />
                 </div>

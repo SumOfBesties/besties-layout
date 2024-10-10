@@ -1,5 +1,5 @@
 <template>
-    <div class="omnibar-wrapper">
+    <div class="omnibar-wrapper bg-game-panel">
         <img
             src="../../assets/img/small-logo.png"
             class="omnibar-logo"
@@ -37,7 +37,7 @@ body {
 .omnibar-wrapper {
     width: 100%;
     height: 100%;
-    background: colors.$layout-panel-background;
+    //background: colors.$layout-panel-background;
     display: flex;
     align-items: center;
     justify-content: space-between;

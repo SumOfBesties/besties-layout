@@ -9,7 +9,7 @@
             class="layout horizontal m-t-4"
             style="align-items: flex-end"
         >
-            <div class="max-width">
+            <div style="width: 70%">
                 <flip-flap-text
                     :font-size="20"
                     :text-content="systemAndReleaseYear"

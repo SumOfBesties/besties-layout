@@ -33,7 +33,7 @@
                         <speedrun-timer class="bg-inset m-t-16" hide-run-number />
                     </div>
                 </div>
-                <div class="bg-panel layout vertical">
+                <div class="bg-game-panel layout vertical">
                     <other-nameplate-grid class="m-x-16 m-t-8" style="min-height: 150px;" />
                     <media-box class="m-y-8 m-x-8 grow" />
                 </div>
