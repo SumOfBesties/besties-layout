@@ -86,7 +86,7 @@ import SevenSegmentDigits from 'components/SevenSegmentDigits.vue';
 import FlipFlapText from "components/FlipFlapText.vue";
 import FlipFlapDigits from "components/FlipFlapDigits.vue";
 
-const maxScheduleItemCount = 6;
+const maxScheduleItemCount = 3;
 
 const scheduleStore = useScheduleStore();
 const timerStore = useTimerStore();

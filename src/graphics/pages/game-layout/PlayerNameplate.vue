@@ -165,7 +165,7 @@ const baseIndex = computed(() => scheduleStore.playerNameplateAssignments
         return result;
     }, 0));
 
-const useCompactVolumeMeters = computed(() => props.fixedHeight && (assignmentData.value?.talent.length ?? 0) > 1);
+const useCompactVolumeMeters = true;//computed(() => props.fixedHeight && (assignmentData.value?.talent.length ?? 0) > 1);
 </script>
 
 <style scoped lang="scss">
