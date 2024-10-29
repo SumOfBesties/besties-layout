@@ -25,7 +25,7 @@
                 <div class="layout horizontal center-vertical">
                     <flip-flap-digits
                         unlit-segment="00:00:00.0"
-                        :always-lit-segment="formattedTimer.alwaysLitSegment"
+                        
                         class="run-timer"
                         style="width: max-content"
                         :value="formattedTimer.timer"

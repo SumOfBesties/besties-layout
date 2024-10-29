@@ -30,7 +30,7 @@ interface TrackerMilestoneSearchResponseItem {
     model: 'tracker.milestone'
     pk: number
     fields: {
-        event: number
+        event: number | string
         start?: number | string
         amount: number
         name: string
@@ -58,7 +58,7 @@ interface TrackerPrizeSearchResponseItem {
         minimumbid: number
         sumdonations: boolean
         randomdraw: boolean
-        event: number
+        event: number | string
         startrun: number | null
         endrun: number | null
         starttime: string | null
@@ -100,7 +100,7 @@ interface TrackerAllBidsSearchResponseItem {
     pk: number
     fields: {
         name: string
-        event: number
+        event: number | string
         parent: number | null
         speedrun: number | null
         state: TrackerBidState

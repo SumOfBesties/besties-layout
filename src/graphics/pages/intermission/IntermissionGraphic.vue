@@ -4,8 +4,8 @@
         :class="{ 'with-visualizer-space': addVisualizerSpace }"
     >
 
-		<div class="bg-panel max-width">
-			<intermission-schedule class="max-width" />
+		<div class="bg-panel dark-bg max-width">
+			<intermission-schedule class="max-width u-non-dark" />
 		</div>
 		<large-separator direction="horizontal" class="max-width"/>
         <div class="bg-panel layout vertical">
@@ -146,6 +146,26 @@ const hostSpeaking = computed(() => {
 @use 'sass:color';
 @use '../../styles/colors';
 
+.dark-bg::after {
+	-webkit-backdrop-filter: brightness(0.75); /* Use for Safari 9+, Edge 17+ (not a mistake) and iOS Safari 9.2+ */
+	backdrop-filter: brightness(0.75); /* Supported in all major browsers */
+
+	content: "";
+	display: block;
+	position: absolute;
+	width: 100%; height: 100%;
+	top: 0;
+	left: 0;
+}
+.dark-bg {
+	position: relative;
+}
+
+/* Use for child content that should not be dark */
+.u-non-dark {
+	z-index: 1;
+}
+
 .intermission-layout {
     display: grid;
 	grid-template-rows: minmax(45%, 75%) 14px minmax(25%, 55%);
@@ -167,6 +187,8 @@ const hostSpeaking = computed(() => {
                 height: 100%;
             }
         }
+
+
     }
 
     &.with-visualizer-space {

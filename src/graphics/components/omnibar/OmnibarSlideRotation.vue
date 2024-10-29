@@ -7,7 +7,7 @@
             >
                 <opacity-swap-transition mode="default">
                     <span v-if="slides.activeComponent.value === 'donationReminder1'">You are watching <span class="emphasis">{{ eventName }}</span></span>
-                    <span v-else>In support of the (someone) - <span class="emphasis">{{ donationUrl }}</span></span>
+                    <span v-else>In support of Project HOPE - <span class="emphasis">{{ donationUrl }}</span></span>
                 </opacity-swap-transition>
             </div>
             <div
@@ -30,7 +30,7 @@
                             v-if="slides.activeComponent.value === 'fallback'"
                             class="no-slide-placeholder max-height"
                         >
-                            Benefiting (IDK man, wish I would though)
+                            Benefitting Project HOPE
                         </div>
                         <omnibar-schedule-item-display
                             v-else-if="slides.activeComponent.value === 'nextUp'"
@@ -325,7 +325,7 @@ const slideTitle = computed(() => {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(to bottom, #93FFFB 0%, #B5FAF7 100%);
+    background: url("../../assets/img/leaves-1.png");
     font-size: 40px;
     font-weight: 500;
     text-align: center;
