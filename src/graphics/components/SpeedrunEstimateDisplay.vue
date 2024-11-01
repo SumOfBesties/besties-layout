@@ -38,7 +38,7 @@ const parsedEstimate = computed(() =>
 }
 
 .estimate-label {
-    color: colors.$vfd-dark;
+    color: colors.$vfd-light;
 }
 
 .estimate-digit-label {

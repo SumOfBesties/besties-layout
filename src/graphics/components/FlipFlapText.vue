@@ -9,13 +9,13 @@
             justifyContent
         }"
     >
-		<span class="background">{{ '█'.repeat(characterCount) }}</span>
+		<span class="background">{{ '▓'.repeat(characterCount) }}</span>
         <fitted-content
             v-if="useFittedContent"
             :align="props.textAlign"
             :style="{
                 width: `${characterWidth * characterCount}px`,
-            	textIndent: `${((props.textAlign == 'center' && props.textContent != null && textLengthUnmatched) ? (props.fontSize) : 0)}px`,
+            	textIndent: `${((props.textAlign == 'center' && props.textContent != null && textLengthUnmatched) ? (props.fontSize*0.6) : 0)}px`,
                 whiteSpace: props.progressBar != null ? 'pre' : 'pre'
             }"
         >
@@ -79,8 +79,8 @@ onUnmounted(() => {
     wrapperResizeObserver.disconnect();
 });
 
-const characterHeight = computed(() => Math.round(props.fontSize*1.1425));
-const characterWidth = computed(() => props.fontSize);
+const characterHeight = computed(() => Math.round(props.fontSize*1.25));
+const characterWidth = computed(() => props.fontSize * 0.6);
 const characterCount = computed(() => Math.floor(wrapperWidth.value / characterWidth.value));
 const textLengthUnmatched = computed(() => props.textContent != null && props.textContent.length%2 !== characterCount.value%2)
 const justifyContent = computed(() => {
@@ -216,8 +216,14 @@ const progressBarInfo = computed(() => {
 @use '../styles/colors';
 
 .flip-flap-text {
-    font-family: 'split-flap-noborder';
+    font-family: 'Roboto Mono';
+	font-weight: bold;
+	text-decoration-line: line-through;
+	text-decoration-style: solid;
+	text-decoration-color: black;
+	text-decoration-thickness: 1px;
     color: colors.$vfd-light;
+	//background-color: black;
     display: flex;
     text-rendering: geometricPrecision;
     position: relative;
@@ -229,8 +235,14 @@ const progressBarInfo = computed(() => {
 }
 
 .background {
-    color: colors.$vfd-light-unlit;
+    color: #222;
+	font-family: 'split-flap-background';
+	text-decoration-line: line-through;
+	text-decoration-style: solid;
+	text-decoration-color: black;
+	text-decoration-thickness: 1px;
 	text-rendering: geometricPrecision;
+	background-color: black;
     //position: absolute;
 
 	//letter-spacing: 0.6em;

@@ -277,7 +277,15 @@ const slideTitle = computed(() => {
     perspective: 1920px;
     position: relative;
     transform-style: preserve-3d;
-    background-color: colors.$vfd-background;
+
+	background:
+		radial-gradient(black 15%, transparent 16%) 0 0,
+		radial-gradient(black 15%, transparent 16%) 8px 8px,
+		radial-gradient(rgba(128,128,128,.1) 15%, transparent 20%) 0 1px,
+		radial-gradient(rgba(128,128,128,.1) 15%, transparent 20%) 8px 9px;
+	background-color:#141414;
+	background-size:8px 8px;
+
     padding: 0 8px;
     box-sizing: border-box;
 }

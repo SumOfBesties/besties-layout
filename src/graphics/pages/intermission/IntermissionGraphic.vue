@@ -15,7 +15,7 @@
 					<media-box class="media-box" />
 				</div>
 				<!--<intermission-prize-display class="max-width prize-display" />-->
-				<div class="bg-inset m-t-8 layout vertical center-horizontal max-width" style="grid-area: dono">
+				<div class="bg-inset m-t-8 layout vertical center-horizontal center-vertical max-width" style="grid-area: dono">
 					<div class="layout horizontal center-vertical">
 						<donation-total class="donation-total" />
 						<div class="pointer-icon">»</div>
@@ -30,7 +30,7 @@
 			<div class="layout horizontal center-vertical">
 				<div class="bg-inset m-t-8" style="overflow: hidden; height: 80px; width: 100%">
 					<omnibar-slide-rotation
-						:slide-title-width="150"
+						:slide-title-width="225"
 						without-donation-reminder
 						without-schedule-items
 					/>

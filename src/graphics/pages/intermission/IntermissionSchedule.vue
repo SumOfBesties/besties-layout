@@ -132,7 +132,7 @@
             <div class="layout horizontal center-vertical">
                 <div class="full-schedule-label">Full Schedule</div>
                 <div class="full-schedule-pointer-icon m-x-8">@</div>
-                <div class="full-schedule-link">&lt;&lt;schedule URL here&gt;&gt;</div>
+                <div class="full-schedule-link">schedule.sumofbesti.es</div>
             </div>
         </div>
     </div>

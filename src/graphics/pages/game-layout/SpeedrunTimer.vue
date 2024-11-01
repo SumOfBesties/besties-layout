@@ -25,7 +25,7 @@
                 <div class="layout horizontal center-vertical">
                     <flip-flap-digits
                         unlit-segment="00:00:00.0"
-                        
+
                         class="run-timer"
                         style="width: max-content"
                         :value="formattedTimer.timer"
@@ -175,6 +175,7 @@ fieldset {
 
 .play-pause-section {
     span {
+		font-size: 20px;
         font-weight: 700;
         color: colors.$vfd-light-unlit;
         transition: color 100ms;
@@ -206,6 +207,7 @@ fieldset {
 
 .estimate-alarm {
     width: 100%;
+	font-size: 20px;
     text-align: center;
     color: colors.$vfd-background;
     background-color: colors.$vfd-dark-unlit;

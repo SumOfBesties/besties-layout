@@ -3,7 +3,7 @@
         class="wrapper"
         :class="{ flash: props.flash, [`color-${props.color}`]: true }"
     >
-        <span class="unlit">{{'█'.repeat((digitCount ?? unlitSegment?.length) ?? 1) }}</span>
+        <span class="unlit">{{'▓'.repeat((digitCount ?? unlitSegment?.length) ?? 1) }}</span>
         <span class="digits">{{ props.padDigits ? String(props.value ?? '').padStart(props.digitCount ?? 1, '0') : (props.unlitSegment != null && (props.value != null && typeof props.value !== "number") ? props.unlitSegment.substring(0, props.unlitSegment.length-props.value.length).concat(props.value) : props.value) }}</span>
         <span v-if="props.alwaysLitSegment != null" class="always-lit-segment">{{ alwaysLitSegment }}</span>
     </div>
@@ -30,10 +30,15 @@ const props = withDefaults(defineProps<{
 @use '../styles/colors';
 
 .wrapper {
-    font-family: 'split-flap-noborder';
+    font-family: 'Roboto Mono', 'split-flap-background';
     position: relative;
     text-rendering: geometricPrecision;
-    font-weight: 400;
+	font-weight: bold;
+	text-decoration-line: line-through;
+	text-decoration-style: solid;
+	text-decoration-color: black;
+	text-decoration-thickness: 1px;
+	background-color: black;
 
     &.flash > .digits {
         animation: digits-flash 2s 3;
@@ -45,7 +50,7 @@ const props = withDefaults(defineProps<{
         }
 
         .unlit {
-            color: colors.$vfd-light;
+            color: #222;
         }
     }
 
@@ -63,6 +68,10 @@ const props = withDefaults(defineProps<{
 .digits, .always-lit-segment {
     position: absolute;
     right: 0;
+	text-decoration-line: line-through;
+	text-decoration-style: solid;
+	text-decoration-color: black;
+	text-decoration-thickness: 1px;
 }
 
 @keyframes digits-flash {
