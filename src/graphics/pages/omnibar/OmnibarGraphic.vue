@@ -6,7 +6,7 @@
         >
         <omnibar-slide-rotation
             :slide-title-width="225"
-            style="width: 1250px; height: 100%"
+            style="width: 1350px; height: 100%"
         />
         <div class="bg-inset logo-and-total layout horizontal center-vertical">
             <donation-total class="m-r-12" />
@@ -53,7 +53,7 @@ body {
 }
 
 .omnibar-logo {
-    width: 200px;
+    width: 300px;
     margin-left: 16px;
 }
 

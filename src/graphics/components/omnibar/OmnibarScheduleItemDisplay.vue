@@ -1,16 +1,18 @@
 <template>
-    <div class="omnibar-schedule-item-display">
+    <div class="omnibar-schedule-item-display layout horizontal">
         <flip-flap-text
-            :font-size="26"
+            :font-size="28"
             :text-content="props.scheduleItem?.title ?? 'Nothing!'"
+			class="max-width m-r-8"
             text-align="left"
             @scroll-started="onScrollStart(0)"
             @scroll-end-reached="onScrollEnd(0)"
         />
         <flip-flap-text
-            :font-size="26"
+            :font-size="28"
             :text-content="secondLine"
             text-align="left"
+			class="max-width"
             @scroll-started="onScrollStart(1)"
             @scroll-end-reached="onScrollEnd(1)"
         />
@@ -37,7 +39,7 @@ let readyToSwitchMessageTimeout: number | undefined = undefined;
 let finishedScrolls = [true, true];
 onMounted(() => {
      readyToSwitchMessageTimeout = window.setTimeout(() => {
-         emit('readyToSwitch');
+         //emit('readyToSwitch');
      }, 1000);
 });
 // If the text on this slide scrolls, we want to show this slide at minimum until all displayed text has finished scrolling
@@ -48,7 +50,7 @@ function onScrollStart(lineIndex: number) {
 function onScrollEnd(lineIndex: number) {
     finishedScrolls[lineIndex] = true;
     if (finishedScrolls.every(scroll => scroll)) {
-        emit('readyToSwitch');
+        //emit('readyToSwitch');
     }
 }
 
@@ -56,7 +58,7 @@ const secondLine = computed(() => {
     if (props.scheduleItem == null) return '';
     if (props.scheduleItem.type === 'SPEEDRUN') {
         if (!!props.scheduleItem.category) {
-            return `${props.scheduleItem.category}·${talentStore.formatSpeedrunTeamList(props.scheduleItem.teams)}`;
+            return `${props.scheduleItem.category} - ${talentStore.formatSpeedrunTeamList(props.scheduleItem.teams)}`;
         } else {
             return talentStore.formatSpeedrunTeamList(props.scheduleItem.teams);
         }

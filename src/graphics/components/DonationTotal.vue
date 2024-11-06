@@ -5,9 +5,11 @@
             class="donation-total-digits"
             :value="tweenedTotal"
         />
-        <div class="currency-label">
-            <div>EUR</div>
-        </div>
+		<flip-flap-text
+			:text-content="'EUR'"
+			:font-size="50"
+			style="width: 110px"
+			/>
     </div>
 </template>
 
@@ -16,6 +18,7 @@ import SevenSegmentDigits from 'components/SevenSegmentDigits.vue';
 import { useTweenedNumber } from '../helpers/useTweenedNumber';
 import { useDonationStore } from 'client-shared/stores/DonationStore';
 import FlipFlapDigits from "components/FlipFlapDigits.vue";
+import FlipFlapText from "components/FlipFlapText.vue";
 
 const donationStore = useDonationStore();
 const tweenedTotal = useTweenedNumber(() => Math.floor(donationStore.donationTotal));
@@ -29,12 +32,12 @@ const tweenedTotal = useTweenedNumber(() => Math.floor(donationStore.donationTot
 }
 
 .donation-total-digits {
-    font-size: 1.75em;
+    font-size: 50px;
     margin-right: 4px;
 }
 
 .currency-label {
-    font-size: 1.25em;
+    font-size: 30px;
     font-weight: 700;
     line-height: 1.1em;
 

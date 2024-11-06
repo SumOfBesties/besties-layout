@@ -50,7 +50,7 @@
                 "socketAddress": { "type": "string" },
                 "username": { "type": "string" },
                 "password": { "type": "string" },
-                "eventId": { "type": "string" }
+                "eventId": { "type": "number" }
             }
         },
         "twitch": {

@@ -94,7 +94,7 @@ const justifyContent = computed(() => {
     }
 });
 
-const useFittedContent = computed(() => props.textContent != null && props.textContent.length - characterCount.value < 0);
+const useFittedContent = computed(() => true);//computed(() => props.textContent != null && props.textContent.length - characterCount.value < 0);
 let textScrollUnpauseTimeout: number | undefined = undefined;
 let currentTextPosition = 0;
 let formattedText: string = '';
@@ -227,11 +227,15 @@ const progressBarInfo = computed(() => {
     display: flex;
     text-rendering: geometricPrecision;
     position: relative;
+	overflow: hidden;
 	//letter-spacing: 0.6em;
 
     > span {
         position: absolute;
     }
+	>* {
+		margin-top: -4px;
+	}
 }
 
 .background {

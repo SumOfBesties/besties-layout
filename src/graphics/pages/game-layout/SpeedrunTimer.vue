@@ -1,27 +1,7 @@
 <template>
     <div class="speedrun-timer">
         <div class="layout horizontal center-vertical center-horizontal">
-            <!--<fieldset v-if="!props.hideRunNumber">
-                <legend>RUN NO.</legend>
-                <flip-flap-digits
-                    :digit-count="3"
-                    class="run-counter"
-                    :value="speedrunCount.current"
-                />
-            </fieldset>-->
             <div style="margin-left: -2px;">
-                <!--<div class="run-info-text-segments">
-                    <div>
-                        <span :class="{ lit: isCoop }">CO-OP</span>
-                        <span :class="{ lit: scheduleStore.activeSpeedrun?.relay }">RELAY</span>
-                        <span :class="{ lit: isRace }" class="segment-red">RACE</span>
-                    </div>
-                    <div>
-                        <span>SLEEP</span>
-                        <span class="lit">FAST</span>
-                        <span class="segment-red"><span>FASTER</span><span>!!!</span></span>
-                    </div>
-                </div>-->
                 <div class="layout horizontal center-vertical">
                     <flip-flap-digits
                         unlit-segment="00:00:00.0"
@@ -31,28 +11,6 @@
                         :value="formattedTimer.timer"
                         :flash="timerStore.timer.state === 'FINISHED'"
                     />
-                    <div class="m-l-8">
-                        <div class="layout horizontal play-pause-section">
-                            <span :class="{ lit: timerStore.timer.state === 'RUNNING' }">
-                                PLAY
-                                <svg viewBox="0 0 15 15">
-                                    <path d="M0,0L15,7.5L0,15Z" />
-                                </svg>
-                            </span>
-                            <span :class="{ lit: timerStore.timer.state !== 'RUNNING' }">
-                                STOP
-                                <svg viewBox="0 0 15 15">
-                                    <path d="M0,0L15,0L15,15L0,15Z" />
-                                </svg>
-                            </span>
-                        </div>
-                        <div
-                            class="estimate-alarm"
-                            :class="{ lit: isOverEstimate }"
-                        >
-                            ESTIMATE
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
@@ -117,10 +75,10 @@ const isOverEstimate = computed(() => {
 .speedrun-timer {
     font-size: 8px;
     font-weight: 700;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-sizing: border-box;
+    //display: flex;
+    //align-items: center;
+    //justify-content: center;
+    //box-sizing: border-box;
 }
 
 fieldset {
@@ -141,7 +99,7 @@ fieldset {
 }
 
 .run-timer {
-    font-size: 50px;
+    font-size: 60px;
 }
 
 .run-info-text-segments {

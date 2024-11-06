@@ -9,27 +9,28 @@
 		</div>
 		<large-separator direction="horizontal" class="max-width"/>
         <div class="bg-panel layout vertical">
-			<div class="layout horizontal">
-				<div class="layout horizontal logos">
+			<div class="layout horizontal" style="justify-content: space-between">
+				<div class="layout horizontal logos max-width" style="justify-content: space-around">
 					<img src="../../assets/img/large-logo.png">
 					<media-box class="media-box" />
 				</div>
 				<!--<intermission-prize-display class="max-width prize-display" />-->
-				<div class="bg-inset m-t-8 layout vertical center-horizontal center-vertical max-width" style="grid-area: dono">
+				<div class="bg-inset m-t-8 layout vertical center-horizontal center-vertical" style="width: 1000px">
 					<div class="layout horizontal center-vertical">
 						<donation-total class="donation-total" />
 						<div class="pointer-icon">»</div>
 						<img
 							class="charity-logo"
 							src="../../assets/img/charity-logo-wide.png"
-							height="250"
+							height="100"
 						>
 					</div>
 				</div>
 			</div>
 			<div class="layout horizontal center-vertical">
-				<div class="bg-inset m-t-8" style="overflow: hidden; height: 80px; width: 100%">
+				<div class="bg-inset m-t-8" style="width: 100%">
 					<omnibar-slide-rotation
+						style="height: 80px"
 						:slide-title-width="225"
 						without-donation-reminder
 						without-schedule-items
@@ -168,8 +169,8 @@ const hostSpeaking = computed(() => {
 
 .intermission-layout {
     display: grid;
-	grid-template-rows: minmax(45%, 75%) 14px minmax(25%, 55%);
-    //height: 100%;
+	grid-template-rows: minmax(45%, 65%) 14px minmax(25%, 55%);
+    height: 100%;
 	width: 100%;
 
     > .bg-panel {
@@ -212,7 +213,7 @@ const hostSpeaking = computed(() => {
     //margin: 25px 30px 0;
 
     img {
-        width: 250px;
+        width: 400px;
     }
 
     .media-box {
@@ -238,7 +239,7 @@ const hostSpeaking = computed(() => {
 }
 
 .charity-logo {
-    height: 129px;
+    height: 90px;
     margin: -8px 0;
 }
 

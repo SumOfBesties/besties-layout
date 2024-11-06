@@ -55,7 +55,8 @@ const duration = computed(() => {
 @use '../../styles/constants';
 
 .countdown-wrapper {
-    height: calc(100% - constants.$omnibarHeight);
+    height: 100%;
+	background-image: url("../../assets/img/fam-nation-background.png");
 }
 
 .event-logo {

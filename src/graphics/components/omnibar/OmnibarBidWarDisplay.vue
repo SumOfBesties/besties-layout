@@ -1,62 +1,41 @@
 <template>
     <div class="omnibar-bid-war-display layout horizontal">
-        <div
-            class="bid-war-title m-r-16"
-            :style="{ maxWidth: `${maxTitleWidth}px` }"
-        >
-            <fitted-content v-if="!isBlank(props.bidWar.speedrunName)">
-                {{ props.bidWar.speedrunName }}
-            </fitted-content>
-            <fitted-content>
-                {{ props.bidWar.name }}
-            </fitted-content>
-        </div>
-        <div
-            v-if="props.bidWar.options?.length === 0 && props.bidWar.userOptionsAllowed"
-            class="no-options-message layout horizontal center-vertical center-horizontal"
-        >
-            <fitted-content>
-                <span>No options submitted. Donate now to add your own!</span>
-            </fitted-content>
-        </div>
-        <div
-            v-else-if="props.bidWar.options?.length === 2"
-            class="bid-war-duel-options layout horizontal m-r-8"
-        >
-            <div
-                v-for="option in props.bidWar.options"
-                class="bid-war-duel-option"
-                :class="{ 'is-winning': highestOptionTotal !== 0 && option.total === highestOptionTotal }"
-            >
-                <div class="option-numbers">
-                    <div class="percentage">{{ props.bidWar.total === 0 ? 0 : Math.round((option.total / props.bidWar.total) * 100) }}%</div>
-                    <div class="total">{{ formatNumber(option.total) }}kr</div>
-                </div>
-                <fitted-content align="center" class="option-name">{{ option.name }}</fitted-content>
-            </div>
-        </div>
-        <div
-            v-else-if="(props.bidWar.options?.length ?? 0) > 0"
-            class="bid-war-options grow"
-            :style="{ gridTemplateColumns: `repeat(${maxOptions}, minmax(0, 1fr)) ${(props.bidWar.options?.length ?? 0) > maxOptions ? '55px' : ''}` }"
-        >
-            <div
-                v-for="option in props.bidWar.options?.slice(0, maxOptions)"
-                class="bid-war-option"
-                :class="{ 'is-winning': highestOptionTotal !== 0 && option.total === highestOptionTotal }"
-            >
-                <fitted-content class="option-name">
-                    {{ option.name }}
-                </fitted-content>
-                <div class="option-total">{{ formatNumber(option.total) }}kr</div>
-            </div>
-            <div
-                v-if="(props.bidWar.options?.length ?? 0) > maxOptions"
-                class="extra-option-box"
-            >
-                <div class="extra-option-count">+{{ props.bidWar.options!.length - maxOptions }}</div>
-            </div>
-        </div>
+		<flip-flap-text
+			style="flex-basis: 100%; margin-left: 4px; margin-right: 8px"
+			:font-size="25"
+			text-align="left"
+			class="grow"
+			:text-content="props.bidWar.speedrunName + '|' + props.bidWar.name"/>
+		<flip-flap-text
+			style="flex-basis: 100%; margin-right: 4px"
+			:font-size="25"
+			text-align="left"
+			class="grow"
+			v-if="props.bidWar.options?.length === 0 && props.bidWar.userOptionsAllowed"
+			text-content="No options submitted. Donate now to add your own!"/>
+		<flip-flap-text
+			style="flex-basis: 100%; margin-right: 8px"
+			:font-size="25"
+			text-align="left"
+			class="bid-war-option"
+			:class="{ 'is-winning': highestOptionTotal !== 0 && props.bidWar.options[0].total === highestOptionTotal }"
+			v-if="props.bidWar.options != undefined && props.bidWar.options.length > 0"
+			:text-content="props.bidWar.options[0]?.name + ' - ' + props.bidWar.options[0]?.total + '€'"/>
+		<flip-flap-text
+			style="flex-basis: 100%; margin-right: 8px"
+			:font-size="25"
+			text-align="left"
+			class="bid-war-option"
+			:class="{ 'is-winning': highestOptionTotal !== 0 && props.bidWar.options[1].total === highestOptionTotal }"
+			v-if="props.bidWar.options != undefined && props.bidWar.options?.length > 1"
+			:text-content="props.bidWar.options[1]?.name + ' - ' + props.bidWar.options[1]?.total + '€'"/>
+		<flip-flap-text
+			:font-size="25"
+			text-align="left"
+			style="width: 100px; margin-right: 4px"
+			class="bid-war-option"
+			v-if="props.bidWar.options != undefined && props.bidWar.options?.length > 2"
+			:text-content="'+' + (props.bidWar.options.length - 2)"/>
     </div>
 </template>
 
@@ -69,6 +48,7 @@ import {
     MaxOmnibarBidWarItemsInjectionKey,
     MaxOmnibarBidWarTitleWidthInjectionKey
 } from '../../../dashboard/helpers/Injections';
+import FlipFlapText from "components/FlipFlapText.vue";
 
 const props = defineProps<{
     bidWar: CurrentBids[number]
@@ -102,7 +82,7 @@ const maxTitleWidth = inject(MaxOmnibarBidWarTitleWidthInjectionKey, 275);
 
     > * {
         border: 2px solid colors.$vfd-light;
-        padding: 6px 16px;
+        padding: 6px 8px;
     }
 }
 
@@ -111,9 +91,10 @@ const maxTitleWidth = inject(MaxOmnibarBidWarTitleWidthInjectionKey, 275);
 
     border: 2px solid var(--option-color);
     color: var(--option-color);
+	overflow: hidden;
 
     &.is-winning {
-        --option-color: #FF5959;
+        --option-color: #40AA50;
     }
 }
 
