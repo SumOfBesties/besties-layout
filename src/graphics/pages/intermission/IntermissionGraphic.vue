@@ -90,6 +90,12 @@
 								align="left"
 								text-align="left"
 							/>
+							<flip-flap-text
+								:font-size="24"
+								:text-content="musicStore.musicState.track?.album ?? 'Unknown Album'"
+								align="left"
+								text-align="left"
+							/>
 						</div>
 					</div>
 					<div

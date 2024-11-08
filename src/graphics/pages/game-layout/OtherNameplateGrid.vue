@@ -34,7 +34,7 @@
                                 </fitted-content>
                             </div>
                         </template>
-                        <div class="cell-index">{{ talentStore.currentHostId != null && talent?.id === talentStore.currentHostId ? 'H' : i * rowCount + j + 1 + nameplatePlayerCount }}</div>
+                        <div class="cell-index">{{ talentStore.currentHostId != null && talent?.id === talentStore.currentHostId ? 'H' : i * rowCount + j + nameplatePlayerCount }}</div>
                     </td>
                 </tr>
             </tbody>

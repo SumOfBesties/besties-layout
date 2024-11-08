@@ -21,7 +21,7 @@
 								style="width: 80px"
 								:font-size="25"
 								:text-align="'left'"
-								:text-content="padStart(Math.floor(scheduleItemTimeDeltas[i]/60).toString(10), 2, '0')+':'+padStart((scheduleItemTimeDeltas[i]%60).toString(10),2, '0')"/>
+								:text-content="i > 0 ? padStart(Math.floor(scheduleItemTimeDeltas[i-1]/60).toString(10), 2, '0')+':'+padStart((scheduleItemTimeDeltas[i-1]%60).toString(10),2, '0') : '00:00'"/>
 							<flip-flap-text
 								style="width: 525px"
 								:font-size="25"

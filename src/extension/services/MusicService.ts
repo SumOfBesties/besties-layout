@@ -111,7 +111,7 @@ export class MusicService {
                 };
             }
         }, 5000);
-        const response = await axios.get<Readable>(`${baseAddress}/api/query/updates?player=true&trcolumns=%artist%,%title%`, {
+        const response = await axios.get<Readable>(`${baseAddress}/api/query/updates?player=true&trcolumns=%artist%,%title%,%album%`, {
             responseType: 'stream',
             signal: abortController.signal,
             headers: {
@@ -130,7 +130,8 @@ export class MusicService {
                 if ('player' in parsedData) {
                     this.musicState.value.track = {
                         artist: parsedData.player.activeItem.columns[0],
-                        song: parsedData.player.activeItem.columns[1]
+                        song: parsedData.player.activeItem.columns[1],
+						album: parsedData.player.activeItem.columns[2] == '?' ? undefined : parsedData.player.activeItem.columns[2]
                     }
                 }
             } catch (e) {
