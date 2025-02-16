@@ -5,7 +5,7 @@
                 class="camera-capture layout-gap-bottom"
                 data-capture-index="0"
             />
-            <div class="grow layout vertical bg-panel">
+            <div class="grow layout vertical bg-game-panel">
                 <player-nameplate :index="0" :max-concurrent-players="4" />
                 <other-nameplate-grid class="m-y-12 m-x-16" />
                 <media-box class="grow m-b-12 m-x-12" />
@@ -18,7 +18,7 @@
                 data-capture-index="0"
             />
             <div class="timer-wrapper grow bg-timer layout-gap-bottom layout-gap-right layout horizontal center-vertical center-horizontal">
-                <speedrun-timer class="bg-inset" />
+                <speedrun-timer class="bg-inset timer" />
                 <speedrun-details class="m-l-16 bg-inset" />
             </div>
         </div>
@@ -58,7 +58,12 @@ import MediaBox from 'components/MediaBox.vue';
 }
 
 .timer-wrapper > * {
-    width: 580px;
+    width: 700px;
     height: 110px;
+}
+
+.timer-wrapper > .timer {
+	width: 380px;
+	height: 110px;
 }
 </style>

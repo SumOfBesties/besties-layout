@@ -44,7 +44,7 @@
             />
             <div class="column">
                 <player-nameplate :index="1" />
-                <div class="bg-panel layout vertical grow">
+                <div class="bg-game-panel layout vertical grow">
                     <other-nameplate-grid class="m-t-12 m-x-16" />
                     <media-box class="grow m-x-8 m-y-8" />
                 </div>

@@ -1,71 +1,61 @@
 <template>
     <div class="intermission-schedule bg-inset">
-        <div class="title">
-            <span>Next Up</span>
+        <div class="title" style="margin-bottom: 0">
+            <span class="max-width" style="text-align: center">Schedule</span>
         </div>
-        <template
-            v-for="(item, i) in nextScheduleItems"
-        >
-            <div class="schedule-item layout horizontal center-vertical">
-                <template v-if="item != null">
-                    <div
-                        v-if="i > 0"
-                        class="schedule-item-time-delta layout horizontal"
-                    >
-                        <div class="in">IN</div>
-                        <seven-segment-digits
-                            :digit-count="2"
-                            :value="scheduleItemTimeDeltas[i - 1] >= 60 ? Math.round(scheduleItemTimeDeltas[i - 1] / 60) : scheduleItemTimeDeltas[i - 1]"
-                            class="delta-digits"
-                        />
-                        <div class="m-l-2">
-                            <div class="unit" :class="{ lit: scheduleItemTimeDeltas[i - 1] < 60 }">MIN</div>
-                            <div class="unit" :class="{ lit: scheduleItemTimeDeltas[i - 1] >= 60 }">HR<span :class="{ unlit: Math.round(scheduleItemTimeDeltas[i - 1] / 60) === 1 }">S</span></div>
-                        </div>
-                    </div>
-                    <div class="layout vertical center-vertical grow">
-                        <vfd-pixel-text
-                            :font-size="27"
-                            :text-content="item.title"
-                        />
-                        <div
-                            v-if="item.type === 'SPEEDRUN' || item.talentIds.length > 0"
-                            class="layout horizontal"
-                        >
-                            <template v-if="item.type === 'SPEEDRUN'">
-                                <div class="max-width m-t-4">
-                                    <vfd-pixel-text
-                                        :font-size="22"
-                                        :text-content="talentStore.formatSpeedrunTeamList(item.teams)"
-                                    />
-                                    <vfd-pixel-text
-                                        :font-size="22"
-                                        :text-content="item.category"
-                                    />
-                                </div>
-                                <speedrun-estimate-display
-                                    :estimate="item.estimate"
-                                    class="estimate-display"
-                                />
-                            </template>
-                            <vfd-pixel-text
-                                v-else
-                                :font-size="22"
-                                :text-content="talentStore.formatTalentIdList(item.talentIds, 4)"
-                                class="max-width m-t-4"
-                            />
-                        </div>
-                    </div>
-                </template>
-            </div>
-            <div class="separator" />
-        </template>
+		<div class="title">
+			<span style="width: 80px">ETA</span>
+			<span style="width: 550px">Title</span>
+			<span style="width: 550px">Talent</span>
+			<span style="width: 550px">Category</span>
+			<span style="width: 80px">EST</span>
+		</div>
+		<div class="layout horizontal max-width">
+			<div class="layout vertical max-width">
+				<template
+					v-for="(item, i) in nextScheduleItems"
+				>
+					<template v-if="item != null">
+						<div class="layout horizontal max-width" style="justify-content: space-between">
+							<flip-flap-text
+								style="width: 80px"
+								:font-size="25"
+								:text-align="'center'"
+								:text-content="i > 0 ? padStart(Math.floor(scheduleItemTimeDeltas[i-1]/60).toString(10), 2, '0')+':'+padStart((scheduleItemTimeDeltas[i-1]%60).toString(10),2, '0') : 'NOW'"/>
+							<flip-flap-text
+								style="width: 525px"
+								:font-size="25"
+								:text-content="item.title"
+								:text-align="'left'"/>
+
+							<flip-flap-text
+								style="width: 525px"
+								:font-size="25"
+								:text-content="item.type === 'SPEEDRUN' ? talentStore.formatSpeedrunTeamList(item.teams) : talentStore.formatTalentIdList(item.talentIds, 6)"
+								:text-align="'left'"/>
+
+							<flip-flap-text
+								style="width: 525px"
+								:font-size="25"
+								:text-content="item.type === 'SPEEDRUN' ? item.category : '---N/A---'"
+								:text-align="item.type === 'SPEEDRUN' ? 'left' : 'center'"/>
+
+							<flip-flap-text
+								style="width: 80px"
+								:font-size="25"
+								:text-content="item.type === 'SPEEDRUN' ? Duration.fromISO(item.estimate).shiftTo('hours', 'minutes').toFormat('hh:mm') : '-N/A-'"
+								:text-align="item.type === 'SPEEDRUN' ? 'left' : 'center'"/>
+						</div>
+					</template>
+				</template>
+			</div>
+		</div>
         <div class="schedule-notes layout vertical center-vertical center-horizontal max-width">
             <div class="m-b-8">Times are approximate.</div>
             <div class="layout horizontal center-vertical">
                 <div class="full-schedule-label">Full Schedule</div>
-                <div class="full-schedule-pointer-icon m-x-8">»</div>
-                <div class="full-schedule-link">schedule.nsgmarathon.com</div>
+                <div class="full-schedule-pointer-icon m-x-8">@</div>
+                <div class="full-schedule-link">schedule.sumofbesti.es</div>
             </div>
         </div>
     </div>
@@ -81,8 +71,11 @@ import { useTalentStore } from 'client-shared/stores/TalentStore';
 import SpeedrunEstimateDisplay from 'components/SpeedrunEstimateDisplay.vue';
 import { Duration } from 'luxon';
 import SevenSegmentDigits from 'components/SevenSegmentDigits.vue';
+import FlipFlapText from "components/FlipFlapText.vue";
+import FlipFlapDigits from "components/FlipFlapDigits.vue";
+import {padStart} from "lodash";
 
-const maxScheduleItemCount = 4;
+const maxScheduleItemCount = 11;
 
 const scheduleStore = useScheduleStore();
 const timerStore = useTimerStore();
@@ -143,11 +136,12 @@ const scheduleItemTimeDeltas = computed(() => {
 
 .title {
     width: 100%;
+	display: flex;
     margin-bottom: 12px;
 
     span {
-        color: colors.$vfd-background;
-        background-color: colors.$vfd-red;
+        color: colors.$vfd-light;
+        background-color: colors.$vfd-light-unlit;
         font-weight: 700;
         text-transform: uppercase;
         font-size: 25px;
@@ -158,8 +152,15 @@ const scheduleItemTimeDeltas = computed(() => {
 .separator {
     width: 80%;
     height: 2px;
-    background-color: colors.$vfd-teal;
+    background-color: colors.$vfd-light;
     margin: 16px 0 16px 10%;
+}
+
+.separator-vertical {
+	height: 100%;
+	width: 2px;
+	background-color: colors.$vfd-light;
+	margin: 0 16px 10% 16px;
 }
 
 .schedule-item {
@@ -171,10 +172,10 @@ const scheduleItemTimeDeltas = computed(() => {
 }
 
 .schedule-notes {
-    color: colors.$vfd-teal;
+    color: colors.$vfd-light;
     font-size: 28px;
     font-weight: 500;
-    margin-top: -4px;
+    margin-top: 16px;
 }
 
 .full-schedule-pointer-icon {
@@ -186,7 +187,7 @@ const scheduleItemTimeDeltas = computed(() => {
 
 .full-schedule-label {
     color: colors.$vfd-background;
-    background-color: colors.$vfd-teal;
+    background-color: colors.$vfd-light;
     font-weight: 700;
     padding: 1px 12px;
     text-transform: uppercase;
@@ -201,27 +202,27 @@ const scheduleItemTimeDeltas = computed(() => {
     margin-left: 8px;
 
     .delta-digits {
-        font-size: 44px;
+        font-size: 32px;
     }
 
     .in {
-        color: colors.$vfd-teal;
+        color: colors.$vfd-light;
         margin-bottom: -2px;
         margin-right: 2px;
     }
 
     .unit {
-        color: colors.$vfd-teal-unlit;
+        color: colors.$vfd-light-unlit;
         transform: translateY(3.5px);
         font-size: 24px;
         line-height: 26px;
 
         &.lit {
-            color: colors.$vfd-teal;
+            color: colors.$vfd-light;
         }
 
         > .unlit {
-            color: colors.$vfd-teal-unlit;
+            color: colors.$vfd-light-unlit;
         }
     }
 }

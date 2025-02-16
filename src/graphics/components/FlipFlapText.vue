@@ -1,7 +1,7 @@
 <template>
     <div
         ref="wrapper"
-        class="vfd-pixel-text"
+        class="flip-flap-text"
         :style="{
             fontSize: `${props.fontSize}px`,
             height: `${characterHeight}px`,
@@ -9,13 +9,14 @@
             justifyContent
         }"
     >
-        <span class="background">{{ '▓'.repeat(characterCount) }}</span>
+		<span class="background">{{ '▓'.repeat(characterCount) }}</span>
         <fitted-content
             v-if="useFittedContent"
             :align="props.textAlign"
             :style="{
                 width: `${characterWidth * characterCount}px`,
-                whiteSpace: props.progressBar != null ? 'pre' : undefined
+            	textIndent: `${((props.textAlign == 'center' && props.textContent != null && textLengthUnmatched) ? (props.fontSize*0.6) : 0)}px`,
+                whiteSpace: props.progressBar != null ? 'pre' : 'pre'
             }"
         >
             <template v-if="progressBarInfo != null">
@@ -78,9 +79,10 @@ onUnmounted(() => {
     wrapperResizeObserver.disconnect();
 });
 
-const characterHeight = computed(() => Math.round(props.fontSize * 1.1425));
-const characterWidth = computed(() => props.fontSize * 0.857);
+const characterHeight = computed(() => Math.round(props.fontSize*1.25));
+const characterWidth = computed(() => props.fontSize * 0.6);
 const characterCount = computed(() => Math.floor(wrapperWidth.value / characterWidth.value));
+const textLengthUnmatched = computed(() => props.textContent != null && props.textContent.length%2 !== characterCount.value%2)
 const justifyContent = computed(() => {
     switch (props.align) {
         case 'center':
@@ -92,7 +94,7 @@ const justifyContent = computed(() => {
     }
 });
 
-const useFittedContent = computed(() => props.textContent != null && props.textContent.length - characterCount.value < 0);
+const useFittedContent = computed(() => true);//computed(() => props.textContent != null && props.textContent.length - characterCount.value < 0);
 let textScrollUnpauseTimeout: number | undefined = undefined;
 let currentTextPosition = 0;
 let formattedText: string = '';
@@ -213,20 +215,40 @@ const progressBarInfo = computed(() => {
 <style scoped lang="scss">
 @use '../styles/colors';
 
-.vfd-pixel-text {
-    font-family: 'HD44780A00 5x8';
+.flip-flap-text {
+    font-family: 'Roboto Mono';
+	font-weight: bold;
+	text-decoration-line: line-through;
+	text-decoration-style: solid;
+	text-decoration-color: black;
+	text-decoration-thickness: 1px;
     color: colors.$vfd-light;
+	//background-color: black;
     display: flex;
     text-rendering: geometricPrecision;
     position: relative;
+	overflow: hidden;
+	//letter-spacing: 0.6em;
 
     > span {
         position: absolute;
     }
+	>* {
+		margin-top: -4px;
+	}
 }
 
 .background {
-    color: colors.$vfd-light-unlit;
-    position: absolute;
+    color: #222;
+	font-family: 'split-flap-background';
+	text-decoration-line: line-through;
+	text-decoration-style: solid;
+	text-decoration-color: black;
+	text-decoration-thickness: 1px;
+	text-rendering: geometricPrecision;
+	background-color: black;
+    //position: absolute;
+
+	//letter-spacing: 0.6em;
 }
 </style>

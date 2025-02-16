@@ -15,11 +15,10 @@
             </fitted-content>
         </opacity-swap-transition>
         <div class="bg-inset countdown">
-            <seven-segment-digits
+            <flip-flap-digits
                 unlit-segment="00:00:00"
                 :value="duration.value"
                 :flash="duration.flash"
-                always-lit-segment="!!!!!:!!"
             />
         </div>
     </div>
@@ -33,6 +32,7 @@ import OpacitySwapTransition from 'components/OpacitySwapTransition.vue';
 import FittedContent from 'components/FittedContent.vue';
 import SevenSegmentDigits from 'components/SevenSegmentDigits.vue';
 import { padNumber } from 'client-shared/helpers/StringHelper';
+import FlipFlapDigits from "components/FlipFlapDigits.vue";
 
 const countdownStore = useCountdownStore();
 const duration = computed(() => {
@@ -55,7 +55,8 @@ const duration = computed(() => {
 @use '../../styles/constants';
 
 .countdown-wrapper {
-    height: calc(100% - constants.$omnibarHeight);
+    height: 100%;
+	background-image: url("../../assets/img/fam-nation-background.png");
 }
 
 .event-logo {

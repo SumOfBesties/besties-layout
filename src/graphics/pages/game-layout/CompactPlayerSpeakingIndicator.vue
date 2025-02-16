@@ -33,12 +33,12 @@ const props = defineProps<{
     line-height: 21px;
     text-align: center;
     font-weight: 600;
-    background-color: colors.$vfd-teal-unlit;
+    background-color: colors.$vfd-light-unlit;
     color: colors.$vfd-background;
     transition: background-color 150ms;
 
     &.speaking {
-        background-color: colors.$vfd-teal;
+        background-color: colors.$vfd-light;
     }
 }
 </style>

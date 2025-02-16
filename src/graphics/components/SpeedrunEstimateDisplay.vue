@@ -1,24 +1,11 @@
 <template>
     <div class="speedrun-estimate-display">
         <div class="estimate-label">EST.</div>
-        <seven-segment-digits
-            :digit-count="2"
-            :value="parsedEstimate?.hours === 0 ? null : parsedEstimate?.hours"
-            class="estimate-digits m-l-4"
-        />
-        <div
-            class="estimate-digit-label"
-            :class="{ unlit: parsedEstimate?.hours === 0 }"
-        >
-            H
-        </div>
-        <seven-segment-digits
-            :digit-count="2"
-            :value="parsedEstimate?.minutes"
-            pad-digits
+        <flip-flap-digits
+            :digit-count="5"
+            :value="parsedEstimate?.hours + ':' + parsedEstimate?.minutes"
             class="estimate-digits"
         />
-        <div class="estimate-digit-label">M</div>
     </div>
 </template>
 
@@ -26,6 +13,7 @@
 import SevenSegmentDigits from 'components/SevenSegmentDigits.vue';
 import { computed } from 'vue';
 import { Duration } from 'luxon';
+import FlipFlapDigits from "components/FlipFlapDigits.vue";
 
 const props = defineProps<{
     estimate?: string
@@ -46,18 +34,18 @@ const parsedEstimate = computed(() =>
 }
 
 .estimate-digits {
-    font-size: 2em;
+    font-size: 1.75em;
 }
 
 .estimate-label {
-    color: colors.$vfd-red;
+    color: colors.$vfd-light;
 }
 
 .estimate-digit-label {
-    color: colors.$vfd-teal;
+    color: colors.$vfd-light;
 
     &.unlit {
-        color: colors.$vfd-teal-unlit;
+        color: colors.$vfd-light-unlit;
     }
 }
 

@@ -1,12 +1,12 @@
 <template>
     <div class="layout vertical center-vertical">
-        <seven-segment-digits
+        <flip-flap-digits
             unlit-segment="88:88"
             :value="time"
             class="time-display"
         />
-        <vfd-pixel-text
-            :font-size="17"
+        <flip-flap-text
+            :font-size="15"
             :text-content="date"
             align="center"
         />
@@ -19,6 +19,8 @@ import { Configschema } from 'types/schemas';
 import { onMounted, onUnmounted, ref } from 'vue';
 import { DateTime } from 'luxon';
 import VfdPixelText from 'components/VfdPixelText.vue';
+import FlipFlapText from "components/FlipFlapText.vue";
+import FlipFlapDigits from "components/FlipFlapDigits.vue";
 
 const zone = (nodecg.bundleConfig as Configschema)?.event?.timezone ?? 'Etc/GMT';
 const time = ref('--:--');
@@ -47,7 +49,7 @@ setDate(getCurrentTime());
 
 <style scoped lang="scss">
 .time-display {
-    font-size: 1.7em;
+    font-size: 1.25em;
     margin-bottom: 2px;
     margin-top: -2px;
     margin-left: -4px;

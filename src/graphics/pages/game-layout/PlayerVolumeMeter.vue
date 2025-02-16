@@ -83,7 +83,7 @@ onMounted(() => {
             currentLevel = Math.min(targetLevel, currentLevel + deltaTime / 100);
         }
 
-        ctx.fillStyle = colors.vfdTealUnlit;
+        ctx.fillStyle = colors.vfdLightUnlit;
         const dotCount = Math.floor((width + dotSpacing) / (dotDiameter + dotSpacing));
         const litDotCount = Math.round(dotCount * currentLevel);
         const xOffset = (width - (dotCount * (dotDiameter + dotSpacing) - dotSpacing)) / 2 + dotDiameter / 2;
@@ -93,7 +93,7 @@ onMounted(() => {
                 ? i === dotCount - peakThreshold
                 : i > 12 ? (i - 4) % 8 === 0 : i % 4 === 0;
             if (drawSmallDot) {
-                ctx.fillStyle = color === 'peak' ? colors.vfdRed : colors.vfdTeal;
+                ctx.fillStyle = color === 'peak' ? colors.vfdDark : colors.vfdLight;
                 ctx.beginPath();
                 ctx.arc(
                     i * (dotDiameter + dotSpacing) + xOffset,
@@ -105,9 +105,9 @@ onMounted(() => {
             }
 
             if (i >= litDotCount) {
-                ctx.fillStyle = color === 'peak' ? colors.vfdRedUnlit : colors.vfdTealUnlit;
+                ctx.fillStyle = color === 'peak' ? colors.vfdDarkUnlit : colors.vfdLightUnlit;
             } else {
-                ctx.fillStyle = color === 'peak' ? colors.vfdRed : colors.vfdTeal;
+                ctx.fillStyle = color === 'peak' ? colors.vfdDark : colors.vfdLight;
             }
 
             ctx.beginPath();

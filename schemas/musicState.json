@@ -12,7 +12,8 @@
             "additionalProperties": false,
             "properties": {
                 "artist": { "type": "string" },
-                "song": { "type": "string" }
+                "song": { "type": "string" },
+				"album": { "type":  "string" }
             }
         }
     },

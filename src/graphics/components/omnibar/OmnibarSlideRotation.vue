@@ -3,70 +3,66 @@
         <transition name="donation-reminder">
             <div
                 v-if="slides.activeComponent.value?.startsWith('donationReminder')"
-                class="omnibar-donation-reminder"
+                class="omnibar-slides omnibar-donation-reminder"
             >
-                <opacity-swap-transition mode="default">
-                    <span v-if="slides.activeComponent.value === 'donationReminder1'">You are watching <span class="emphasis">{{ eventName }}</span></span>
-                    <span v-else>In support of the NABP - <span class="emphasis">{{ donationUrl }}</span></span>
-                </opacity-swap-transition>
+                <transition name="slide-swap">
+					<span v-if="slides.activeComponent.value === 'donationReminder1'">You are watching <span class="emphasis">{{ eventName }}</span></span>
+                    <span v-else>In support of Project HOPE - <span class="emphasis">{{ donationUrl }}</span></span>
+				</transition>
             </div>
             <div
                 v-else
                 class="omnibar-slides"
             >
                 <transition name="slide-swap">
-                    <div
-                        :key="slideTitle"
-                        class="slide-title"
-                        :style="{ minWidth: `${props.slideTitleWidth}px`, width: `${props.slideTitleWidth}px` }"
-                    >
-                        <fitted-content class="slide-title-text">{{ slideTitle }}</fitted-content>
-                        <div class="slide-title-icon">»</div>
-                    </div>
+					<div class="layout vertical max-height max-width">
+						<div
+							:key="slideTitle"
+							class="slide-title m-b-6"
+						>
+							<fitted-content align="center" class="slide-title-text max-width">{{ slideTitle }}</fitted-content>
+						</div>
+						<div
+							v-if="slides.activeComponent.value === 'fallback'"
+							class="no-slide-placeholder max-height"
+						>
+							Benefitting Project HOPE
+						</div>
+						<omnibar-schedule-item-display
+							v-else-if="slides.activeComponent.value === 'nextUp'"
+							:key="nextScheduleItem?.id"
+							:schedule-item="nextScheduleItem"
+							@ready-to-switch="onSlideSwitchReady"
+						/>
+						<omnibar-schedule-item-display
+							v-else-if="slides.activeComponent.value === 'later'"
+							:key="scheduleItemAfterNext?.id"
+							:schedule-item="scheduleItemAfterNext"
+							@ready-to-switch="onSlideSwitchReady"
+						/>
+						<omnibar-schedule-item-display
+							v-else-if="slides.activeComponent.value === 'nextSpeedrun'"
+							:key="nextSpeedrun?.id"
+							:schedule-item="nextSpeedrun"
+							@ready-to-switch="onSlideSwitchReady"
+						/>
+						<!--<omnibar-milestone-display
+							v-else-if="slides.activeComponent.value === 'milestone'"
+							:key="visibleMilestone?.id"
+							:milestone="visibleMilestone!"
+						/>-->
+						<!--<omnibar-incentive-display
+							v-else-if="slides.activeComponent.value === 'incentive'"
+							:key="visibleIncentive?.id"
+							:incentive="visibleIncentive!"
+						/>-->
+						<omnibar-bid-war-display
+							v-else-if="slides.activeComponent.value === 'bidwar'"
+							:key="visibleBidWar?.id"
+							:bid-war="visibleBidWar!"
+						/>
+					</div>
                 </transition>
-                <div class="slide-content">
-                    <transition name="slide-swap">
-                        <div
-                            v-if="slides.activeComponent.value === 'fallback'"
-                            class="no-slide-placeholder max-height"
-                        >
-                            Benefiting Norges Blindeforbund
-                        </div>
-                        <omnibar-schedule-item-display
-                            v-else-if="slides.activeComponent.value === 'nextUp'"
-                            :key="nextScheduleItem?.id"
-                            :schedule-item="nextScheduleItem"
-                            @ready-to-switch="onSlideSwitchReady"
-                        />
-                        <omnibar-schedule-item-display
-                            v-else-if="slides.activeComponent.value === 'later'"
-                            :key="scheduleItemAfterNext?.id"
-                            :schedule-item="scheduleItemAfterNext"
-                            @ready-to-switch="onSlideSwitchReady"
-                        />
-                        <omnibar-schedule-item-display
-                            v-else-if="slides.activeComponent.value === 'nextSpeedrun'"
-                            :key="nextSpeedrun?.id"
-                            :schedule-item="nextSpeedrun"
-                            @ready-to-switch="onSlideSwitchReady"
-                        />
-                        <omnibar-milestone-display
-                            v-else-if="slides.activeComponent.value === 'milestone'"
-                            :key="visibleMilestone?.id"
-                            :milestone="visibleMilestone!"
-                        />
-                        <omnibar-incentive-display
-                            v-else-if="slides.activeComponent.value === 'incentive'"
-                            :key="visibleIncentive?.id"
-                            :incentive="visibleIncentive!"
-                        />
-                        <omnibar-bid-war-display
-                            v-else-if="slides.activeComponent.value === 'bidwar'"
-                            :key="visibleBidWar?.id"
-                            :bid-war="visibleBidWar!"
-                        />
-                    </transition>
-                </div>
             </div>
         </transition>
     </div>
@@ -84,8 +80,6 @@ import OpacitySwapTransition from 'components/OpacitySwapTransition.vue';
 import FittedContent from 'components/FittedContent.vue';
 import OmnibarBidWarDisplay from 'components/omnibar/OmnibarBidWarDisplay.vue';
 import OmnibarScheduleItemDisplay from 'components/omnibar/OmnibarScheduleItemDisplay.vue';
-import OmnibarIncentiveDisplay from 'components/omnibar/OmnibarIncentiveDisplay.vue';
-import OmnibarMilestoneDisplay from 'components/omnibar/OmnibarMilestoneDisplay.vue';
 
 const props = withDefaults(defineProps<{
     withoutDonationReminder?: boolean
@@ -96,8 +90,8 @@ const props = withDefaults(defineProps<{
     withoutScheduleItems: false
 });
 
-const eventName = (nodecg.bundleConfig as Configschema).event?.name ?? 'the Norway Speedrunner Gathering';
-const fallbackSlideTitle = (nodecg.bundleConfig as Configschema).event?.name ?? 'NSG';
+const eventName = (nodecg.bundleConfig as Configschema).event?.name ?? 'Sum of Besties';
+const fallbackSlideTitle = (nodecg.bundleConfig as Configschema).event?.name ?? 'SoB';
 const donationUrl = (nodecg.bundleConfig as Configschema).event?.donationUrl;
 const showDonationReminder = computed(() => donationUrl != null && !props.withoutDonationReminder);
 
@@ -205,17 +199,14 @@ const slides = useSlides(() => {
 
     if (anyBidsPinned.value) {
         result.push(
-            { component: 'incentive', enabled: incentivesEnabled, beforeChange: beforeIncentiveShow, duration: 120 },
             { component: 'bidwar', enabled: bidWarsEnabled, beforeChange: beforeBidWarShow, duration: 120 },
             { component: 'donationReminder1', enabled: showDonationReminder, duration: 10 },
             { component: 'donationReminder2', enabled: showDonationReminder, duration: 10 });
     } else {
         result.push(
-            { component: 'nextUp', enabled: computed(() => nextScheduleItem.value != null), duration: null },
-            { component: 'later', enabled: computed(() => scheduleItemAfterNext.value != null), duration: null },
-            { component: 'nextSpeedrun', enabled: computed(() => nextSpeedrun.value != null), duration: null },
-            { component: 'milestone', enabled: milestonesEnabled, beforeChange: beforeMilestoneShow, duration: 30 },
-            { component: 'incentive', enabled: incentivesEnabled, beforeChange: beforeIncentiveShow, duration: 30 },
+            { component: 'nextUp', enabled: computed(() => nextScheduleItem.value != null), duration: 30 },
+            { component: 'later', enabled: computed(() => scheduleItemAfterNext.value != null), duration: 30 },
+            { component: 'nextSpeedrun', enabled: computed(() => nextSpeedrun.value != null), duration: 30 },
             { component: 'bidwar', enabled: bidWarsEnabled, beforeChange: beforeBidWarShow, duration: 30 },
             { component: 'donationReminder1', enabled: showDonationReminder, duration: 10 },
             { component: 'donationReminder2', enabled: showDonationReminder, duration: 10 });
@@ -261,12 +252,13 @@ const slideTitle = computed(() => {
 
 .omnibar-slides {
     width: 100%;
-    padding: 0 8px;
+	height: 100%;
     position: absolute;
     display: flex;
     align-items: center;
-    transform: rotate3d(1, 0, 0, 0deg) translateZ(40px) scale(0.98);
-    box-sizing: border-box;
+    //transform: rotate3d(1, 0, 0, 0deg) translateZ(40px) scale(0.98);
+    //box-sizing: border-box;
+	border: 2px solid colors.$vfd-light;
 }
 
 .omnibar-main-content {
@@ -277,7 +269,15 @@ const slideTitle = computed(() => {
     perspective: 1920px;
     position: relative;
     transform-style: preserve-3d;
-    background-color: colors.$vfd-background;
+
+	background:
+		radial-gradient(black 15%, transparent 16%) 0 0,
+		radial-gradient(black 15%, transparent 16%) 8px 8px,
+		radial-gradient(rgba(128,128,128,.1) 15%, transparent 20%) 0 1px,
+		radial-gradient(rgba(128,128,128,.1) 15%, transparent 20%) 8px 9px;
+	background-color:#141414;
+	background-size:8px 8px;
+
     padding: 0 8px;
     box-sizing: border-box;
 }
@@ -288,17 +288,19 @@ const slideTitle = computed(() => {
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: -2px 8px 0;
+	width: 100%;
+    //margin: -2px 8px 0;
 
     .slide-title-text {
-        background-color: colors.$vfd-teal;
+        background-color: colors.$vfd-light;
         color: colors.$vfd-background;
-        padding: 2px 12px;
+        //padding: 2px 12px;
         text-transform: uppercase;
+		text-align: center;
     }
 
     .slide-title-icon {
-        color: colors.$vfd-teal;
+        color: colors.$vfd-light;
         font-size: 40px;
         margin-top: -4px;
         margin-left: 8px;
@@ -325,25 +327,25 @@ const slideTitle = computed(() => {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(to bottom, #93FFFB 0%, #B5FAF7 100%);
+    //background: url("../../assets/img/leaves-1.png");
     font-size: 40px;
     font-weight: 500;
     text-align: center;
     transform-origin: center;
-    transform: rotate3d(1, 0, 0, 0deg) translateZ(40px) scale(0.98);
+    //transform: rotate3d(1, 0, 0, 0deg) translateZ(40px) scale(0.98);
     opacity: 100%;
     border-color: colors.$layout-gap;
     border-width: 0 2px 0 2px;
     border-style: solid;
 
     .emphasis {
-        color: colors.$vfd-red;
+        color: colors.$vfd-dark;
         font-weight: 700;
     }
 }
 
 .no-slide-placeholder {
-    color: colors.$vfd-teal;
+    color: colors.$vfd-light;
     font-weight: 700;
     text-align: center;
     width: 100%;
@@ -378,11 +380,11 @@ const slideTitle = computed(() => {
     transition-timing-function: ease-in-out;
 }
 .donation-reminder-leave-to {
-    transform: rotate3d(1, 0, 0, -90deg) translateZ(40px) scale(0.98);
+    //transform: rotate3d(1, 0, 0, -90deg) translateZ(40px) scale(0.98);
     opacity: 10%;
 }
 .donation-reminder-enter-from {
-    transform: rotate3d(1, 0, 0, 90deg) translateZ(40px) scale(0.98);
+    //transform: rotate3d(1, 0, 0, 90deg) translateZ(40px) scale(0.98);
     opacity: 10%;
 }
 </style>

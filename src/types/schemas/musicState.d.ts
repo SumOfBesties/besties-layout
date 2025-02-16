@@ -10,5 +10,6 @@ export interface MusicState {
 	track?: {
 		artist?: string;
 		song?: string;
+		album?: string;
 	};
 }

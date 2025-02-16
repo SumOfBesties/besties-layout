@@ -1,7 +1,13 @@
 {
-    "name": "nsg2-layouts",
+    "name": "besties-layout",
     "version": "0.1.0",
-    "description": "Broadcast graphics for the Norway Speedrunner Gathering",
+    "description": "Broadcast graphics for Sum of Besties",
+    "maintainers": [
+        {
+            "name": "FabiClawZ",
+            "url": "https://fabiclawz.net"
+        }
+    ],
     "author": {
         "name": "inkfarer",
         "email": "inkfarer@inkfarer.com",
@@ -16,7 +22,7 @@
         "start": "node ../..",
         "watch": "run-p watch:*",
         "watch:browser": "vite --config vite.config.browser.mjs",
-        "watch:extension": "vite --config vite.config.extension.ts",
+        "watch:extension": "vite --config vite.config.extension.mts",
         "schema-types": "nodecg schema-types",
         "test": "jest"
     },

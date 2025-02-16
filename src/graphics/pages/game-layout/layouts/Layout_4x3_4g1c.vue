@@ -41,7 +41,7 @@
                     class="camera-capture"
                     data-capture-index="0"
                 />
-                <div class="bg-panel layout vertical">
+                <div class="bg-game-panel layout vertical">
                     <div class="nameplate-layout">
                         <player-nameplate :index="2" class="max-width" fixed-height />
                         <player-nameplate :index="3" class="max-width" fixed-height />

@@ -6,7 +6,7 @@
                     class="camera-capture layout-gap-bottom"
                     data-capture-index="0"
                 />
-                <div class="grow layout vertical bg-panel">
+                <div class="grow layout vertical bg-game-panel">
                     <player-nameplate :index="0" :max-concurrent-players="4" />
                     <div class="timer-wrapper bg-timer layout-gap-bottom layout vertical center-vertical">
                         <div class="bg-inset">

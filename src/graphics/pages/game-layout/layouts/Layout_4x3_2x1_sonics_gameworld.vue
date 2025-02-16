@@ -7,14 +7,14 @@
             />
             <player-nameplate :index="0" />
             <div class="secondary-capture-layout layout-gap-bottom">
-                <div class="bg-panel" />
+                <div class="bg-game-panel" />
                 <div
                     class="game-capture secondary-game-capture"
                     data-capture-index="1"
                 />
-                <div class="bg-panel" />
+                <div class="bg-game-panel" />
             </div>
-            <div class="grow layout vertical bg-panel">
+            <div class="grow layout vertical bg-game-panel">
                 <other-nameplate-grid class="m-y-4 m-x-16" />
                 <media-box class="grow m-b-4 m-x-12" />
             </div>

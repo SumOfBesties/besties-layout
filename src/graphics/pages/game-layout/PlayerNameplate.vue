@@ -165,14 +165,14 @@ const baseIndex = computed(() => scheduleStore.playerNameplateAssignments
         return result;
     }, 0));
 
-const useCompactVolumeMeters = computed(() => props.fixedHeight && (assignmentData.value?.talent.length ?? 0) > 1);
+const useCompactVolumeMeters = true;//computed(() => props.fixedHeight && (assignmentData.value?.talent.length ?? 0) > 1);
 </script>
 
 <style scoped lang="scss">
 @use '../../styles/colors';
 
 .player-nameplate {
-    color: colors.$vfd-teal;
+    color: colors.$vfd-light;
     background-color: colors.$vfd-background;
     text-align: center;
     font-size: 30px;

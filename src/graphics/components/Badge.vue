@@ -12,7 +12,7 @@
 @use '../styles/colors';
 
 .badge {
-    background-color: colors.$vfd-teal;
+    background-color: colors.$vfd-light;
     color: #000;
     padding: 1px 4px;
     font-size: 0.7em;

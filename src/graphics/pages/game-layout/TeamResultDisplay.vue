@@ -23,10 +23,10 @@
             >
                 Forfeit
             </div>
-            <seven-segment-digits
-                unlit-segment="8:88:88 .8"
+            <flip-flap-digits
+                :digit-count="9"
                 class="run-timer"
-                :value="formatTimer(result.time, true, true)"
+                :value="formatTimer(result.time, true, false)"
                 :color="result.state === 'FORFEIT' ? 'red' : 'teal'"
             />
         </div>
@@ -42,6 +42,7 @@ import SevenSegmentDigits from 'components/SevenSegmentDigits.vue';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faFlagCheckered } from '@fortawesome/free-solid-svg-icons/faFlagCheckered';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import FlipFlapDigits from "components/FlipFlapDigits.vue";
 
 library.add(faFlagCheckered);
 
@@ -74,7 +75,7 @@ const result = computed(() => {
     background-color: color.adjust(colors.$vfd-background, $alpha: -0.25);
     color: white;
     padding: 8px 8px 6px;
-    font-size: 25px;
+    font-size: 15px;
     display: flex;
     align-items: center;
 
@@ -101,7 +102,7 @@ const result = computed(() => {
 }
 
 .forfeit-indicator {
-    color: colors.$vfd-red;
+    color: colors.$vfd-dark;
     text-transform: uppercase;
     font-weight: 700;
     font-size: 14px;
@@ -112,7 +113,7 @@ const result = computed(() => {
 
 .finish-icon {
     margin-right: 6px;
-    color: colors.$vfd-teal;
+    color: colors.$vfd-light;
     font-size: 22px;
 }
 

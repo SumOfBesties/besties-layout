@@ -3,8 +3,8 @@
         class="wrapper"
         :class="{ flash: props.flash, [`color-${props.color}`]: true }"
     >
-        <span class="unlit">{{ unlitSegment ?? '8'.repeat(props.digitCount ?? 1) }}</span>
-        <span class="digits">{{ props.padDigits ? String(props.value ?? '').padStart(props.digitCount ?? 1, '0') : props.value }}</span>
+        <span class="unlit">{{'▓'.repeat((digitCount ?? unlitSegment?.length) ?? 1) }}</span>
+        <span class="digits">{{ props.padDigits ? String(props.value ?? '').padStart(props.digitCount ?? 1, '0') : (props.unlitSegment != null && (props.value != null && typeof props.value !== "number") ? props.unlitSegment.substring(0, props.unlitSegment.length-props.value.length).concat(props.value) : props.value) }}</span>
         <span v-if="props.alwaysLitSegment != null" class="always-lit-segment">{{ alwaysLitSegment }}</span>
     </div>
 </template>
@@ -12,7 +12,7 @@
 <script setup lang="ts">
 const props = withDefaults(defineProps<{
     digitCount?: number
-    unlitSegment?: string
+    unlitSegment?: string | null
     alwaysLitSegment?: string
     value?: number | string | null
     padDigits?: boolean
@@ -21,7 +21,8 @@ const props = withDefaults(defineProps<{
 }>(), {
     padDigits: false,
     flash: false,
-    color: 'teal'
+    color: 'teal',
+	unlitSegment: null
 });
 </script>
 
@@ -29,10 +30,15 @@ const props = withDefaults(defineProps<{
 @use '../styles/colors';
 
 .wrapper {
-    font-family: 'DSEG7 Classic';
+    font-family: 'Roboto Mono', 'split-flap-background';
     position: relative;
     text-rendering: geometricPrecision;
-    font-weight: 700;
+	font-weight: bold;
+	text-decoration-line: line-through;
+	text-decoration-style: solid;
+	text-decoration-color: black;
+	text-decoration-thickness: 1px;
+	background-color: black;
 
     &.flash > .digits {
         animation: digits-flash 2s 3;
@@ -44,7 +50,7 @@ const props = withDefaults(defineProps<{
         }
 
         .unlit {
-            color: colors.$vfd-light-unlit;
+            color: #222;
         }
     }
 
@@ -54,7 +60,7 @@ const props = withDefaults(defineProps<{
         }
 
         .unlit {
-            color: colors.$vfd-dark-unlit;
+            color: colors.$vfd-dark;
         }
     }
 }
@@ -62,6 +68,10 @@ const props = withDefaults(defineProps<{
 .digits, .always-lit-segment {
     position: absolute;
     right: 0;
+	text-decoration-line: line-through;
+	text-decoration-style: solid;
+	text-decoration-color: black;
+	text-decoration-thickness: 1px;
 }
 
 @keyframes digits-flash {

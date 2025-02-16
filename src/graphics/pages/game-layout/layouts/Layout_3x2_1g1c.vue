@@ -6,7 +6,7 @@
                     class="camera-capture layout-gap-bottom"
                     data-capture-index="0"
                 />
-                <div class="grow layout vertical bg-panel">
+                <div class="grow layout vertical bg-game-panel">
                     <player-nameplate :index="0" :max-concurrent-players="4" />
                     <div class="timer-wrapper bg-timer layout-gap-bottom layout vertical center-vertical">
                         <div class="bg-inset">
@@ -20,12 +20,12 @@
             </div>
             <large-separator direction="vertical" />
             <div class="layout vertical max-width">
-                <div class="bg-panel grow" />
+                <div class="bg-game-panel grow" />
                 <div
                     class="game-capture"
                     data-capture-index="0"
                 />
-                <div class="bg-panel grow" />
+                <div class="bg-game-panel grow" />
             </div>
         </div>
         <large-separator direction="horizontal" />
