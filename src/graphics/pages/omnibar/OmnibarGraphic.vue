@@ -9,7 +9,7 @@
             style="width: 1350px; height: 100%"
         />
         <div class="bg-inset logo-and-total layout horizontal center-vertical">
-            <donation-total class="m-r-12" />
+            <!--<donation-total class="m-r-12" />-->
             <clock />
         </div>
     </div>
@@ -53,8 +53,9 @@ body {
 }
 
 .omnibar-logo {
-    width: 300px;
-    margin-left: 16px;
+    height: 120px;
+    margin-left: 80px;
+	filter: drop-shadow(5px 5px 4px #222);
 }
 
 .logo-and-total {

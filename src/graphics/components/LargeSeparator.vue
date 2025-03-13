@@ -18,8 +18,8 @@ const props = defineProps<{
 <style scoped lang="scss">
 @use '../styles/colors';
 
-$separator-color: #B84C25;
-$separator-color-highlight: #FF7D47;
+$separator-color: colors.$vfd-dark-unlit;
+$separator-color-highlight: colors.$vfd-dark;
 $separator-color-shadow: colors.$layout-gap;
 
 .separator {

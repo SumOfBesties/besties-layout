@@ -15,7 +15,7 @@
 					<media-box class="media-box" />
 				</div>
 				<!--<intermission-prize-display class="max-width prize-display" />-->
-				<div class="bg-inset m-t-8 layout vertical center-horizontal center-vertical" style="width: 1000px">
+				<!--<div class="bg-inset m-t-8 layout vertical center-horizontal center-vertical" style="width: 1000px">
 					<div class="layout horizontal center-vertical">
 						<donation-total class="donation-total" />
 						<div class="pointer-icon">»</div>
@@ -25,7 +25,7 @@
 							height="100"
 						>
 					</div>
-				</div>
+				</div>-->
 			</div>
 			<div class="layout horizontal center-vertical">
 				<div class="bg-inset m-t-8" style="width: 100%">
@@ -219,11 +219,13 @@ const hostSpeaking = computed(() => {
     //margin: 25px 30px 0;
 
     img {
-        width: 400px;
+        height: 150px;
+		filter: drop-shadow(5px 5px 4px #333);
     }
 
     .media-box {
-        width: 400px;
+        width: 150px;
+		//filter: drop-shadow(5px 5px 4px #333);
         //height: 100%;
     }
 }

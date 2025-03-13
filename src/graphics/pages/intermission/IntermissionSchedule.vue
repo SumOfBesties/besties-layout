@@ -8,7 +8,7 @@
 			<span style="width: 550px">Title</span>
 			<span style="width: 550px">Talent</span>
 			<span style="width: 550px">Category</span>
-			<span style="width: 80px">EST</span>
+			<span style="width: 90px">EST</span>
 		</div>
 		<div class="layout horizontal max-width">
 			<div class="layout vertical max-width">
@@ -140,7 +140,7 @@ const scheduleItemTimeDeltas = computed(() => {
     margin-bottom: 12px;
 
     span {
-        color: colors.$vfd-light;
+        color: #000;
         background-color: colors.$vfd-light-unlit;
         font-weight: 700;
         text-transform: uppercase;

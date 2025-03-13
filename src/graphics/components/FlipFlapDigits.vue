@@ -50,7 +50,7 @@ const props = withDefaults(defineProps<{
         }
 
         .unlit {
-            color: #222;
+			color: #364334;
         }
     }
 

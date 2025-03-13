@@ -43,6 +43,7 @@ onMounted(async () => {
         max-height: 100%;
         max-width: 100%;
         image-rendering: -webkit-optimize-contrast;
+		filter: drop-shadow(10px 10px 4px #333);
     }
 }
 </style>

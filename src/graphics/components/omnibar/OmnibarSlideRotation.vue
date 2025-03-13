@@ -56,11 +56,11 @@
 							:key="visibleIncentive?.id"
 							:incentive="visibleIncentive!"
 						/>-->
-						<omnibar-bid-war-display
+						<!--<omnibar-bid-war-display
 							v-else-if="slides.activeComponent.value === 'bidwar'"
 							:key="visibleBidWar?.id"
 							:bid-war="visibleBidWar!"
-						/>
+						/>-->
 					</div>
                 </transition>
             </div>
@@ -199,17 +199,17 @@ const slides = useSlides(() => {
 
     if (anyBidsPinned.value) {
         result.push(
-            { component: 'bidwar', enabled: bidWarsEnabled, beforeChange: beforeBidWarShow, duration: 120 },
+            { component: 'bidwar', enabled: bidWarsEnabled, beforeChange: beforeBidWarShow, duration: 120 }/*,
             { component: 'donationReminder1', enabled: showDonationReminder, duration: 10 },
-            { component: 'donationReminder2', enabled: showDonationReminder, duration: 10 });
+            { component: 'donationReminder2', enabled: showDonationReminder, duration: 10 }*/);
     } else {
         result.push(
             { component: 'nextUp', enabled: computed(() => nextScheduleItem.value != null), duration: 30 },
             { component: 'later', enabled: computed(() => scheduleItemAfterNext.value != null), duration: 30 },
             { component: 'nextSpeedrun', enabled: computed(() => nextSpeedrun.value != null), duration: 30 },
-            { component: 'bidwar', enabled: bidWarsEnabled, beforeChange: beforeBidWarShow, duration: 30 },
+            { component: 'bidwar', enabled: bidWarsEnabled, beforeChange: beforeBidWarShow, duration: 30 }/*,
             { component: 'donationReminder1', enabled: showDonationReminder, duration: 10 },
-            { component: 'donationReminder2', enabled: showDonationReminder, duration: 10 });
+            { component: 'donationReminder2', enabled: showDonationReminder, duration: 10 }*/);
     }
 
     return result;
