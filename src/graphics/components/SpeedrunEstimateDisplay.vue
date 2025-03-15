@@ -3,7 +3,7 @@
         <div class="estimate-label">EST.</div>
         <flip-flap-digits
             :digit-count="5"
-            :value="parsedEstimate?.hours + ':' + parsedEstimate?.minutes"
+            :value=" props.estimate == null ? '00:00' : Duration.fromISO(props.estimate).shiftTo('hours', 'minutes').toFormat('hh:mm')"
             class="estimate-digits"
         />
     </div>
