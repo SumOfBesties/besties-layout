@@ -7,7 +7,7 @@
             >
                 <transition name="slide-swap">
 					<span v-if="slides.activeComponent.value === 'donationReminder1'">You are watching <span class="emphasis">{{ eventName }}</span></span>
-                    <span v-else>In support of Project HOPE - <span class="emphasis">{{ donationUrl }}</span></span>
+                    <span v-else>Sum of Besties 1.5: Besties back, alright?</span>
 				</transition>
             </div>
             <div
