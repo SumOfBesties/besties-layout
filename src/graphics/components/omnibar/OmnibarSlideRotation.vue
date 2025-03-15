@@ -26,7 +26,7 @@
 							v-if="slides.activeComponent.value === 'fallback'"
 							class="no-slide-placeholder max-height"
 						>
-							Benefitting Project HOPE
+							Sum of Besties 1.5: Besties back, alright?
 						</div>
 						<omnibar-schedule-item-display
 							v-else-if="slides.activeComponent.value === 'nextUp'"
