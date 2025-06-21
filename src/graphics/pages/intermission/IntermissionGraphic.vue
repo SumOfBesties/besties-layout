@@ -43,6 +43,7 @@
 					<div class="layout horizontal center-vertical">
 						<div
 							class="host-name-display layout vertical center-vertical center-horizontal"
+              data-augmented-ui="tl-clip-x tr-rect br-clip-y border"
 							:class="{ speaking: hostSpeaking }"
 						>
 							<template v-if="currentHost == null">
@@ -263,6 +264,12 @@ const hostSpeaking = computed(() => {
     overflow: hidden;
     background-color: transparent;
     transition: background-color 150ms;
+
+  --aug-tl: 10px;
+  --aug-tr: 10px;
+  --aug-bl: 10px;
+  --aug-br: 10px;
+  --aug-border-all: 1px;
 
     &.speaking {
         background-color: color.adjust(colors.$vfd-light, $alpha: -0.8);

@@ -1,11 +1,13 @@
 <template>
     <div
         class="player-nameplate"
+        data-augmented-ui="tl-clip-x tr-rect br-clip-y border"
         :data-nameplate-index="props.index"
         :style="{
             minHeight: props.fixedHeight ? undefined : `${Math.max(80, Math.min(props.maxConcurrentPlayers, assignmentData?.talent.length ?? 0) * 60 + 16)}px`,
             height: props.fixedHeight ? '80px' : undefined
         }"
+
     >
         <opacity-swap-transition mode="default">
             <div :key="talentListSlides.activeComponent.value ?? '-1'">
@@ -180,6 +182,13 @@ const useCompactVolumeMeters = true;//computed(() => props.fixedHeight && (assig
     box-sizing: border-box;
     overflow: hidden;
     position: relative;
+    --aug-tl: 10px;
+    --aug-tr: 10px;
+    --aug-bl: 10px;
+    --aug-br: 10px;
+  --aug-border-all: 1px;
+
+
 
     > div {
         display: flex;
