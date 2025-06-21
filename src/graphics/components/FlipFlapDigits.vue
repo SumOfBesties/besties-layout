@@ -50,7 +50,7 @@ const props = withDefaults(defineProps<{
         }
 
         .unlit {
-			color: #364334;
+			color: colors.$vfd-light-unlit//#364334;
         }
     }
 
@@ -60,7 +60,7 @@ const props = withDefaults(defineProps<{
         }
 
         .unlit {
-            color: colors.$vfd-dark;
+            color: colors.$vfd-dark-unlit;
         }
     }
 }

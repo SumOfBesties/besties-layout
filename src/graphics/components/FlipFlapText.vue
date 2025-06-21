@@ -239,7 +239,7 @@ const progressBarInfo = computed(() => {
 }
 
 .background {
-    color: #364334;//#172414;
+    color: colors.$vfd-light-unlit;//#364334;//#172414;
 	font-family: 'split-flap-background';
 	text-decoration-line: line-through;
 	text-decoration-style: solid;
