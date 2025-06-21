@@ -140,7 +140,7 @@ const scheduleItemTimeDeltas = computed(() => {
     margin-bottom: 12px;
 
     span {
-        color: colors.$text-color;
+        color: colors.$vfd-dark;
         background-color: colors.$vfd-light-unlit;
         font-weight: 700;
         text-transform: uppercase;
